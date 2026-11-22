@@ -1,5 +1,5 @@
 /* LetsPlay: interactive prototype
-   Tiers: lite (browse + join), pro (+ pin places, teams, invites), enterprise (+ company league, schedule, leaderboards). */
+   Tiers: lite (browse + join), pro (+ pin places, teams, invites), corporate (+ company league, schedule, leaderboards). */
 (function () {
 'use strict';
 
@@ -76,9 +76,9 @@ const fresh = () => ({
   shopCat: 'all', ackAlert: false,
 });
 let S = fresh();
-try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && saved.tier) S = Object.assign(fresh(), saved); } catch (e) { /* storage unavailable */ }
+try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && saved.tier) S = Object.assign(fresh(), saved, saved.tier === 'enterprise' ? { tier: 'corporate' } : {}); } catch (e) { /* storage unavailable */ }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Saved for this session only. Storage is full', 'info'); } }
-const can = { pin: () => S.tier !== 'lite', teams: () => S.tier !== 'lite', org: () => S.tier === 'enterprise' };
+const can = { pin: () => S.tier !== 'lite', teams: () => S.tier !== 'lite', org: () => S.tier === 'corporate' };
 let tab = 'explore';
 let selected = null;
 
@@ -136,7 +136,7 @@ function renderTabbar() {
   const items = [
     ['explore', 'compass', 'Explore'],
     ['games', 'calendar-days', 'My games'],
-    ['teams', S.tier === 'enterprise' ? 'trophy' : 'users', S.tier === 'enterprise' ? 'League' : 'Teams'],
+    ['teams', S.tier === 'corporate' ? 'trophy' : 'users', S.tier === 'corporate' ? 'League' : 'Teams'],
     ['shop', 'shopping-bag', 'Shop'],
     ['me', 'user', 'Profile'],
   ];
@@ -649,7 +649,7 @@ function renderGames() {
   $('#scr-games').innerHTML = html;
 }
 
-/* ───────── TEAMS (Pro) / LEAGUE (Enterprise) ───────── */
+/* ───────── TEAMS (Pro) / LEAGUE (Corporate) ───────── */
 function renderTeams() {
   const el = $('#scr-teams');
   if (S.tier === 'lite') {
@@ -661,7 +661,7 @@ function renderTeams() {
       <div class="section"><button class="btn btn-primary btn-block" data-act="subscribe" data-id="pro" style="min-height:54px">${ic('zap')}Get Pro</button><div class="faint" style="text-align:center;font-size:13px">${proPriceLine()}. Example pricing.</div></div>`;
     return;
   }
-  if (S.tier === 'enterprise') return renderLeague(el);
+  if (S.tier === 'corporate') return renderLeague(el);
   el.innerHTML = `<div class="page-head"><div><h1>Teams</h1><div class="page-sub"><b class="num">${S.teams.length}</b> team${S.teams.length === 1 ? '' : 's'} · <b class="num">${PLAYERS.filter((p) => p.lft).length}</b> free agents</div></div><button class="btn btn-primary btn-sm" data-act="newTeam">${ic('plus', 'ic-sm')}New team</button></div>
     <div style="display:grid;gap:12px">${S.teams.map(teamCard).join('')}</div>
     <div class="section"><div class="section-head"><h2>Players near you</h2><button class="link" data-act="addPlayers" data-id="${S.teams[0] ? S.teams[0].id : ''}">See all nearby</button></div>
@@ -737,7 +737,7 @@ function scheduleSheet(teamId) {
     <button class="btn btn-primary btn-block" data-act="saveMatch" data-id="${teamId}">${ic('send')}Schedule & ask for availability</button>`);
 }
 
-/* Enterprise league */
+/* Corporate league */
 const teamById = (id) => ORG.teams.find((t) => t.id === id);
 function standings() { return ORG.teams.map((t) => ({ ...t, p: t.w + t.d + t.l, pts: t.w * 3 + t.d })).sort((a, b) => b.pts - a.pts || b.w - a.w); }
 function renderLeague(el) {
@@ -745,7 +745,7 @@ function renderLeague(el) {
   let body = '';
   if (S.entTab === 'overview') {
     const st = standings();
-    body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-enterprise" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
+    body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-corporate" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
         <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · cricket, football, kabaddi and more</div>
         <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-sm" style="background:#fff;color:#0D1530" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
       <div class="stats section" style="margin-top:12px">
@@ -821,7 +821,7 @@ function renderShop() {
     <div class="section"><div class="section-head"><h2>${S.shopCat === 'all' ? 'All gear' : cats.find((c) => c[0] === S.shopCat)[1]}</h2><span class="faint num">${list.length} item${list.length === 1 ? '' : 's'}</span></div>
       ${list.length ? `<div class="grid2">${list.map((p) => prodCard(p, memberOff)).join('')}</div>` : `<div class="empty card">${ic('search')}<b>No gear matches “${esc(S.shopQ || '')}”</b><span>Try a sport or a product type, like ball or shoes.</span><button class="btn btn-soft btn-sm" data-act="shopClear">Clear search</button></div>`}
       <div class="faint" style="font-size:12.5px">Sample products, sellers, prices and ratings for the prototype.</div></div>
-    ${S.tier === 'enterprise' ? `<div class="section"><div class="biz" style="background:var(--ent-deep);color:#fff" aria-disabled="true">${ic('shirt')}<div class="grow"><b>Team kits for ${ORG.name}</b><small>Bulk-order printed jerseys for all ${ORG.teams.length} teams.</small></div><span class="soon">Coming soon</span></div></div>` : ''}
+    ${S.tier === 'corporate' ? `<div class="section"><div class="biz" style="background:var(--ent-deep);color:#fff" aria-disabled="true">${ic('shirt')}<div class="grow"><b>Team kits for ${ORG.name}</b><small>Bulk-order printed jerseys for all ${ORG.teams.length} teams.</small></div><span class="soon">Coming soon</span></div></div>` : ''}
     <div class="section"><button class="biz" data-act="promote">${ic('megaphone')}<div class="grow"><b>Promote your business</b><small>Featured map pins, shop banners and event sponsorship for local sports businesses.</small></div>${ic('chevron-right')}</button></div>`;
   bindShopSearch(false);
 }
@@ -907,7 +907,7 @@ function renderPanel() {
   const P = PLANS[S.tier];
   $('#panelTier').innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" data-quiet="1" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
-  const tries = { lite: ['Tap a pin, then Join: step-by-step registration', 'Book venue → pick hours → split the cost', 'My games → Family calendar (see the clash)'], pro: ['Teams → open a team → Match day', 'My games → Host a game → point the address', 'Add place → take a photo of a new place'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
+  const tries = { lite: ['Tap a pin, then Join: step-by-step registration', 'Book venue → pick hours → split the cost', 'My games → Family calendar (see the clash)'], pro: ['Teams → open a team → Match day', 'My games → Host a game → point the address', 'Add place → take a photo of a new place'], corporate: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
   $('#panelTheme').innerHTML = [['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, n]) => `<button data-act="themeQuick" data-id="${k}" aria-pressed="${(S.theme || 'system') === k}">${n}</button>`).join('');
 }

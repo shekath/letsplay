@@ -14,7 +14,7 @@ def bundle() -> str:
     html = (SRC / "shell.html").read_text()
     for marker, name in (("CSS", "styles.css"), ("ICONS", "icons.js"), ("DATA", "data.js"), ("APP", "app.js")):
         html = html.replace(f"/*@@{marker}@@*/", (SRC / name).read_text())
-    html = html.replace("/*@@TOURNAMENT@@*/", (SRC / "tournament.js").read_text())
+    html = html.replace("/*@@TOURNAMENT@@*/", (SRC / "tour-engine.js").read_text() + "\n" + (SRC / "tournament.js").read_text())
     return html.replace("/*@@FEATURES@@*/", (SRC / "features.js").read_text())
 
 
@@ -48,6 +48,10 @@ def bundle_design2() -> str:
     html = (SRC2 / "shell.html").read_text()
     for marker, path in (("CSS", SRC2 / "d2.css"), ("ICONS", SRC / "icons.js"), ("DATA", SRC / "data.js"), ("APP", SRC2 / "d2.js")):
         html = html.replace(f"/*@@{marker}@@*/", path.read_text())
+    # Plan features run inside d2.js's scope: the shared tournament engine, then Design 2's own modules.
+    html = html.replace("/*@@TOUR_ENGINE@@*/", (SRC / "tour-engine.js").read_text())
+    for name in ("d2-plans.js", "d2-lite.js", "d2-pro.js", "d2-corp.js"):
+        html = html.replace(f"/*@@{name}@@*/", (SRC2 / name).read_text())
     return html
 
 

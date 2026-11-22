@@ -342,6 +342,264 @@ button.gi-act:active { transform: scale(.92); }
 .badge.locked .medal { background: var(--surface-2); color: var(--ink-3); }
 .goal-set { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; }
 
+/* ═════ Plans and plan features ═════ */
+/* Plan colours are data: each plan has one hue, used only on its own label and hero. */
+:root { --pro: #C2410C; --pro-soft: #FDEBDF; --pro-text: #9A3412; --corp: #1D4ED8; --corp-soft: #E2E9FD; --corp-text: #1E40AF; }
+:root[data-theme="dark"] { --pro-soft: #3A2014; --pro-text: #FDBA8C; --corp-soft: #17224A; --corp-text: #A8BDFB; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pro-soft: #3A2014; --pro-text: #FDBA8C; --corp-soft: #17224A; --corp-text: #A8BDFB; } }
+.t-lite { --tc: var(--ink-2); --tsoft: var(--surface-2); --ttext: var(--ink); --tfill: #15161A; }
+.t-pro { --tc: var(--pro); --tsoft: var(--pro-soft); --ttext: var(--pro-text); --tfill: #9A3412; }
+.t-corporate { --tc: var(--corp); --tsoft: var(--corp-soft); --ttext: var(--corp-text); --tfill: #1E3A8A; }
+.tierword { display: inline-flex; align-items: center; gap: 5px; padding: 1px 9px; border-radius: 999px; background: var(--tsoft); color: var(--ttext); font: 800 12.5px var(--f-body); }
+.tierword .ic { width: 15px; height: 15px; }
+.hello .tierword { font-size: 12px; vertical-align: 1px; }
+.note-card { display: grid; gap: 10px; padding: 16px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+.note-card ul { font-size: 14px; }
+.bell { position: relative; width: 44px; height: 44px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); color: var(--ink); }
+.tcount { position: absolute; top: -3px; right: -3px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--live); color: #fff; font: 800 11px/19px var(--f-body); font-style: normal; text-align: center; box-shadow: 0 0 0 2px var(--surface); }
+.tab { padding: 0 14px; }
+.tab .tic { position: relative; display: grid; }
+.tab .tcount { top: -7px; right: -9px; box-shadow: 0 0 0 2px var(--cta); }
+.tab[aria-current="page"] .tcount { display: none; }
+.mapctl .addmap { background: var(--cta); color: var(--cta-ink); }
+.pin.place span { background: var(--surface); color: var(--ink); border-color: var(--ink); width: 26px; height: 26px; left: -13px; top: -13px; border-radius: 9px; }
+.pin.place span .ic { width: 14px; height: 14px; }
+.host-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 18px; background: var(--surface-2); }
+.round.sm { width: 40px; height: 40px; }
+.round[aria-pressed="true"] { background: var(--you-soft); color: var(--you-text); border-color: transparent; }
+
+/* Rows: one list language for settings, people, events and results */
+.lrows { display: grid; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.lrow { display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 60px; text-align: left; width: 100%; color: var(--ink); }
+.lrow + .lrow { border-top: 1px solid var(--line); }
+button.lrow:active { background: var(--surface-2); }
+.lrows > .lrow:only-child { min-height: 64px; }
+.sheet > .lrow, .section > .lrow { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.ltile { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--c, var(--ink)) 11%, var(--surface)); color: color-mix(in srgb, var(--c, var(--ink)) 82%, var(--ink)); }
+.ltile.img { overflow: hidden; } .ltile.img img { width: 100%; height: 100%; object-fit: cover; }
+.ltext { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.ltext b { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ltext small { font-size: 13px; color: var(--ink-3); font-weight: 600; }
+.lrow > .ic { color: var(--ink-3); }
+.tickbox { width: 26px; height: 26px; flex: none; border-radius: 8px; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; }
+.tickbox .ic { width: 16px; height: 16px; }
+[aria-pressed="true"] > .tickbox, [aria-pressed="true"] .apside .tickbox { background: var(--cta); border-color: var(--cta); color: var(--cta-ink); }
+button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%, var(--surface)); }
+.lrow:disabled { opacity: .55; }
+.empty { display: grid; justify-items: center; gap: 10px; padding: 26px 16px; text-align: center; border-radius: var(--r); background: var(--surface); border: 1px dashed var(--line); color: var(--ink-2); }
+.empty > .ic { width: 28px; height: 28px; color: var(--ink-3); }
+.empty b { color: var(--ink); }
+.okchip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: color-mix(in srgb, var(--ok) 70%, var(--ink)); }
+.okchip .ic { width: 13px; height: 13px; }
+.eyebrow { font-size: 12.5px; font-weight: 800; color: var(--ink-3); }
+
+/* Forms */
+.fgrp { display: grid; gap: 8px; }
+.fgrp > b { font-size: 14px; }
+.chips.wrap { flex-wrap: wrap; overflow: visible; }
+.fld { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.sheet { grid-template-columns: minmax(0, 1fr); }
+.fld input { width: 100%; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600; }
+.fld input:focus { outline: none; border-color: var(--you); }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.check { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: var(--surface-2); font-size: 14px; color: var(--ink-2); }
+.check b { color: var(--ink); }
+.check input { width: 22px; height: 22px; accent-color: var(--you); margin: 0; flex: none; }
+.errbox, .okbox { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; font-size: 14px; }
+.errbox { background: color-mix(in srgb, var(--live) 11%, var(--surface)); color: color-mix(in srgb, var(--live) 60%, var(--ink)); }
+.okbox { background: var(--you-soft); color: var(--ink); }
+.okbox > .ic { color: var(--you-text); }
+.linkbtn { justify-self: start; font-size: 13px; font-weight: 700; color: var(--ink-3); text-decoration: underline; min-height: 36px; }
+.steps { display: grid; grid-auto-flow: column; gap: 6px; }
+.steps i { height: 5px; border-radius: 3px; background: var(--surface-2); }
+.steps i.done, .steps i.cur { background: var(--you); }
+.steps i.cur { opacity: .55; }
+.opts { display: grid; gap: 8px; }
+.opt { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--surface); text-align: left; }
+.opt[aria-pressed="true"] { border-color: var(--cta); }
+.fcard { padding: 14px; display: grid; gap: 10px; }
+.search { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-3); }
+.search input { flex: 1; min-width: 0; border: 0; background: none; font-size: 15px; font-weight: 600; color: var(--ink); outline: none; }
+.stepper.sm button { width: 32px; height: 32px; } .stepper.sm b { min-width: 28px; }
+.stickybar { position: sticky; bottom: calc(-24px - env(safe-area-inset-bottom, 0px)); margin: 0 -20px calc(-24px - env(safe-area-inset-bottom, 0px)); padding: 12px 20px calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+/* Plans and billing */
+.plans { display: grid; gap: 12px; }
+.plan { display: grid; gap: 8px; padding: 16px; border-radius: var(--r); border: 2px solid var(--line); background: var(--surface); text-align: left; }
+.plan[aria-pressed="true"] { border-color: var(--tc); }
+.plan-top { display: flex; justify-content: space-between; align-items: center; }
+.cur { font-size: 12px; font-weight: 800; color: var(--ink-3); }
+.plan-price b { font: 800 30px var(--f-display); font-style: italic; }
+.plan-price small { font-weight: 700; color: var(--ink-2); margin-left: 3px; }
+.plan-save { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-3); }
+.save-tag { display: inline-block; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--ok) 15%, var(--surface)); color: color-mix(in srgb, var(--ok) 70%, var(--ink)); font-size: 12px; font-weight: 800; }
+.feats { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 14px; }
+.feats li { display: flex; gap: 8px; align-items: flex-start; }
+.feats .ic { width: 18px; height: 18px; color: var(--ok); margin-top: 1px; }
+.feats li.off { color: var(--ink-3); } .feats li.off .ic { color: var(--ink-3); }
+.sum { padding: 14px; display: grid; gap: 8px; font-size: 14px; }
+.sum > div { display: flex; justify-content: space-between; gap: 10px; }
+.sum .ok { color: color-mix(in srgb, var(--ok) 70%, var(--ink)); font-weight: 700; }
+.sum .total { padding-top: 8px; border-top: 1px solid var(--line); font-weight: 800; font-size: 16px; }
+.sum .faint { color: var(--ink-3); font-size: 13px; }
+.up-hero { display: grid; gap: 10px; padding: 20px; border-radius: var(--r-lg); background: var(--tfill); color: #fff; }
+.up-hero h2 { font-size: 24px; }
+.up-hero > div { color: rgba(255,255,255,.88); font-size: 14.5px; }
+.up-ic { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--you-soft); color: var(--you-text); }
+.up-hero .up-ic { background: rgba(255,255,255,.16); color: #fff; }
+.xp-burst .up-ic.t-pro, .xp-burst .up-ic.t-corporate { background: var(--tsoft); color: var(--ttext); }
+.plan-card { padding: 16px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); gap: 8px; }
+.share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.share-app { display: grid; justify-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--ink); text-decoration: none; }
+.share-app span { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--c); color: #fff; }
+.copybox { padding: 12px 14px; border-radius: 14px; background: var(--surface-2); font-size: 13.5px; color: var(--ink-2); word-break: break-word; }
+.share-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px; border-radius: var(--r); background: var(--you-soft); }
+
+/* My games and family calendar */
+.nexthero { display: grid; gap: 4px; width: 100%; padding: 18px; border-radius: var(--r-lg); background: color-mix(in srgb, var(--c) 82%, #000); color: #fff; text-align: left; position: relative; }
+.nexthero h2 { font-size: 22px; padding-right: 86px; }
+.nexthero > span:not(.eyebrow) { font-size: 14px; color: rgba(255,255,255,.9); font-weight: 600; }
+.nexthero .count { position: absolute; right: 16px; top: 18px; text-align: right; font: 800 20px var(--f-display); font-style: italic; line-height: 1; }
+.nexthero .count small { display: block; font: 700 12px var(--f-body); color: rgba(255,255,255,.8); margin-top: 3px; }
+.evrow { display: flex; align-items: center; gap: 12px; padding: 12px 14px; width: 100%; text-align: left; border-left: 4px solid var(--c); }
+.evrow + .evrow { border-top: 1px solid var(--line); }
+.evrow.clashing { background: color-mix(in srgb, var(--live) 7%, var(--surface)); }
+.evtime { display: grid; width: 64px; flex: none; }
+.evtime b { font-size: 14.5px; } .evtime small { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+.evtag { display: inline-block; margin-right: 6px; padding: 0 7px; border-radius: 999px; font-size: 11.5px; font-weight: 800; background: color-mix(in srgb, var(--c, var(--ink)) 12%, var(--surface)); color: color-mix(in srgb, var(--c, var(--ink)) 75%, var(--ink)); }
+.evtag.live { --c: var(--live); }
+.avs { display: flex; }
+.avs i, .dotc { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; font-style: normal; color: #fff; border: 2px solid var(--surface); }
+.avs i + i { margin-left: -7px; }
+.dotc { width: 12px; height: 12px; border: 0; display: inline-block; }
+.dotc.lg { width: 40px; height: 40px; border-radius: 12px; display: grid; font-size: 15px; }
+.dotlive { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--live); vertical-align: 2px; }
+.daypick { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+.daypick button { display: grid; justify-items: center; gap: 2px; padding: 8px 0; border-radius: 16px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.daypick button b { font-size: 17px; color: var(--ink); }
+.daypick button[aria-pressed="true"] { background: var(--cta); color: var(--cta-ink); }
+.daypick button[aria-pressed="true"] b { color: var(--cta-ink); }
+.daypick .dots { display: flex; gap: 2px; height: 6px; } .daypick .dots i { width: 6px; height: 6px; border-radius: 50%; }
+.clash { display: flex; gap: 10px; padding: 14px; border-radius: var(--r); background: color-mix(in srgb, var(--live) 9%, var(--surface)); border: 1px solid color-mix(in srgb, var(--live) 30%, var(--line)); font-size: 14px; }
+.clash > .ic { color: var(--live); }
+.ntf { display: flex; gap: 12px; padding: 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+.ntf.unread { border-color: color-mix(in srgb, var(--you) 40%, var(--line)); }
+.ntf.pri-urgent .ltile { --c: var(--live); }
+.ntf.pri-action .ltile { --c: var(--you); }
+.ntf.done { opacity: .75; }
+
+/* Shop */
+.promos { display: grid; grid-auto-flow: column; grid-auto-columns: 84%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 14px -18px 0; padding: 0 18px; scrollbar-width: none; }
+.promos::-webkit-scrollbar { display: none; }
+.promo { position: relative; scroll-snap-align: start; min-height: 158px; border-radius: var(--r); overflow: hidden; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; color: #fff; text-align: left; background: #15161A; }
+.promo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.promo::before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 20%, rgba(0,0,0,.82)); z-index: 1; }
+.promo.dark::before { display: none; }
+.promo > :not(img) { position: relative; z-index: 2; }
+.promo h3 { font-size: 21px; }
+.promo p { margin: 0; font-size: 13.5px; color: rgba(255,255,255,.9); }
+.ptag { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; background: #fff; color: #15161A; font-size: 12px; font-weight: 800; }
+.ptag .ic { width: 14px; height: 14px; }
+.sponsor { position: absolute !important; right: 12px; top: 12px; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(0,0,0,.55); }
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.prod { display: grid; gap: 3px; text-align: left; align-content: start; }
+.pimg { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: var(--surface-2); margin-bottom: 6px; }
+.pimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pimg .ptag { position: absolute; left: 8px; top: 8px; background: #C9362C; color: #fff; }
+.pimg.big { aspect-ratio: 16 / 10; margin: -10px -20px 0; border-radius: 30px 30px 0 0; }
+.pname { font-size: 14px; line-height: 1.25; }
+.pprice { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.pprice b { font-size: 15.5px; } .pprice s { font-size: 12.5px; color: var(--ink-3); }
+.prod .ic, .sheet .faint .ic { width: 13px; height: 13px; display: inline-block; vertical-align: -2px; }
+
+/* Pro: places, host, teams */
+.photo-drop { position: relative; display: grid; justify-items: center; align-content: center; gap: 6px; min-height: 150px; border-radius: var(--r); border: 2px dashed var(--line); background: var(--surface-2); text-align: center; overflow: hidden; cursor: pointer; }
+.photo-drop small { color: var(--ink-3); font-weight: 600; }
+.photo-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.photo-drop.has { border-style: solid; min-height: 0; }
+.photo-drop.has img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.loccard { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
+#scr-play.picking .lsheet, #scr-play.picking .play-top { display: none; }
+.pick-ui { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+.crosshair { position: absolute; transform: translate(-50%, -100%); color: var(--live); filter: drop-shadow(0 3px 4px rgba(0,0,0,.35)); }
+.crosshair .ic { width: 44px; height: 44px; stroke-width: 2.4; fill: var(--surface); }
+.pickbar { pointer-events: auto; position: absolute; left: 14px; right: 14px; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; padding: 14px; border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); }
+.app.framed .pickbar { bottom: 100px; }
+.pickbar small { display: block; color: var(--ink-3); font-weight: 600; font-size: 13px; }
+.tcards { display: grid; gap: 10px; }
+.tcard { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); text-align: left; }
+.tnext { display: flex !important; align-items: center; gap: 5px; color: var(--ink-2) !important; }
+.tnext .ic { width: 14px; height: 14px; }
+.tyes { display: grid; justify-items: center; flex: none; }
+.tyes b { font: 800 20px var(--f-display); font-style: italic; } .tyes small { font-size: 11.5px; color: var(--ink-3); font-weight: 700; }
+.crest { width: 28px; height: 28px; flex: none; border-radius: 9px; display: inline-grid; place-items: center; background: var(--c); color: #fff; font: 800 11px var(--f-display); }
+.crest.sm { width: 22px; height: 22px; border-radius: 7px; font-size: 9.5px; }
+.crest.lg { width: 46px; height: 46px; border-radius: 14px; font-size: 16px; }
+.crest.lg .ic { width: 24px; height: 24px; }
+.crest.tbd { background: var(--surface-2); color: var(--ink-3); }
+.avail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.avail div { padding: 12px; border-radius: 16px; background: var(--surface-2); display: grid; gap: 2px; }
+.avail b { font: 800 24px var(--f-display); font-style: italic; } .avail small { font-size: 12px; color: var(--ink-2); font-weight: 700; }
+.stchip { padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--surface-2); color: var(--ink-2); }
+.stchip.st-yes { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: color-mix(in srgb, var(--ok) 70%, var(--ink)); }
+.stchip.st-no { background: color-mix(in srgb, var(--live) 12%, var(--surface)); color: color-mix(in srgb, var(--live) 65%, var(--ink)); }
+.stchip.st-invited { background: var(--you-soft); color: var(--you-text); }
+.apside { display: grid; justify-items: end; gap: 6px; flex: none; }
+
+/* Corporate: league and tournaments */
+.org-hero { display: grid; gap: 6px; padding: 20px; border-radius: var(--r-lg); background: #1E3A8A; color: #fff; }
+.org-hero .eyebrow { color: rgba(255,255,255,.8); }
+.org-hero h2 { font-size: 24px; }
+.ostats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.ostats div { padding: 10px; border-radius: 14px; background: rgba(255,255,255,.1); text-align: center; }
+.ostats b { display: block; font: 800 22px var(--f-display); font-style: italic; } .ostats small { font-size: 12px; color: rgba(255,255,255,.82); }
+.podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-items: end; }
+.pod { position: relative; display: grid; justify-items: center; gap: 4px; padding: 14px 6px 12px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); font-size: 13px; }
+.pod b { font-size: 14px; } .pod > span:not(.crest) { color: var(--ink-3); font-weight: 700; }
+.pod.p1 { padding-top: 26px; border-color: color-mix(in srgb, var(--c) 45%, var(--line)); }
+.pod i { position: absolute; top: -10px; width: 22px; height: 22px; border-radius: 50%; background: var(--cta); color: var(--cta-ink); font: 800 12px/22px var(--f-display); text-align: center; }
+.table { overflow: hidden; }
+.tr { display: grid; grid-template-columns: 22px 1fr 26px 26px 34px 76px; gap: 6px; align-items: center; padding: 10px 12px; font-size: 13.5px; }
+.tr.g { grid-template-columns: 22px 1fr 26px 26px 26px 34px; }
+.tr + .tr { border-top: 1px solid var(--line); }
+.tr.th { font-size: 12px; font-weight: 800; color: var(--ink-3); padding-block: 8px; }
+.tr.q { background: color-mix(in srgb, var(--ok) 6%, var(--surface)); }
+.tname { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 700; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.form { display: flex; gap: 2px; }
+.form i { width: 14px; height: 14px; border-radius: 4px; font: 800 9px/14px var(--f-body); font-style: normal; text-align: center; color: #fff; }
+.form .fW { background: var(--ok); } .form .fD { background: #8A8D96; } .form .fL { background: var(--live); }
+.lrow.fx .ltext b .crest { margin-right: 2px; }
+.bars { padding: 14px; display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: 92px 1fr 40px; gap: 10px; align-items: center; font-size: 13px; font-weight: 700; }
+.bar .track { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+.bar .track i { display: block; height: 100%; border-radius: 5px; background: var(--corp); }
+.bar b { text-align: right; }
+.prog { display: block; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+.prog i { display: block; height: 100%; background: var(--you); border-radius: 3px; }
+.tstatus { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.tstatus span { display: flex; align-items: center; gap: 6px; }
+.champ { display: flex; align-items: center; gap: 14px; padding: 16px; margin-top: 16px; border-radius: var(--r); background: color-mix(in srgb, var(--c) 85%, #000); color: #fff; }
+.champ .ic { width: 34px; height: 34px; color: #F2B33D; }
+.champ .eyebrow { color: rgba(255,255,255,.8); }
+.bracket { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(212px, 78%); gap: 12px; overflow-x: auto; margin: 16px -18px 0; padding: 0 18px 6px; scrollbar-width: none; }
+.bracket::-webkit-scrollbar { display: none; }
+.bcol { display: flex; flex-direction: column; justify-content: space-around; gap: 10px; }
+.bhead { font-size: 13px; color: var(--ink-3); }
+.mlist { display: grid; gap: 8px; }
+.mcard { display: grid; gap: 4px; padding: 10px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); text-align: left; width: 100%; }
+.mcard:disabled { opacity: 1; cursor: default; }
+.mcard.final { border: 2px solid var(--you); }
+.mlab { font-size: 11.5px; font-weight: 800; color: var(--ink-3); }
+.mline { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.mname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mline.won { font-weight: 800; } .mline.lost { color: var(--ink-3); }
+.mcard small { font-size: 12px; }
+.scorerow { display: flex; align-items: center; gap: 12px; padding: 12px; }
+
+/* Larger text setting */
+.app.big-text { font-size: 17px; }
+.app.big-text :is(.ltext b, .gi-title, .fld input, .lrow, .muted, .faint, .sub) { font-size: 1.08em; }
+
 /* ── Toast and confetti ── */
 .toast { position: absolute; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 95; background: var(--cta); color: var(--cta-ink); padding: 12px 16px; border-radius: 999px; font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; box-shadow: var(--shadow); width: max-content; max-width: calc(100% - 32px); animation: drop .25s ease-out; }
 .app.framed .toast { top: 52px; }
@@ -356,22 +614,17 @@ button.gi-act:active { transform: scale(.92); }
 <div class="stage">
   <aside class="note" aria-label="About this design">
     <h1>Design 2: Playground</h1>
-    <p>A second direction for LetsPlay that turns finding a game into a quick, physical interaction and makes progress visible.</p>
-    <ul>
-      <li>Browse the list over the live map. Tap a game to see it on the map, tap + to join, tap a pin to find its card.</li>
-      <li>Tap a story ring for games starting soon.</li>
-      <li>Book: drag the time window along the day.</li>
-      <li>Squad: pick a player, then tap a fielding spot.</li>
-      <li>Me: your level, weekly goal, streak and badges.</li>
-    </ul>
-    <div class="seg" id="noteTheme" role="group" aria-label="Appearance"></div>
+    <p>A second direction for LetsPlay that turns finding a game into a quick, physical interaction and makes progress visible. Switch plans to see what each one unlocks.</p>
+    <div class="note-card"><b>Preview plan</b><div class="seg" id="noteTier" role="group" aria-label="Preview plan"></div><ul id="noteTry"></ul></div>
+    <div class="note-card"><b>Appearance</b><div class="seg" id="noteTheme" role="group" aria-label="Appearance"></div></div>
     <p style="font-size:13px">Sample games, people and prices. Payments and messages are simulated.</p>
   </aside>
   <div class="device">
     <div class="app" id="app">
       <section class="screen" id="scr-play" aria-label="Play"></section>
-      <section class="screen top-safe" id="scr-book" aria-label="Book a venue" hidden></section>
-      <section class="screen top-safe" id="scr-squad" aria-label="Squad" hidden></section>
+      <section class="screen top-safe" id="scr-games" aria-label="My games" hidden></section>
+      <section class="screen top-safe" id="scr-team" aria-label="Team" hidden></section>
+      <section class="screen top-safe" id="scr-shop" aria-label="Shop" hidden></section>
       <section class="screen top-safe" id="scr-me" aria-label="Me" hidden></section>
       <nav class="tabbar" id="tabbar" aria-label="Main"></nav>
     </div>
@@ -479,7 +732,7 @@ const SAMPLE_TEAMS = [
     next: { vs: 'Shuttle Social mixer', d: 1, t: '20:00', venue: 'Shuttle Zone Arena' } },
 ];
 
-/* Enterprise: a fictional company running an internal league. */
+/* Corporate: a fictional company running an internal league. */
 const ORG = {
   name: 'Halcyon Systems',
   league: 'Monsoon Corporate Cup',
@@ -527,7 +780,7 @@ const PLANS = {
   pro: { name: 'Pro', monthly: 199, icon: 'zap', blurb: 'Organise teams and grow your local scene.',
     feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
     no: ['Company leagues and leaderboards'] },
-  enterprise: { name: 'Enterprise', monthly: 149, perSeat: true, minSeats: 20, icon: 'building-2', blurb: 'Run sport across your company.',
+  corporate: { name: 'Corporate', monthly: 149, perSeat: true, minSeats: 20, icon: 'building-2', blurb: 'Run sport across your company.',
     feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };
@@ -647,11 +900,24 @@ const avatar = (n) => `<span class="av" style="background:${AVC[[...n].reduce((a
 function buzz(ms = 12) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* unsupported */ } }
 
 /* ── State ── */
-const KEY = 'letsplay-d2-v1';
-const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7'], seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], vote: null, poll: { yes: 4, maybe: 1, no: 1 }, lineup: {}, chat: null, venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10 });
+const KEY = 'letsplay-d2-v2';
+const clone = (o) => JSON.parse(JSON.stringify(o));
+/* Sample week: your 5K run, plus Vihaan's futsal and Aanya's swim lesson on Saturday morning, which clash for drop-offs. */
+const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7', 'a13', 'a16'], taken: { a7: 1, a13: 1, a16: 1 }, bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0],
+  venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10,
+  tier: 'lite', billing: 'monthly', renews: null, seats: 50, payApp: 'GPay',
+  waitlist: [], turf: [], hosted: [], places: [], teams: clone(SAMPLE_TEAMS), tm: {}, fixtures: clone(SAMPLE_FIXTURES),
+  cart: [], shopCat: 'all', shopQ: '', gamesView: 'upcoming', calWho: 'all', calDay: 0, corpView: 'league', bigText: false });
 let S = fresh();
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) S = Object.assign(fresh(), s); } catch (e) { /* storage unavailable */ }
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Saved for this session only. Storage is full', 'info'); } };
+/* Every game on the map: the sample games plus games hosted in this demo. */
+const allActs = () => ACTIVITIES.concat(S.hosted);
+const actById = (id) => allActs().find((a) => a.id === id);
+const imgOf = (a) => a.photo || (IMG + a.img + '.jpg');
+const spotsLeft = (a) => Math.max(0, a.spots - (S.taken[a.id] || 0));
+/* Plans: Lite browses and joins; Pro organises; Corporate runs sport across a company. */
+const can = { pin: () => S.tier !== 'lite', teams: () => S.tier !== 'lite', org: () => S.tier === 'corporate' };
 const LV = 250;
 const level = () => Math.floor(S.xp / LV) + 1;
 const TITLES = ['Rookie', 'Regular', 'Weekend warrior', 'Team player', 'All-rounder', 'Local legend', 'Captain material', 'Club hero'];
@@ -677,9 +943,15 @@ let tab = 'play';
 function go(t) {
   tab = t; closeSheet(); closeStory();
   $$('.screen').forEach((s) => (s.hidden = s.id !== 'scr-' + t));
-  $('#tabbar').innerHTML = [['play', 'compass', 'Play'], ['book', 'calendar-days', 'Book'], ['squad', 'users', 'Squad'], ['me', 'user', 'Me']]
-    .map(([k, i, l]) => `<button class="tab" data-act="tab" data-id="${k}" aria-label="${l}" ${tab === k ? 'aria-current="page"' : ''}>${ic(i)}<span class="lbl">${l}</span></button>`).join('');
-  ({ play: renderPlay, book: renderBook, squad: renderSquad, me: renderMe })[t]();
+  renderTabbar();
+  ({ play: renderPlay, games: renderGames, team: renderTeam, shop: renderShop, me: renderMe })[t]();
+  const scr = $('#scr-' + t); if (scr && t !== 'play') scr.scrollTop = 0;
+}
+/* Corporate swaps Team for League. Counts show what needs attention. */
+function renderTabbar() {
+  const todo = notes().filter((n) => !n.done && noteVisible(n) && (n.pri === 'urgent' || n.pri === 'action')).length;
+  const tabs = [['play', 'compass', 'Play'], ['games', 'calendar-days', 'Games', todo], ['team', can.org() ? 'trophy' : 'users', can.org() ? 'League' : 'Team'], ['shop', 'shopping-bag', 'Shop', S.cart.length], ['me', 'user', 'Me']];
+  $('#tabbar').innerHTML = tabs.map(([k, i, l, n]) => `<button class="tab" data-act="tab" data-id="${k}" aria-label="${l}${n ? `, ${n} ${k === 'shop' ? 'in bag' : 'to do'}` : ''}" ${tab === k ? 'aria-current="page"' : ''}><span class="tic">${ic(i)}${n ? `<i class="tcount num">${n}</i>` : ''}</span><span class="lbl">${l}</span></button>`).join('');
 }
 
 /* ═════ PLAY: map + list of games (tap a card or a pin; the two stay in sync) ═════ */
@@ -693,9 +965,9 @@ function mapSVG() {
   [[800, 1340, 'MG Road', 90], [1380, 792, 'Nehru Marg', 0], [640, 392, 'Ring Road', 0]].forEach(([x, y, n, r]) => { o += `<text class="m-label" x="${x}" y="${y}" text-anchor="middle" dy="5" transform="rotate(${r} ${x} ${y})">${n}</text>`; });
   return o + '</svg>';
 }
-const games = () => ACTIVITIES.filter((a) => S.mood === 'all' || a.sport === S.mood).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
+const games = () => allActs().filter((a) => (S.mood === 'all' || a.sport === S.mood) && advPass(a)).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
 let focused = null;   /* the game the map is showing */
-const soon = () => ACTIVITIES.filter((a) => a.d <= 1).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t)).slice(0, 8);
+const soon = () => allActs().filter((a) => a.d <= 1).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t)).slice(0, 8);
 function goalRing() {
   const r = 20, c = 2 * Math.PI * r, done = Math.min(S.week, S.goal);
   return `<button class="goal-ring" data-act="tab" data-id="me" aria-label="Weekly goal: ${done} of ${S.goal} games"><svg viewBox="0 0 48 48"><circle class="track" cx="24" cy="24" r="${r}"/><circle class="val" cx="24" cy="24" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - done / S.goal)}"/></svg><b class="num">${done}/${S.goal}</b></button>`;
@@ -706,41 +978,44 @@ function renderPlay() {
   const el = $('#scr-play');
   if (!$('#map')) {
     el.innerHTML = `<div class="map" id="map" aria-label="Map of games near you"><div class="map-layer" id="mapLayer">${mapSVG()}<div id="pins"></div></div>
-        <div class="mapctl" id="mapctl"><div class="zoomgrp"><button id="zoomIn" data-act="zoomIn" aria-label="Zoom in">${ic('plus')}</button><button id="zoomOut" data-act="zoomOut" aria-label="Zoom out">${ic('minus')}</button></div><button data-act="locate" aria-label="Centre on my location">${ic('locate-fixed')}</button></div></div>
+        <div class="mapctl" id="mapctl"><div class="zoomgrp"><button id="zoomIn" data-act="zoomIn" aria-label="Zoom in">${ic('plus')}</button><button id="zoomOut" data-act="zoomOut" aria-label="Zoom out">${ic('minus')}</button></div><button data-act="locate" aria-label="Centre on my location">${ic('locate-fixed')}</button><button class="addmap" data-act="addToMap" aria-label="Add a place or host a game">${ic('map-pin-plus')}</button></div></div>
       <div class="play-top top-safe" id="playTop"></div>
       <div class="lsheet" id="lsheet"><div class="lgrab" id="lgrab" aria-hidden="true"></div><div class="lhead" id="lhead"></div><div class="llist" id="llist"></div></div>`;
     bindMapDrag(); bindSheet();
   }
   const moods = [['all', 'Anything', null]].concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga'].map((k) => [k, sp(k).name, sp(k)]));
-  $('#playTop').innerHTML = `<div class="hello"><h1><small>Good to see you, Arjun</small>What do you feel like playing?</h1><span class="streak" title="Weekly streak">${ic('flame')}<span class="num">${streakWeeks()}</span></span>${goalRing()}</div>
-    <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${IMG + a.img}.jpg" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
-    <div class="chips">${moods.map(([k, n, s]) => `<button class="chip ${s ? '' : 'neutral'}" style="${s ? '--c:' + s.c : ''}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('')}</div>`;
+  const nf = advCount();
+  $('#playTop').innerHTML = `<div class="hello"><h1><small>Good to see you, Arjun · <button class="tierword t-${S.tier}" data-act="plans">${PLANS[S.tier].name}</button></small>What do you feel like playing?</h1>${bellHTML()}${goalRing()}</div>
+    <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${imgOf(a)}" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
+    <div class="chips"><button class="chip neutral" data-act="advOpen" aria-pressed="${nf > 0}" aria-label="Filters${nf ? ', ' + nf + ' on' : ''}">${ic('sliders-horizontal')}Filters${nf ? ` <b class="num">${nf}</b>` : ''}</button>${moods.map(([k, n, s]) => `<button class="chip ${s ? '' : 'neutral'}" style="${s ? '--c:' + s.c : ''}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('')}</div>`;
   const list = games();
   if (!list.find((a) => a.id === focused)) focused = list[0] ? list[0].id : null;
-  $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>` + ACTIVITIES.map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
+  $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>`
+    + COMMUNITY_SPOTS.concat(S.places).map((p) => `<button class="pin place" data-act="place" data-id="${p.id}" style="left:${p.x}px;top:${p.y}px" aria-label="Place: ${esc(p.name)}"><span>${ic(p.photo ? 'camera' : 'map-pin')}</span></button>`).join('')
+    + allActs().map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
   $('#lhead').innerHTML = `<div><h2>${list.length} game${list.length === 1 ? '' : 's'} near you</h2><div class="faint" style="font-size:13px;font-weight:600">Tap a game to see it on the map</div></div><button class="pill sm soft" data-act="sheetToggle" aria-label="Expand or collapse the list">${ic('layers')}${sheetIdx ? 'Map' : 'List'}</button>`;
-  $('#llist').innerHTML = list.length ? `<div class="grows">${list.map(itemHTML).join('')}</div>` :`<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
+  $('#llist').innerHTML = list.length ? `<div class="grows">${list.map(itemHTML).join('')}</div>` : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() + ' ' : '')}games match</b><div class="muted">${nf ? 'Try fewer filters' : 'Try another sport'}, or book a court and start your own.</div><div style="display:flex;gap:8px;justify-content:center">${nf ? '<button class="pill sm" data-act="advReset">Clear filters</button>' : ''}<button class="pill sm soft" data-act="openBook">Book a court</button></div></div>`;
   focusMap(true, list.find((a) => a.id === focused) || null);
 }
 /* One row per game: name, then day · time and a distance chip, then price, spots and venue.
    The venue goes last so a long name is what gets cut, never the price or spots. */
 function itemHTML(a) {
-  const s = sp(a.sport), joined = S.joined.includes(a.id), left = Math.max(0, a.spots - (joined ? 1 : 0));
+  const s = sp(a.sport), joined = S.joined.includes(a.id), left = spotsLeft(a);
   return `<article class="gitem ${focused === a.id ? 'on' : ''}" id="item-${a.id}" style="--c:${s.c}">
     <button class="gi-main" data-act="focus" data-id="${a.id}" aria-label="${esc(a.title)}: show on map and see details">
-      <img class="gi-photo" src="${IMG + a.img}.jpg" alt="" loading="lazy">
+      <img class="gi-photo" src="${imgOf(a)}" alt="" loading="lazy">
       <span class="gi-text">
         <b class="gi-title">${esc(a.title)}</b>
         <span class="gi-when"><span class="${a.d === 0 ? 'today' : ''}">${a.d === 1 ? 'Tmrw' : dayLabel(a.d)}</span><i class="dot" aria-hidden="true"></i><span>${tf.format(dateAt(a.d, a.t))}</span><span class="gi-dist">${ic('map-pin')}${fmtKm(km(a.x, a.y))}</span></span>
         <span class="gi-meta">${money(a.price)} · ${left ? left + ' left' : 'Full'} · ${esc(a.venue.split(' · ')[0])}</span></span>
     </button>
-    ${joined ? `<span class="gi-act in" role="img" aria-label="You're in">${ic('check')}</span>` : left === 0 ? '<span class="gi-act full">Full</span>' : `<button class="gi-act" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
+    ${joined ? `<span class="gi-act in" role="img" aria-label="You're in">${ic('check')}</span>` : left === 0 ? `<button class="gi-act full" data-act="join" data-id="${a.id}" aria-label="${esc(a.title)} is full. Join the waitlist">${S.waitlist.includes(a.id) ? 'Waitlisted' : 'Full'}</button>` : `<button class="gi-act" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
   </article>`;
 }
 /* The list is a bottom sheet with two heights: peek (map first) and expanded (browse). */
 let sheetIdx = 0;
 function sheetHeights() { const h = $('#scr-play').clientHeight; return [Math.round(h * 0.42), h - (($('#playTop') || {}).offsetHeight || 220) + 40]; }
-function setSheet(i, anim = true) { sheetIdx = i; const el = $('#lsheet'); if (!el) return; el.classList.toggle('dragging', !anim); el.style.height = sheetHeights()[i] + 'px'; const b = $('#lhead [data-act="sheetToggle"]'); if (b) b.innerHTML = `${ic('layers')}${i ? 'Map' : 'List'}`; if (anim) setTimeout(() => focusMap(true, ACTIVITIES.find((a) => a.id === focused) || null), 340); }
+function setSheet(i, anim = true) { sheetIdx = i; const el = $('#lsheet'); if (!el) return; el.classList.toggle('dragging', !anim); el.style.height = sheetHeights()[i] + 'px'; const b = $('#lhead [data-act="sheetToggle"]'); if (b) b.innerHTML = `${ic('layers')}${i ? 'Map' : 'List'}`; if (anim) setTimeout(() => focusMap(true, actById(focused) || null), 340); }
 function bindSheet() {
   const el = $('#lsheet'); let s = null; setSheet(0, false);
   const down = (e) => { if (e.target.closest('button')) return; s = { y: e.clientY, h: el.clientHeight, moved: 0 }; e.currentTarget.setPointerCapture(e.pointerId); el.classList.add('dragging'); };
@@ -750,7 +1025,7 @@ function bindSheet() {
 }
 function focusGame(id, scroll) {
   focused = id; $$('.gitem.on').forEach((e) => e.classList.remove('on')); const it = $('#item-' + id); if (it) { it.classList.add('on'); if (scroll) { const l = $('#llist'); l.scrollTo({ top: it.offsetTop - l.offsetTop - 8, behavior: REDUCED ? 'auto' : 'smooth' }); } }
-  focusMap(true, ACTIVITIES.find((a) => a.id === id)); buzz(6);
+  focusMap(true, actById(id)); buzz(6);
 }
 let mapPos = { x: 0, y: 0 };
 let mz = MAP_S;                       /* current zoom */
@@ -768,7 +1043,7 @@ function zoomAt(f, cx, cy, anim) {
 }
 function mapCentre() { const m = $('#map'), topH = ($('#playTop') || {}).offsetHeight || 200, sheetTop = m.clientHeight - (($('#lsheet') || {}).offsetHeight || 0); return [m.clientWidth / 2, topH + Math.max(40, (sheetTop - topH) / 2)]; }
 function focusMap(anim, a) {
-  const m = $('#map'); if (!m) return; const target = a === undefined ? ACTIVITIES.find((x) => x.id === focused) : a; const p = target || ME;
+  const m = $('#map'); if (!m) return; const target = a === undefined ? actById(focused) : a; const p = target || ME;
   const [cx, cy] = mapCentre();
   setMap(cx - p.x * mz, cy - p.y * mz, anim);
   $$('.pin.on').forEach((e) => e.classList.remove('on'));
@@ -780,7 +1055,7 @@ function bindMapDrag() {
   const m = $('#map'); const pts = new Map(); let start = null, pinch = 0;
   const rel = (e) => { const r = m.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   m.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('.pin, #mapctl')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
+    if (e.target.closest('.pin, #mapctl, .pickbar')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
     if (pts.size === 1) start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y };
     if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); start = null; }
   });
@@ -794,27 +1069,21 @@ function bindMapDrag() {
   m.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = rel(e); zoomAt(e.deltaY < 0 ? 1.12 : 1 / 1.12, x, y, false); }, { passive: false });
 }
 
-/* Join: confirm, celebrate, show progress */
-function joinSheet(id) {
-  const a = ACTIVITIES.find((x) => x.id === id), s = sp(a.sport);
-  sheet(`${head('Join ' + esc(a.title) + '?', `${when(a)} · ${esc(a.venue)}`)}
-    <div class="facts"><div class="fact"><b>${money(a.price)}</b><span>${a.price ? 'Paid with UPI' : 'No payment needed'}</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div></div>
-    <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;background:var(--you-soft);border-color:transparent"><span style="color:var(--you-text)">${ic('zap')}</span><div style="flex:1"><b>+50 XP</b> for joining<div class="muted" style="font-size:13px">Counts towards your weekly goal of ${S.goal} games</div></div></div>
-    <button class="pill block" data-act="confirmJoin" data-id="${a.id}" style="min-height:56px">${a.price ? `${ic('smartphone')}Pay ${inr(a.price)} with UPI` : `${ic('check')}Count me in`}</button>
-    <button class="pill block soft" data-act="cancelJoin">Not now</button>`);
-}
-function confirmJoin(id) {
-  const a = ACTIVITIES.find((x) => x.id === id); const before = level();
-  S.joined.push(id); S.week += 1; S.xp += 50; S.streak[S.streak.length - 1] = 1; save();
+/* Join: step-by-step registration (d2-lite.js), then celebrate and show progress. */
+const joinSheet = (id) => regStart(id);
+function celebrateJoin(id, who) {
+  const a = actById(id); const before = level();
+  S.week += 1; S.xp += 50; S.streak[S.streak.length - 1] = 1; save();
   const lvlUp = level() > before; const goalHit = S.week === S.goal;
+  const names = who.map(firstName);
   sheet(`<div class="xp-burst"><span class="big num">+50 XP</span><h2>${lvlUp ? `Level ${level()}! You’re a ${TITLES[Math.min(level() - 1, TITLES.length - 1)].toLowerCase()} now` : 'You’re in!'}</h2>
-      <div class="muted">${esc(a.title)} · ${when(a)}<br>Added to your games. The host can see you’re coming.</div></div>
+      <div class="muted">${esc(a.title)} · ${when(a)}<br>Playing: ${esc(names.join(', '))}. Added to the family calendar, with a reminder 2 hours before.</div></div>
     <div class="card" style="padding:14px;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;font-weight:700"><span>Level ${level()}</span><span class="num">${S.xp % LV}/${LV} XP</span></div><div class="xpbar" style="background:var(--surface-2)"><i style="width:0%" id="xpFill"></i></div>
       <div class="muted" style="font-size:13.5px">${goalHit ? 'Weekly goal reached. Your streak is safe.' : `Weekly goal: ${Math.min(S.week, S.goal)} of ${S.goal} games`}</div></div>
-    <button class="pill block" data-act="close">Back to the map</button>`);
+    <div style="display:flex;gap:10px"><button class="pill soft" style="flex:1" data-act="shareGame" data-id="${a.id}">${ic('share-2')}Invite friends</button><button class="pill" style="flex:1" data-act="close">Done</button></div>`);
   requestAnimationFrame(() => setTimeout(() => { const f = $('#xpFill'); if (f) f.style.width = ((S.xp % LV) / LV) * 100 + '%'; }, 60));
   confetti(sp(a.sport).c); buzz(30);
-  if (tab === 'play') renderPlay();
+  renderTabbar(); if (tab === 'play') renderPlay(); if (tab === 'games') renderGames();
 }
 /* A one-second celebration, drawn on canvas, skipped when the user prefers less motion. */
 function confetti(color) {
@@ -828,12 +1097,13 @@ function confetti(color) {
     if (k < 1) requestAnimationFrame(frame); else cv.remove(); })(t0);
 }
 function openDetail(id) {
-  const a = ACTIVITIES.find((x) => x.id === id), s = sp(a.sport), joined = S.joined.includes(id);
-  sheet(`<div style="margin:-10px -20px 0;height:170px;position:relative;border-radius:30px 30px 0 0;overflow:hidden"><img src="${IMG + a.img}.jpg" alt="" style="width:100%;height:100%;object-fit:cover"><span class="tag" style="position:absolute;left:16px;bottom:14px;background:${s.c}">${ic(s.icon)}${s.name}</span><button class="x" data-act="close" aria-label="Close" style="position:absolute;right:14px;top:14px">${ic('x')}</button></div>
-    <div><h2>${esc(a.title)}</h2><div class="muted" style="margin-top:4px">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))}</div></div>
-    <div class="facts"><div class="fact"><b>${when(a)}</b><span>${a.mins} min</span></div><div class="fact"><b>${money(a.price)}</b><span>${a.spots} of ${a.total} spots left</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div><div class="fact"><b>${a.setting}</b><span>${esc(a.surface)}</span></div></div>
-    <div class="muted" style="font-size:14px"><b style="color:var(--ink)">Bring:</b> ${esc(a.equipment)}<br><b style="color:var(--ink)">Access:</b> ${esc(a.access)}</div>
-    ${joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : a.spots === 0 ? '<button class="pill block soft" disabled>This game is full</button>' : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
+  const a = actById(id), s = sp(a.sport), joined = S.joined.includes(id);
+  sheet(`<div style="margin:-10px -20px 0;height:170px;position:relative;border-radius:30px 30px 0 0;overflow:hidden"><img src="${imgOf(a)}" alt="" style="width:100%;height:100%;object-fit:cover"><span class="tag" style="position:absolute;left:16px;bottom:14px;background:${s.c}">${ic(s.icon)}${s.name}</span><button class="x" data-act="close" aria-label="Close" style="position:absolute;right:14px;top:14px">${ic('x')}</button></div>
+    <div><h2>${esc(a.title)}</h2><div class="muted" style="margin-top:4px">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))}</div>${a.landmark ? `<div class="faint" style="font-size:13px;margin-top:2px">${ic('map-pin')} ${esc(a.landmark)}</div>` : ''}</div>
+    <div class="facts"><div class="fact"><b>${when(a)}</b><span>${a.mins} min</span></div><div class="fact"><b>${money(a.price)}</b><span>${spotsLeft(a)} of ${a.total} spots left</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div><div class="fact"><b>${a.setting}</b><span>${esc(a.surface)}</span></div></div>
+    <div class="host-row">${avatar(a.host)}<div style="flex:1;min-width:0"><b>${esc(a.host)}</b><div class="faint" style="font-size:13px">${COACH[a.id] ? `Coach ${esc(COACH[a.id][0])} · ${esc(COACH[a.id][1])}` : a.hostedByYou ? 'You’re hosting' : 'Host'}</div></div><button class="round" data-act="shareGame" data-id="${a.id}" aria-label="Share this game">${ic('share-2')}</button></div>
+    <div class="muted" style="font-size:14px"><b style="color:var(--ink)">Bring:</b> ${esc(a.equipment)}<br><b style="color:var(--ink)">Access:</b> ${esc(a.access)}<br><b style="color:var(--ink)">Cancellation:</b> ${esc(a.cancel || 'Free cancellation up to 2 hours before.')}</div>
+    ${joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : spotsLeft(a) === 0 ? `<button class="pill block soft" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('timer')}${S.waitlist.includes(a.id) ? 'You’re on the waitlist' : 'Full · join the waitlist'}</button>` : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
 }
 
 /* Stories: games starting soon, full screen, auto-advancing (manual when motion is reduced). */
@@ -849,11 +1119,11 @@ function openStory(i) {
 function drawStory() {
   const a = SV.list[SV.i], s = sp(a.sport); if (!S.seen.includes(a.id)) { S.seen.push(a.id); save(); }
   const mins = Math.round((dateAt(a.d, a.t) - Date.now()) / 60000);
-  $('#storyView').innerHTML = `<img src="${IMG + a.img}.jpg" alt="">
+  $('#storyView').innerHTML = `<img src="${imgOf(a)}" alt="">
     <div class="sv-top"><div class="sv-bars">${SV.list.map((_, k) => `<i><b style="width:${k < SV.i ? 100 : k === SV.i ? SV.t * 100 : 0}%"></b></i>`).join('')}</div>
       <div class="sv-head"><span class="av" style="background:${s.c}">${ic(s.icon)}</span><div class="grow">${esc(a.host)}<small>${mins > 0 && mins < 600 ? `Starts in ${mins >= 60 ? Math.floor(mins / 60) + ' h ' : ''}${mins % 60} min` : when(a)}</small></div><button class="round" data-act="closeStory" aria-label="Close stories">${ic('x')}</button></div></div>
     <div class="sv-bottom"><span class="tag" style="background:${s.c};justify-self:start">${ic(s.icon)}${s.name} · ${money(a.price)}</span><h2>${esc(a.title)}</h2>
-      <div style="font-weight:600;opacity:.92">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))} · ${a.spots} spots left</div>
+      <div style="font-weight:600;opacity:.92">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))} · ${spotsLeft(a)} spots left</div>
       ${S.joined.includes(a.id) ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : `<button class="pill block" style="background:#fff;color:#15161A;min-height:56px" data-act="storyJoin" data-id="${a.id}">${ic('check')}I’m in</button>`}</div>`;
 }
 function tickStory(now) { if (!SV) return; if (!SV.paused) { SV.t += (now - SV.last) / 5000; } SV.last = now; if (SV.t >= 1) { stepStory(1); } else { const b = $$('#storyView .sv-bars i b')[SV.i]; if (b) b.style.width = SV.t * 100 + '%'; } SV.raf = requestAnimationFrame(tickStory); }
@@ -872,7 +1142,7 @@ function renderBook() {
   const total = hrs.reduce((n, h) => n + (isPeak(S.bookDay, h) ? v.peak : v.price), 0);
   const each = Math.ceil(total / S.players);
   const hl = (h) => new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(h % 24).padStart(2, '0') + ':00'));
-  $('#scr-book').innerHTML = `<div class="head"><div><h1>Book a court</h1><div class="sub">Drag the window to your time</div></div></div>
+  $('#scr-games').innerHTML = `${gamesHead()}<div class="sub" style="margin:0 0 14px">Pick a court, then drag the window to your time.</div>
     <div class="venues">${VENUES_BOOK.map((x) => `<button class="venue" data-act="venue" data-id="${x.id}" aria-pressed="${S.venue === x.id}"><img src="${IMG + x.img}.jpg" alt=""><b>${esc(x.name)}</b><small>${x.sports.map((k) => sp(k).name).join(' · ')} · from ${inr(x.price)}/hr</small></button>`).join('')}</div>
     <div class="section"><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="bookDay" data-id="${d}" aria-pressed="${S.bookDay === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
       <div class="timeline-wrap" id="tlWrap"><div class="timeline" id="tl" style="width:${(H1 - H0) * HPX}px">
@@ -895,37 +1165,22 @@ function renderBook() {
   $('#players').addEventListener('change', save);
 }
 
-/* ═════ SQUAD: set the field, poll, chat ═════ */
-const POS = [['Bowler', 50, 28], ['Keeper', 50, 72], ['Slip', 63, 77], ['Point', 18, 50], ['Cover', 25, 31], ['Mid-off', 38, 17], ['Mid-on', 62, 17], ['Midwicket', 77, 33], ['Sq. leg', 82, 54], ['Fine leg', 70, 84], ['Third man', 30, 84]];
-let picking = null;
-function renderSquad() {
-  const t = SAMPLE_TEAMS[0]; const members = t.members.map((m) => m.name);
-  if (!S.chat) S.chat = [['Rohan Iyer', 'Nets at 6 before the match?'], ['Vikram Singh', 'I can bring the stumps and two balls.'], ['Sameer Khan', 'Running 10 min late, start without me.']];
-  const placed = Object.values(S.lineup); const total = S.poll.yes + S.poll.maybe + S.poll.no;
-  $('#scr-squad').innerHTML = `<div class="head"><div><h1>${esc(t.name)}</h1><div class="sub">v ${esc(t.next.vs)} · ${dayLabel(t.next.d)} ${tf.format(dateAt(t.next.d, t.next.t))}</div></div></div>
-    <div class="section" style="margin-top:4px"><h2>Set the field</h2><div class="muted" style="font-size:14px">${picking ? `Tap a spot for <b style="color:var(--ink)">${esc(picking)}</b>` : 'Pick a player, then tap a fielding spot. Tap a placed player to bench them.'}</div>
-      <div class="field ${picking ? 'placing' : ''}" role="group" aria-label="Fielding positions">${POS.map(([n, x, y]) => { const who = S.lineup[n]; return `<button class="pos ${who ? 'filled' : ''}" style="left:${x}%;top:${y}%" data-act="pos" data-id="${n}" aria-label="${n}${who ? ': ' + esc(who) : ', empty'}"><span class="dot">${who ? esc(who.split(' ').map((w) => w[0]).join('')) : ''}</span><small>${n}</small></button>`; }).join('')}</div>
-      <div class="bench">${members.map((m) => `<button class="chip" data-act="pick" data-id="${esc(m)}" aria-pressed="${picking === m}" ${placed.includes(m) ? 'disabled' : ''}>${avatar(m)}${esc(m.split(' ')[0])}</button>`).join('')}</div>
-      <div class="faint" style="font-size:13px"><span class="num">${placed.length}</span> of 11 placed${placed.length < 11 ? `. ${11 - placed.length} more needed for a full side.` : '. Full side.'}</div></div>
-    <div class="section"><h2>Are you playing Wednesday?</h2><div class="poll">${[['yes', 'I’m in'], ['maybe', 'Maybe'], ['no', 'Can’t make it']].map(([k, l]) => `<button data-act="vote" data-id="${k}" aria-pressed="${S.vote === k}"><i style="width:${Math.round((S.poll[k] / total) * 100)}%"></i><span>${l}</span><span class="num">${S.poll[k]}</span></button>`).join('')}</div></div>
-    <div class="section"><h2>Team chat</h2><div class="chat">${S.chat.map(([w, m]) => `<div class="msg ${w === 'You' ? 'mine' : ''}">${w === 'You' ? '' : `<b>${esc(w)}</b>`}${esc(m)}</div>`).join('')}</div>
-      <div class="chips">${['On my way', 'Who has the kit?', 'Great game, team!'].map((m) => `<button class="chip neutral" data-act="say" data-id="${m}">${ic('send')}${m}</button>`).join('')}</div></div>`;
-}
-
 /* ═════ ME: player card, goal, streak, badges ═════ */
-const BADGES = [['First whistle', 'award', 'Join your first game', () => S.joined.length >= 1], ['Early bird', 'clock', 'Play a game before 7 am', () => S.joined.some((id) => +((ACTIVITIES.find((a) => a.id === id) || { t: '12' }).t.split(':')[0]) < 7)], ['Captain', 'crown', 'Captain a team', () => true],
-  ['Hat-trick', 'flame', 'Hit your weekly goal 3 weeks running', () => streakWeeks() >= 3], ['Explorer', 'compass', 'Play 4 different sports', () => new Set(S.joined.map((id) => (ACTIVITIES.find((a) => a.id === id) || {}).sport)).size >= 4], ['Court boss', 'calendar-days', 'Book a court for your crew', () => !!S.booked]];
+const BADGES = [['First whistle', 'award', 'Join your first game', () => S.joined.length >= 1], ['Early bird', 'clock', 'Play a game before 7 am', () => S.joined.some((id) => +((actById(id) || { t: '12' }).t.split(':')[0]) < 7)], ['Captain', 'crown', 'Captain a team', () => true],
+  ['Hat-trick', 'flame', 'Hit your weekly goal 3 weeks running', () => streakWeeks() >= 3], ['Explorer', 'compass', 'Play 4 different sports', () => new Set(S.joined.map((id) => (actById(id) || {}).sport)).size >= 4], ['Court boss', 'calendar-days', 'Book a court for your crew', () => !!S.booked]];
 function renderMe() {
   const lv = level(), title = TITLES[Math.min(lv - 1, TITLES.length - 1)];
   const weeks = S.streak.map((v, i) => ({ v, l: i === S.streak.length - 1 ? 'Now' : `-${S.streak.length - 1 - i}w` }));
   $('#scr-me').innerHTML = `<div class="player"><div class="row1"><span class="ava">AM</span><div><h2>Arjun Mehta</h2><div class="lvl">Level ${lv} · ${title}</div></div></div>
       <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:6px"><span>${S.xp % LV} / ${LV} XP to level ${lv + 1}</span><span class="num">${S.xp} total</span></div><div class="xpbar"><i style="width:${((S.xp % LV) / LV) * 100}%"></i></div></div>
       <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter((b) => b[3]()).length}</b><span>Badges</span></div></div></div>
+    ${planCardHTML()}
     <div class="section card goal-set"><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div><b>Weekly goal</b><div class="muted" style="font-size:13.5px">${Math.min(S.week, S.goal)} of ${S.goal} games this week</div></div></div><div class="stepper"><button data-act="goal" data-d="-1" aria-label="Lower goal">${ic('minus')}</button><b class="num">${S.goal}</b><button data-act="goal" data-d="1" aria-label="Raise goal">${ic('plus')}</button></div></div>
     <div class="section"><h2>Streak</h2><div class="weeks" aria-label="Weeks you hit your goal">${weeks.map((w) => `<div><i class="${w.v ? 'hit' : ''}" style="height:${w.v ? 56 : 18}px"></i>${w.l}</div>`).join('')}</div></div>
     <div class="section"><h2>Badges</h2><div class="badges">${BADGES.map(([n, i, how, got], k) => `<button class="badge ${got() ? '' : 'locked'}" data-act="badge" data-i="${k}"><span class="medal">${ic(got() ? i : 'lock')}</span>${n}</button>`).join('')}</div></div>
+    ${meSettingsHTML()}
     <div class="section"><h2>Appearance</h2><div class="seg">${[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join('')}</div></div>
-    <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks and players are sample data.</div></div>`;
+    <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks, people and prices are sample data.</div></div>`;
 }
 
 /* ── Actions ── */
@@ -942,8 +1197,6 @@ const A = {
   zoomIn: () => { const [x, y] = mapCentre(); zoomAt(1.35, x, y, true); },
   zoomOut: () => { const [x, y] = mapCentre(); zoomAt(1 / 1.35, x, y, true); },
   locate: () => { $$('.pin.on').forEach((e) => e.classList.remove('on')); const [cx, cy] = mapCentre(); setMap(cx - ME.x * mz, cy - ME.y * mz, true); },
-  confirmJoin: (el) => confirmJoin(el.dataset.id),
-  cancelJoin: () => { closeSheet(); renderPlay(); },
   joinFromDetail: (el) => joinSheet(el.dataset.id),
   story: (el) => openStory(+el.dataset.i),
   closeStory: () => closeStory(),
@@ -951,21 +1204,1101 @@ const A = {
   venue: (el) => { S.venue = el.dataset.id; save(); renderBook(); },
   bookDay: (el) => { S.bookDay = +el.dataset.id; save(); renderBook(); },
   dur: (el) => { S.dur = Math.max(1, Math.min(4, S.dur + +el.dataset.d)); S.start = Math.min(S.start, H1 - S.dur); save(); renderBook(); },
-  book: () => { const v = VB(S.venue); S.booked = true; const before = level(); S.xp += 30; save(); buzz(25); confetti('#5B3FE6');
-    sheet(`<div class="xp-burst"><span class="big num">+30 XP</span><h2>${esc(v.name)} is yours</h2><div class="muted">${dayLabel(S.bookDay)}, ${S.dur} h from ${new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(S.start).padStart(2, '0') + ':00'))}<br>UPI requests sent to ${S.players - 1} players.${level() > before ? `<br><b>Level ${level()} reached.</b>` : ''}</div></div><button class="pill block" data-act="close">Done</button>`); },
-  pick: (el) => { picking = picking === el.dataset.id ? null : el.dataset.id; renderSquad(); },
-  pos: (el) => { const n = el.dataset.id;
-    if (S.lineup[n]) { delete S.lineup[n]; save(); renderSquad(); return; }
-    if (!picking) { toast('Pick a player from the bench first', 'info'); return; }
-    S.lineup[n] = picking; picking = null; save(); buzz(10); renderSquad();
-    if (Object.keys(S.lineup).length === SAMPLE_TEAMS[0].members.length) toast('Everyone is placed. Invite more to fill the side', 'users'); },
-  vote: (el) => { const k = el.dataset.id; if (S.vote) S.poll[S.vote]--; S.vote = S.vote === k ? null : k; if (S.vote) S.poll[S.vote]++; save(); renderSquad(); },
-  say: (el) => { S.chat.push(['You', el.dataset.id]); save(); renderSquad(); const c = $('.chat'); if (c) c.lastElementChild.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'nearest' }); },
+  book: () => { const v = VB(S.venue); S.booked = true; const before = level(); S.xp += 30;
+    const b = { id: 'b' + Date.now(), vid: v.id, d: S.bookDay, start: S.start, dur: S.dur, players: S.players }; S.turf.push(b); save(); buzz(25); confetti('#5B3FE6');
+    sheet(`<div class="xp-burst"><span class="big num">+30 XP</span><h2>${esc(v.name)} is yours</h2><div class="muted">${dayLabel(S.bookDay)}, ${S.dur} h from ${new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(S.start).padStart(2, '0') + ':00'))}<br>UPI requests sent to ${S.players - 1} players. Unpaid shares get a WhatsApp reminder.${level() > before ? `<br><b>Level ${level()} reached.</b>` : ''}</div></div>
+      ${S.players > 1 ? `<button class="pill block soft" data-act="postSpots" data-id="${b.id}">${ic('megaphone')}Post open spots as a game${can.pin() ? '' : ' · Pro'}</button>` : ''}<button class="pill block" data-act="close">Done</button>`); renderTabbar(); },
   goal: (el) => { S.goal = Math.max(1, Math.min(7, S.goal + +el.dataset.d)); save(); renderMe(); },
   badge: (el) => { const [n, i, how, got] = BADGES[+el.dataset.i];
     sheet(`${head(n, got() ? 'Earned' : 'Not yet earned')}<div style="display:grid;justify-items:center;gap:10px;text-align:center"><span class="medal" style="width:80px;height:80px;border-radius:24px;display:grid;place-items:center;background:${got() ? 'var(--you-soft)' : 'var(--surface-2)'};color:${got() ? 'var(--you-text)' : 'var(--ink-3)'}">${ic(got() ? i : 'lock')}</span><div class="muted">${how}</div></div><button class="pill block" data-act="${got() ? 'close' : 'tab'}" data-id="play">${got() ? 'Nice' : 'Find a game'}</button>`); },
-  reset: () => { S = fresh(); save(); applyTheme(); go('play'); toast('Demo reset', 'rotate-ccw'); },
+  reset: () => { S = fresh(); save(); applyTheme(); applyPrefs(); renderNote(); go('play'); toast('Demo reset', 'rotate-ccw'); },
 };
+
+/* ── Plan features, each in its own file (bundled here so they share this scope) ── */
+/* ───────── TOURNAMENT ORGANIZER (Corporate) ─────────
+   Generates a full plan from a few settings:
+   - Knockout: seeded bracket (1 v 8, 4 v 5, 2 v 7, 3 v 6), byes for top seeds when the field is not a power of two.
+   - Groups + knockout: snake-seeded groups, round-robin (circle method), top teams to semifinals, then the final.
+   Then it schedules every match into dates, time slots and venues, and advances winners automatically as results come in.
+   Shared by both designs. Each host provides: dateAt(d, t), teamById(id), standings(), S and save(). */
+const SCORE = { cricket: ['runs', [95, 190], 'super over'], football: ['goals', [0, 4], 'penalties'], kabaddi: ['points', [22, 46], 'golden raid'],
+  basketball: ['points', [28, 64], 'overtime'], volleyball: ['sets', [0, 2], 'golden set'], badminton: ['games', [0, 2], 'decider'] };
+const TOUR_SPORTS = ['cricket', 'football', 'kabaddi', 'badminton', 'volleyball', 'basketball'];
+const scoreOf = (sport) => SCORE[sport] || ['points', [0, 10], 'tie-break'];
+
+function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function seedOrder(P) { let s = [1, 2]; while (s.length < P) { const L = s.length * 2; s = s.flatMap((x) => [x, L + 1 - x]); } return s; }
+const koRoundName = (k) => (k === 2 ? 'Final' : k === 4 ? 'Semifinals' : k === 8 ? 'Quarterfinals' : 'Round of ' + k);
+const koPrefix = (k) => (k === 4 ? 'SF' : k === 8 ? 'QF' : 'R' + k + '-');
+function rrRounds(list) {
+  const t = list.slice(); if (t.length % 2) t.push(null);
+  const n = t.length, R = [];
+  for (let r = 0; r < n - 1; r++) {
+    const pairs = [];
+    for (let i = 0; i < n / 2; i++) { const a = t[i], b = t[n - 1 - i]; if (a && b) pairs.push(r % 2 ? [b, a] : [a, b]); }
+    R.push(pairs); t.splice(1, 0, t.pop());
+  }
+  return R;
+}
+function addMins(t, m) { const [h, mm] = t.split(':').map(Number); const x = h * 60 + mm + m; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); }
+function playable(d, mode) { const wd = dateAt(d, '12:00').getDay(); return mode === 'every' || (mode === 'weekdays' ? wd > 0 && wd < 6 : wd === 0 || wd === 6); }
+
+function orderTeams(cfg, rand) {
+  if (cfg.seeding === 'random') { const a = cfg.teams.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  return standings().map((t) => t.id).filter((id) => cfg.teams.includes(id));
+}
+
+function buildTournament(cfg, rand = Math.random) {
+  const teams = orderTeams(cfg, rand);
+  const M = []; let mid = 0;
+  const add = (o) => { const m = Object.assign({ id: 'm' + (++mid), sa: null, sb: null, winner: null, tb: null, bye: false, a: null, b: null }, o); M.push(m); return m; };
+  let groups = null, entrants;
+  if (cfg.format === 'groups') {
+    const G = teams.length >= 6 ? 2 : 1, names = ['A', 'B'].slice(0, G); groups = {};
+    names.forEach((g) => (groups[g] = []));
+    teams.forEach((t, i) => { const row = Math.floor(i / G); const idx = row % 2 === 0 ? i % G : G - 1 - (i % G); groups[names[idx]].push(t); });
+    names.forEach((g) => { let n = 0; rrRounds(groups[g]).forEach((pairs, r) => pairs.forEach(([a, b]) => add({ stage: 'group', group: g, rk: r, round: `Group ${g} · Matchday ${r + 1}`, label: g + (++n), a, b }))); });
+    entrants = G === 2
+      ? [{ type: 'group', ref: 'A1' }, { type: 'group', ref: 'B2' }, { type: 'group', ref: 'B1' }, { type: 'group', ref: 'A2' }]
+      : [{ type: 'group', ref: 'A1' }, { type: 'group', ref: 'A4' }, { type: 'group', ref: 'A2' }, { type: 'group', ref: 'A3' }];
+  } else {
+    const P = Math.pow(2, Math.ceil(Math.log2(teams.length)));
+    entrants = seedOrder(P).map((s) => (s <= teams.length ? { type: 'team', ref: teams[s - 1], seed: s } : { type: 'bye' }));
+  }
+  let cur = entrants, k = cur.length, rk = 100, semis = [];
+  while (k >= 2) {
+    const next = [], name = koRoundName(k);
+    for (let i = 0; i < k / 2; i++) {
+      const m = add({ stage: 'ko', rk, round: name, label: k === 2 ? 'Final' : koPrefix(k) + (i + 1), srcA: cur[2 * i], srcB: cur[2 * i + 1] });
+      if (k === 4) semis.push(m.id);
+      next.push({ type: 'win', ref: m.id });
+    }
+    cur = next; k /= 2; rk++;
+  }
+  if (cfg.thirdPlace && semis.length === 2) add({ stage: 'ko', rk: rk - 1.5, round: 'Third place', label: '3rd', srcA: { type: 'lose', ref: semis[0] }, srcB: { type: 'lose', ref: semis[1] } });
+  const T = Object.assign({ id: 'tr' + Date.now(), created: Date.now(), groups, matches: M, champion: null }, JSON.parse(JSON.stringify(cfg)));
+  T.seeds = teams;
+  propagate(T); schedulePlan(T);
+  return T;
+}
+
+function schedulePlan(T) {
+  const keys = [...new Set(T.matches.filter((m) => !m.bye).map((m) => m.rk))].sort((a, b) => a - b);
+  const V = Math.max(1, T.venues.length);
+  let day = T.startDay; while (!playable(day, T.days)) day++;
+  let slot = 0, prev = null;
+  const nextDay = () => { day++; slot = 0; while (!playable(day, T.days)) day++; };
+  keys.forEach((rk) => {
+    const ms = T.matches.filter((m) => m.rk === rk && !m.bye);
+    const ko = ms[0].stage === 'ko';
+    const finalAfterThird = ms[0].round === 'Final' && prev === 'Third place';
+    if (ko && slot > 0 && !finalAfterThird) nextDay();
+    for (let i = 0; i < ms.length; i += V) {
+      ms.slice(i, i + V).forEach((m, j) => { m.d = day; m.t = addMins(T.time, slot * (T.mins + 15)); m.venue = T.venues[j % V]; });
+      slot++; if (slot >= T.perDay) nextDay();
+    }
+    prev = ms[0].round;
+  });
+  const ds = T.matches.filter((m) => !m.bye).map((m) => m.d);
+  T.endDay = Math.max(...ds); T.matchDays = new Set(ds).size;
+}
+
+function groupTable(T, g) {
+  const rows = T.groups[g].map((id) => ({ id, p: 0, w: 0, d: 0, l: 0, f: 0, a: 0, pts: 0 }));
+  const by = Object.fromEntries(rows.map((r) => [r.id, r]));
+  T.matches.filter((m) => m.stage === 'group' && m.group === g && m.sa != null).forEach((m) => {
+    const A2 = by[m.a], B2 = by[m.b]; A2.p++; B2.p++; A2.f += m.sa; A2.a += m.sb; B2.f += m.sb; B2.a += m.sa;
+    if (m.sa > m.sb) { A2.w++; B2.l++; A2.pts += 3; } else if (m.sa < m.sb) { B2.w++; A2.l++; B2.pts += 3; } else { A2.d++; B2.d++; A2.pts++; B2.pts++; }
+  });
+  return rows.sort((x, y) => y.pts - x.pts || (y.f - y.a) - (x.f - x.a) || y.f - x.f);
+}
+const groupDone = (T, g) => T.matches.filter((m) => m.stage === 'group' && m.group === g).every((m) => m.sa != null);
+function resolveSrc(T, src) {
+  if (!src || src.type === 'bye') return null;
+  if (src.type === 'team') return src.ref;
+  if (src.type === 'group') { const g = src.ref[0], pos = +src.ref.slice(1); return groupDone(T, g) ? (groupTable(T, g)[pos - 1] || {}).id || null : null; }
+  const m = T.matches.find((x) => x.id === src.ref); if (!m || !m.winner) return null;
+  if (src.type === 'win') return m.winner;
+  return m.winner === m.a ? m.b : m.a;
+}
+function propagate(T) {
+  T.matches.filter((m) => m.stage === 'ko').sort((a, b) => a.rk - b.rk).forEach((m) => {
+    const a = resolveSrc(T, m.srcA), b = resolveSrc(T, m.srcB);
+    if (m.a !== a || m.b !== b) { m.a = a; m.b = b; m.sa = m.sb = null; m.winner = null; m.tb = null; }
+    if ((m.srcA && m.srcA.type === 'bye') || (m.srcB && m.srcB.type === 'bye')) { m.bye = true; m.winner = a || b || null; }
+  });
+  const f = T.matches.find((m) => m.round === 'Final'); T.champion = (f && f.winner) || null;
+}
+function srcLabel(T, src) {
+  if (!src) return 'TBD';
+  if (src.type === 'team') return teamById(src.ref).name;
+  if (src.type === 'bye') return 'Bye';
+  if (src.type === 'group') return T.groups && Object.keys(T.groups).length === 1 ? `#${src.ref.slice(1)} in group` : `Group ${src.ref[0]} #${src.ref.slice(1)}`;
+  const m = T.matches.find((x) => x.id === src.ref); return (src.type === 'win' ? 'Winner ' : 'Loser ') + (m ? m.label : '');
+}
+function playMatch(T, m, sa, sb, tbWinner) {
+  m.sa = sa; m.sb = sb;
+  m.winner = sa > sb ? m.a : sb > sa ? m.b : m.stage === 'ko' ? tbWinner : null;
+  m.tb = sa === sb && m.stage === 'ko' ? tbWinner : null;
+  propagate(T);
+}
+function simulateMatch(T, m, rand) {
+  const [, [lo, hi]] = scoreOf(T.sport);
+  let a = lo + Math.floor(rand() * (hi - lo + 1)), b = lo + Math.floor(rand() * (hi - lo + 1));
+  if (hi === 2) { if (rand() < 0.5) { a = 2; b = Math.floor(rand() * 2); } else { b = 2; a = Math.floor(rand() * 2); } }
+  playMatch(T, m, a, b, rand() < 0.5 ? m.a : m.b);
+}
+const ready = (m) => m.a && m.b && m.sa == null && !m.bye;
+function nextRound(T) { const r = T.matches.filter(ready); if (!r.length) return []; const rk = Math.min(...r.map((m) => m.rk)); return r.filter((m) => m.rk === rk); }
+function tourStatus(T) {
+  if (T.champion) return { text: 'Champion: ' + teamById(T.champion).name, done: true };
+  const open = T.matches.filter((m) => !m.bye && m.sa == null).sort((a, b) => a.rk - b.rk)[0];
+  if (!open) return { text: 'Complete', done: true };
+  return { text: open.stage === 'group' ? 'Group stage' : open.round, done: false };
+}
+function tourProgress(T) { const ms = T.matches.filter((m) => !m.bye); return { played: ms.filter((m) => m.sa != null).length, total: ms.length }; }
+
+function sampleTournament() {
+  const T = buildTournament({ name: 'Monsoon Cricket Cup', sport: 'cricket', format: 'groups', teams: ORG.teams.map((t) => t.id), seeding: 'standings', thirdPlace: true,
+    venues: ['Oval Cricket Ground', 'Riverfront Maidan · Turf 2'], startDay: -3, days: 'every', time: '18:30', mins: 120, perDay: 2 }, rng(11));
+  T.id = 'tr-sample'; const r = rng(7);
+  T.matches.filter((m) => m.stage === 'group').forEach((m) => simulateMatch(T, m, r));
+  return T;
+}
+function tours() { if (!S.tournaments) { S.tournaments = [sampleTournament()]; save(); } return S.tournaments; }
+
+/* ═════ PLANS: Lite, Pro, Corporate · billing · shared helpers ═════
+   Locked features stay visible and lead to an upgrade sheet, so people can see what a plan adds. */
+
+/* Shared helpers used by the plan modules */
+const UPI_APPS = ['GPay', 'PhonePe', 'Paytm', 'BHIM'];
+const pad2 = (n) => String(n).padStart(2, '0');
+const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = (m) => pad2(Math.floor(m / 60) % 24) + ':' + pad2(m % 60);
+const famById = (id) => FAMILY.find((f) => f.id === id) || (S.family || []).find((f) => f.id === id);
+const family = () => FAMILY.concat(S.family || []);
+const firstName = (id) => { const f = famById(id); return f ? f.name.split(' ')[0] : 'You'; };
+const longFmt = new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+const dateFmt = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+const upiChips = (group) => `<div class="chips" id="${group}">${UPI_APPS.map((u) => `<button type="button" class="chip neutral" data-act="pickOne" data-group="${group}" data-id="${u}" aria-pressed="${u === S.payApp}">${ic('smartphone')}${u}</button>`).join('')}</div>`;
+const pickedUpi = (group) => { const b = $(`#${group} [aria-pressed="true"]`); return b ? b.dataset.id : 'UPI'; };
+/* A list row used across the plan screens: tinted icon tile, two lines, optional trailing bit. */
+const rowHTML = (o) => `<${o.act ? 'button' : 'div'} class="lrow" ${o.act ? `data-act="${o.act}" ${o.id != null ? `data-id="${esc(o.id)}"` : ''}` : ''} ${o.pressed != null ? `aria-pressed="${o.pressed}"` : ''} ${o.c ? `style="--c:${o.c}"` : ''}>
+  <span class="ltile">${o.lead || ic(o.icon || 'circle-check')}</span><span class="ltext"><b>${o.title}</b>${o.sub ? `<small>${o.sub}</small>` : ''}</span>${o.end != null ? o.end : (o.act ? ic('chevron-right') : '')}</${o.act ? 'button' : 'div'}>`;
+
+/* Share to any app: the phone's own share sheet when available, otherwise app links and copy. */
+async function shareAny(title, text, url) {
+  if (navigator.share) { try { await navigator.share({ title, text, url }); toast('Shared', 'share-2'); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  const full = `${text} ${url}`, enc = encodeURIComponent;
+  const apps = [['WhatsApp', '#1DA851', 'message-circle', `https://wa.me/?text=${enc(full)}`], ['Telegram', '#1C8ECC', 'send', `https://t.me/share/url?url=${enc(url)}&text=${enc(text)}`],
+    ['SMS', '#13A04B', 'smartphone', `sms:?&body=${enc(full)}`], ['Email', '#D2581A', 'send', `mailto:?subject=${enc(title)}&body=${enc(full)}`],
+    ['Facebook', '#1877F2', 'globe', `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`], ['X', '#15161A', 'share-2', `https://twitter.com/intent/tweet?text=${enc(full)}`]];
+  sheet(`${head('Share', esc(title))}
+    <div class="share-grid">${apps.map(([n, c, i, href]) => `<a class="share-app" href="${href}" target="_blank" rel="noopener" style="--c:${c}"><span>${ic(i)}</span>${n}</a>`).join('')}
+      <button class="share-app" data-act="copyShare" style="--c:var(--ink-2)"><span>${ic('copy')}</span>Copy</button></div>
+    <div class="copybox" id="shareTxt">${esc(full)}</div>
+    <div class="faint" style="font-size:12.5px">On a phone, the installed app opens your phone’s share menu so you can send it to any app.</div>`);
+}
+
+/* ── Billing: yearly is 12 months less 20%. Example prices for the prototype. ── */
+let billView = null;   /* the period the plans sheet is showing */
+function renewDate(period) { const d = new Date(); if (period === 'yearly') d.setFullYear(d.getFullYear() + 1); else d.setMonth(d.getMonth() + 1); return d.getTime(); }
+function planPrice(k, period) {
+  const P = PLANS[k]; if (!P.monthly) return { amount: 0, label: 'Free', per: '', note: 'Always free' };
+  const unit = P.perSeat ? '/employee' : '';
+  if (period === 'yearly') { const y = yearlyPrice(P.monthly), full = P.monthly * 12; return { amount: y, label: inr(y), per: `${unit}/year`, full, save: full - y, note: `${inr(Math.floor(y / 12))}${unit}/month, billed yearly` }; }
+  return { amount: P.monthly, label: inr(P.monthly), per: `${unit}/month`, note: 'Billed monthly, cancel any time' };
+}
+const billSeg = (act, view) => `<div class="seg" role="group" aria-label="Billing period"><button data-act="${act}" data-id="monthly" aria-pressed="${view === 'monthly'}">Monthly</button><button data-act="${act}" data-id="yearly" aria-pressed="${view === 'yearly'}">Yearly <span class="save-tag">−20%</span></button></div>`;
+function planSummary() {
+  if (S.tier === 'lite') return 'Free plan';
+  const pr = planPrice(S.tier, S.billing), seats = PLANS[S.tier].perSeat ? ` · ${S.seats} employees` : '';
+  return `${S.billing === 'yearly' ? 'Yearly' : 'Monthly'} · ${pr.label}${pr.per}${seats}${S.renews ? ` · renews ${dateFmt.format(S.renews)}` : ''}`;
+}
+
+function setTier(t) {
+  S.tier = t; save(); closeSheet(); renderNote(); renderTabbar();
+  if (tab === 'play') renderPlay(); else go(tab);
+}
+function plansSheet() {
+  const view = billView || (S.tier === 'lite' ? 'yearly' : S.billing);
+  sheet(`${head('Choose your plan', 'Example pricing for the prototype')}
+    ${billSeg('billView', view)}
+    <div class="plans">${Object.keys(PLANS).map((k) => { const P = PLANS[k], pr = planPrice(k, view), cur = S.tier === k && (k === 'lite' || S.billing === view);
+      return `<button class="plan t-${k}" data-act="choosePlan" data-id="${k}" aria-pressed="${S.tier === k}">
+        <span class="plan-top"><span class="tierword t-${k}">${ic(P.icon)}${P.name}</span>${cur ? '<span class="cur">Current</span>' : ''}</span>
+        <span class="plan-price"><b class="num">${pr.label}</b><small>${pr.per}</small></span>
+        ${pr.full ? `<span class="plan-save"><s class="num">${inr(pr.full)}</s><span class="save-tag num">Save ${inr(pr.save)}</span></span>` : ''}
+        <span class="faint" style="font-size:13px">${pr.note}</span>
+        <span class="muted" style="font-size:14px">${P.blurb}</span>
+        <ul class="feats">${P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}${P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('')}</ul></button>`; }).join('')}</div>`);
+}
+let SUB = null;
+function startCheckout(plan, period) { const P = PLANS[plan]; SUB = { plan, period: period || (S.tier === plan ? S.billing : 'yearly'), seats: P.perSeat ? Math.max(P.minSeats, S.seats) : 1 }; checkoutSheet(); }
+function checkoutSheet() {
+  const P = PLANS[SUB.plan], pr = planPrice(SUB.plan, SUB.period), seats = SUB.seats, total = pr.amount * seats, gross = (pr.full || pr.amount) * seats;
+  const same = S.tier === SUB.plan && S.billing === SUB.period;
+  sheet(`${head(P.name + ' plan', P.blurb)}
+    ${billSeg('subPeriod', SUB.period)}
+    ${P.perSeat ? `<div class="card" style="padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b>Employees</b><div class="faint" style="font-size:13px">Minimum ${P.minSeats}. Add more any time.</div></div><div class="stepper"><button data-act="subSeats" data-d="-10" aria-label="10 fewer employees">${ic('minus')}</button><b class="num">${seats}</b><button data-act="subSeats" data-d="10" aria-label="10 more employees">${ic('plus')}</button></div></div>` : ''}
+    <div class="sum card">
+      <div><span class="muted">${P.name}${P.perSeat ? ` · ${seats} × ${inr(pr.full || pr.amount)}` : ''} · ${SUB.period === 'yearly' ? '12 months' : '1 month'}</span><span class="num">${inr(gross)}</span></div>
+      ${SUB.period === 'yearly' ? `<div class="ok"><span>Yearly discount (20%)</span><span class="num">− ${inr(gross - total)}</span></div>` : ''}
+      <div class="total"><span>Due today</span><span class="num">${inr(total)}</span></div>
+      <div class="faint"><span>${SUB.period === 'yearly' ? 'Renews' : 'Next payment'} on ${dateFmt.format(renewDate(SUB.period))}</span><span class="num">${inr(total)}</span></div></div>
+    ${SUB.period === 'monthly' ? rowHTML({ act: 'subPeriod', id: 'yearly', icon: 'percent', title: `Pay yearly and save ${inr((P.monthly * 12 - yearlyPrice(P.monthly)) * seats)}`, sub: `${inr(yearlyPrice(P.monthly) * seats)} a year instead of ${inr(P.monthly * 12 * seats)}` }) : ''}
+    <div style="display:grid;gap:8px"><b style="font-size:14px">${SUB.period === 'monthly' ? 'Pay with UPI AutoPay' : 'Pay once with UPI'}</b>${upiChips('subApp')}
+      <div class="faint" style="font-size:12.5px">${SUB.period === 'monthly' ? `You approve a monthly AutoPay mandate of ${inr(total)} in your UPI app. Cancel any time from Me.` : 'One payment for the year. You get a reminder 7 days before it renews.'}</div></div>
+    <button class="pill block" style="min-height:56px" data-act="subPay" id="subGo" ${same ? 'disabled' : ''}>${same ? 'This is your current plan' : `${ic('smartphone')}Pay ${inr(total)} via UPI`}</button>`);
+}
+/* What a locked feature needs, and what the plan adds. */
+const UPSELL = {
+  pin: ['pro', 'map-pin-plus', 'Add places and host games with Pro', 'Snap a photo of a court or ground to put it on the map for everyone, and host games at any address.'],
+  host: ['pro', 'megaphone', 'Host games with Pro', 'Pick any address, set the fee and players needed, and publish it to people nearby or just your invitees.'],
+  teams: ['pro', 'users', 'Build your team with Pro', 'Create teams, add players near you, run match day with availability, lineups and team chat.'],
+  org: ['corporate', 'trophy', 'Run sport across your company', 'Department teams, a league with live standings, a schedule builder and a tournament organizer that builds brackets for you.'],
+};
+function upsell(kind) {
+  const [plan, icon, title, body] = UPSELL[kind], P = PLANS[plan], y = yearlyPrice(P.monthly);
+  sheet(`<div class="up-hero t-${plan}"><span class="up-ic">${ic(icon)}</span><h2>${title}</h2><div>${body}</div></div>
+    <ul class="feats">${P.feats.slice(1, 6).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
+    <button class="pill block" style="min-height:56px" data-act="subscribe" data-id="${plan}" data-period="yearly">Get ${P.name} · ${inr(Math.floor(y / 12))}${P.perSeat ? '/employee' : ''}/month, billed yearly</button>
+    <button class="pill block soft" data-act="subscribe" data-id="${plan}" data-period="monthly">Or ${inr(P.monthly)}${P.perSeat ? '/employee' : ''} monthly</button>
+    <button class="pill block soft" data-act="plans">Compare all plans</button>`);
+}
+function planCardHTML() {
+  const P = PLANS[S.tier];
+  return `<div class="section plan-card t-${S.tier}"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="tierword t-${S.tier}">${ic(P.icon)}${P.name}</span><button class="pill sm soft" data-act="plans">${S.tier === 'lite' ? 'Upgrade' : 'Manage'}</button></div>
+    <div class="muted" style="font-size:14px">${P.blurb}</div><div class="faint num" style="font-size:13px">${planSummary()}</div>
+    ${S.tier !== 'lite' && S.billing === 'monthly' ? `<button class="pill sm" style="justify-self:start" data-act="subscribe" data-id="${S.tier}" data-period="yearly">${ic('percent')}Switch to yearly, save 20%</button>` : ''}</div>`;
+}
+
+/* ── Desktop side note: plan switcher and things to try ── */
+const TRY = {
+  lite: ['Tap + on a game: step-by-step registration with family members', 'Games → Family: two kids’ drop-offs clash', 'Tap the pin button on the map to see what Pro adds'],
+  pro: ['Map pin button → Add a place: snap a photo of a new court', 'Map pin button → Host a game at any address', 'Team → Create a team → add players nearest first and share'],
+  corporate: ['League: standings, insights and Add fixture', 'League → Cups → Create a tournament', 'Open Monsoon Cricket Cup and enter a semifinal result'],
+};
+function renderNote() {
+  const t = $('#noteTier'); if (t) t.innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');
+  const l = $('#noteTry'); if (l) l.innerHTML = TRY[S.tier].map((x) => `<li>${x}</li>`).join('');
+}
+function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); }
+
+Object.assign(A, {
+  setTier: (el) => { setTier(el.dataset.id); toast(`Previewing ${PLANS[el.dataset.id].name}`, PLANS[el.dataset.id].icon); },
+  plans: () => { billView = null; plansSheet(); },
+  billView: (el) => { billView = el.dataset.id; plansSheet(); },
+  choosePlan: (el) => { const k = el.dataset.id, view = billView || (S.tier === 'lite' ? 'yearly' : S.billing);
+    if (k === 'lite') { if (S.tier === 'lite') { toast('You’re on Lite', 'compass'); return; } S.billing = 'monthly'; S.renews = null; setTier('lite'); toast('Switched to Lite', 'compass'); return; }
+    startCheckout(k, view); },
+  subscribe: (el) => startCheckout(el.dataset.id, el.dataset.period),
+  subPeriod: (el) => { SUB.period = el.dataset.id; checkoutSheet(); },
+  subSeats: (el) => { const P = PLANS[SUB.plan]; SUB.seats = Math.max(P.minSeats, Math.min(5000, SUB.seats + +el.dataset.d)); checkoutSheet(); },
+  subPay: () => { const b = $('#subGo'); b.disabled = true; b.innerHTML = `${ic('smartphone')}Waiting for ${pickedUpi('subApp')}…`;
+    setTimeout(() => {
+      const P = PLANS[SUB.plan], pr = planPrice(SUB.plan, SUB.period), total = pr.amount * SUB.seats, plan = SUB.plan, period = SUB.period;
+      S.billing = period; S.renews = renewDate(period); if (P.perSeat) S.seats = SUB.seats; SUB = null; setTier(plan); buzz(30); confetti('#5B3FE6');
+      sheet(`<div class="xp-burst"><span class="up-ic t-${plan}">${ic(P.icon)}</span><h2>You’re on ${P.name}</h2><div class="muted">${period === 'yearly' ? 'Yearly' : 'Monthly'} plan · paid ${inr(total)}<br>${period === 'yearly' ? 'Renews' : 'Next payment'} on ${dateFmt.format(S.renews)}</div></div>
+        <ul class="feats card" style="padding:14px">${P.feats.slice(1, 5).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
+        <button class="pill block" data-act="close">Start using ${P.name}</button>`);
+    }, 1100); },
+  pickOne: (el) => { $$(`#${el.dataset.group} [aria-pressed]`).forEach((b) => b.setAttribute('aria-pressed', b === el)); if (el.dataset.group !== 'regApp' && el.dataset.group !== 'subApp' && el.dataset.group !== 'cartApp') return; S.payApp = el.dataset.id; save(); },
+  copyShare: () => { const txt = $('#shareTxt').textContent; const sel = () => { const r = document.createRange(); r.selectNodeContents($('#shareTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected. Copy it from the menu', 'copy'); };
+    try { navigator.clipboard.writeText(txt).then(() => toast('Copied. Paste it into any app', 'copy'), sel); } catch (e) { sel(); } },
+  shareGame: (el) => { const a = actById(el.dataset.id); shareAny(a.title, `${a.title} · ${when(a)} at ${a.venue}. ${spotsLeft(a)} spots left, ${money(a.price)}. Join me on LetsPlay:`, 'https://letsplay.app/g/' + a.id); },
+});
+
+/* ═════ LITE: filters · registration · waitlist · My games · family calendar · notifications · shop · settings ═════ */
+
+/* ── Filters ── */
+const ADV0 = { when: 'any', time: 'any', km: 'any', price: 'any', level: 'any', ages: 'any', setting: 'any', access: false };
+function adv() { if (!S.adv) S.adv = Object.assign({}, ADV0); return S.adv; }
+function advCount() { const f = adv(); return Object.keys(ADV0).filter((k) => f[k] !== ADV0[k]).length; }
+const isAccessible = (a) => /step-free|ramp|lift|level access|hoist|accessible/i.test(a.access || '');
+function ageRange(s) {
+  if (!s || /all/i.test(s)) return [0, 120];
+  const m = s.match(/(\d+)\s*[–-]\s*(\d+)/); if (m) return [+m[1], +m[2]];
+  const p = s.match(/(\d+)\+/); return p ? [+p[1], 120] : [0, 120];
+}
+function advPass(a) {
+  const f = adv(), h = +a.t.split(':')[0], lv = (a.level || '').toLowerCase(), open = /all/.test(lv), [lo, hi] = ageRange(a.ages);
+  if (f.when === 'today' && a.d !== 0) return false;
+  if (f.when === 'tomorrow' && a.d !== 1) return false;
+  if (f.when === 'weekend') { const wd = dateAt(a.d, '12:00').getDay(); if (wd !== 0 && wd !== 6) return false; }
+  if (f.time === 'morning' && h >= 12) return false;
+  if (f.time === 'afternoon' && (h < 12 || h >= 17)) return false;
+  if (f.time === 'evening' && h < 17) return false;
+  if (f.km !== 'any' && km(a.x, a.y) > +f.km) return false;
+  if (f.price === 'free' && a.price > 0) return false;
+  if ((f.price === '200' || f.price === '500') && a.price > +f.price) return false;
+  if (f.level !== 'any' && !(open || lv.includes(f.level) || (f.level === 'advanced' && /competitive/.test(lv)))) return false;
+  if (f.ages === 'kids' && lo > 12) return false;
+  if (f.ages === 'adults' && hi < 18) return false;
+  if (f.setting !== 'any' && a.setting !== f.setting) return false;
+  if (f.access && !isAccessible(a)) return false;
+  return true;
+}
+function advSheet() {
+  const f = adv(), n = games().length;
+  const grp = (key, label, opts) => `<div class="fgrp"><b>${label}</b><div class="chips wrap">${opts.map(([v, l]) => `<button class="chip neutral" data-act="advSet" data-k="${key}" data-id="${v}" aria-pressed="${String(f[key]) === String(v)}">${l}</button>`).join('')}</div></div>`;
+  sheet(`${head('Filters', 'Narrow down games near you')}
+    ${grp('when', 'Day', [['any', 'Any day'], ['today', 'Today'], ['tomorrow', 'Tomorrow'], ['weekend', 'This weekend']])}
+    ${grp('time', 'Time', [['any', 'Any time'], ['morning', 'Morning'], ['afternoon', 'Afternoon'], ['evening', 'Evening']])}
+    ${grp('km', 'Distance', [['any', 'Any'], ['1', 'Within 1 km'], ['2', 'Within 2 km'], ['3', 'Within 3 km']])}
+    ${grp('price', 'Fee', [['any', 'Any fee'], ['free', 'Free'], ['200', 'Up to ₹200'], ['500', 'Up to ₹500']])}
+    ${grp('level', 'Ability', [['any', 'Any level'], ['beginner', 'Beginner'], ['intermediate', 'Intermediate'], ['advanced', 'Advanced']])}
+    ${grp('ages', 'Who’s playing', [['any', 'Anyone'], ['kids', 'Kids (under 13)'], ['adults', 'Adults']])}
+    ${grp('setting', 'Setting', [['any', 'Indoor or outdoor'], ['Indoor', 'Indoor'], ['Outdoor', 'Outdoor']])}
+    ${rowHTML({ act: 'advAccess', pressed: f.access, icon: 'accessibility', title: 'Step-free access', sub: 'Ramps, lifts or level entry and accessible washrooms', end: `<span class="tickbox">${ic('check')}</span>` })}
+    <div style="display:flex;gap:10px"><button class="pill soft" data-act="advReset">Reset</button><button class="pill" style="flex:1" data-act="close" ${n ? '' : 'disabled'}>${n ? `Show ${n} game${n === 1 ? '' : 's'}` : 'No games match. Try fewer filters'}</button></div>`);
+}
+function advChanged() { save(); renderPlay(); advSheet(); }
+
+/* ── Registration: who's playing → details → consent → payment. Nothing is lost if the sheet closes. ── */
+let REG = null;
+const STEP_LABEL = { who: 'Who’s playing', details: 'Details and emergency contact', consent: 'Consent', pay: 'Payment' };
+const regSteps = (a) => ['who', 'details', 'consent'].concat(a.price ? ['pay'] : []);
+const ageOk = (a, f) => { const [lo, hi] = ageRange(a.ages); return f.age >= lo && f.age <= hi; };
+function profiles() { if (!S.profiles) S.profiles = clone(PROFILES); (S.family || []).forEach((f) => { if (!S.profiles[f.id]) S.profiles[f.id] = { phone: '', ecName: 'Arjun Mehta (parent)', ecPhone: '98765 43210', medical: '' }; }); return S.profiles; }
+function regStart(id) {
+  const a = actById(id);
+  if (spotsLeft(a) === 0 && !S.joined.includes(id)) { waitlistSheet(a); return; }
+  if (!REG || REG.aid !== id) {
+    const elig = family().filter((f) => ageOk(a, f));
+    REG = { aid: id, step: 0, who: elig.length ? [elig[0].id] : [], d: clone(profiles()), keep: true, c: { conduct: false, guardian: false, photo: true }, failed: false, failNext: false, resumed: false, err: '' };
+  } else { REG.resumed = REG.step > 0; REG.err = ''; }
+  regRender();
+}
+function regRender() {
+  const a = actById(REG.aid), steps = regSteps(a), st = steps[REG.step], minors = REG.who.filter((id) => famById(id).age < 18);
+  let body = '';
+  if (st === 'who') {
+    body = `<div class="opts">${family().map((f) => { const ok = ageOk(a, f); return `<button class="opt" data-act="regWho" data-id="${f.id}" aria-pressed="${REG.who.includes(f.id)}" ${ok ? '' : 'disabled'}>${avatar(f.name)}<span class="ltext"><b>${esc(f.name)}</b><small>${ok ? esc(f.note) : `Not eligible · ages ${a.ages} only`}</small></span><span class="tickbox">${ic('check')}</span></button>`; }).join('')}</div>
+      <button class="pill sm soft" style="justify-self:start" data-act="addFamily" data-id="reg">${ic('plus')}Add family member</button>`;
+  } else if (st === 'details') {
+    body = REG.who.map((id) => { const f = famById(id), p = REG.d[id]; return `<div class="card fcard"><div style="display:flex;gap:10px;align-items:center">${avatar(f.name)}<b>${esc(f.name)}</b><span class="okchip">${ic('check')}Saved details</span></div>
+      ${f.age >= 18 ? `<label class="fld"><span>Mobile number</span><input inputmode="tel" data-r="d.${id}.phone" value="${esc(p.phone)}" placeholder="10-digit mobile"></label>` : ''}
+      <div class="two"><label class="fld"><span>Emergency contact</span><input data-r="d.${id}.ecName" value="${esc(p.ecName)}" placeholder="Name (relation)"></label><label class="fld"><span>Their phone</span><input inputmode="tel" data-r="d.${id}.ecPhone" value="${esc(p.ecPhone)}" placeholder="10 digits"></label></div>
+      <label class="fld"><span>Medical notes for the coach (optional)</span><input data-r="d.${id}.medical" value="${esc(p.medical)}" placeholder="Allergies, asthma, injuries"></label></div>`; }).join('')
+      + `<label class="check"><input type="checkbox" data-r="keep" ${REG.keep ? 'checked' : ''}><span>Save these details for next time</span></label>`;
+  } else if (st === 'consent') {
+    body = `<label class="check"><input type="checkbox" data-r="c.conduct" ${REG.c.conduct ? 'checked' : ''}><span><b>Code of conduct and cancellation policy</b><br>I agree to ${esc(a.host)}’s code of conduct. ${esc(a.cancel || 'Free cancellation up to 2 hours before.')}</span></label>
+      ${minors.length ? `<label class="check"><input type="checkbox" data-r="c.guardian" ${REG.c.guardian ? 'checked' : ''}><span><b>Parent or guardian consent</b><br>I’m the parent or guardian of ${minors.map(firstName).join(' and ')} and agree to them taking part.</span></label>` : ''}
+      <label class="check"><input type="checkbox" data-r="c.photo" ${REG.c.photo ? 'checked' : ''}><span><b>Photos (optional)</b><br>The host may take photos for the club’s page.</span></label>
+      <div class="faint" style="font-size:13px;display:flex;gap:6px">${ic('shield-check')}Emergency contacts and medical notes are shared only with the host and coach.</div>`;
+  } else {
+    const n = REG.who.length;
+    body = `${REG.failed ? `<div class="errbox" role="alert">${ic('info')}<div><b>Payment didn’t go through</b><br>No money was taken. Your details are saved, so try again or pick another UPI app.</div></div>` : ''}
+      <div class="sum card"><div><span class="muted">${esc(a.title)} · ${money(a.price)} × ${n}</span><span class="num">${money(a.price * n)}</span></div><div><span class="muted">Booking fee</span><span class="num">₹0</span></div><div class="total"><span>Total</span><span class="num">${money(a.price * n)}</span></div></div>
+      <div style="display:grid;gap:8px"><b style="font-size:14px">Pay via UPI</b>${upiChips('regApp')}</div>
+      <button class="linkbtn" data-act="regFail">Test a failed payment</button>`;
+  }
+  const last = REG.step === steps.length - 1;
+  sheet(`${head('Join game', `${esc(a.title)} · ${when(a)}`)}
+    <div class="steps" aria-hidden="true">${steps.map((s, i) => `<i class="${i < REG.step ? 'done' : i === REG.step ? 'cur' : ''}"></i>`).join('')}</div>
+    <div class="eyebrow">Step ${REG.step + 1} of ${steps.length} · ${STEP_LABEL[st]}</div>
+    ${REG.resumed ? `<div class="faint" style="font-size:13px;display:flex;gap:6px;align-items:center">${ic('rotate-ccw')}Picked up where you left off. Nothing you entered was lost.</div>` : ''}
+    ${body}
+    <div class="errbox" id="regErr" role="alert" ${REG.err ? '' : 'hidden'}>${ic('info')}<div>${esc(REG.err)}</div></div>
+    <div style="display:flex;gap:10px">${REG.step ? '<button class="pill soft" data-act="regBack">Back</button>' : ''}<button class="pill" style="flex:1;min-height:56px" data-act="regNext" id="regGo">${last ? (a.price ? `${ic('smartphone')}Pay ${money(a.price * REG.who.length)} via UPI` : `${ic('check')}Confirm`) : 'Continue'}</button></div>`);
+}
+function regValidate(st) {
+  const digits = (s) => (s || '').replace(/\D/g, '');
+  if (st === 'who' && !REG.who.length) return 'Choose at least one person to register.';
+  if (st === 'details') for (const id of REG.who) {
+    const p = REG.d[id], nm = firstName(id);
+    if (famById(id).age >= 18 && digits(p.phone).length !== 10) return `Enter a 10-digit mobile number for ${nm}.`;
+    if (!p.ecName.trim()) return `Add an emergency contact for ${nm}.`;
+    if (digits(p.ecPhone).length !== 10) return `Enter a 10-digit phone number for ${nm}’s emergency contact.`;
+  }
+  if (st === 'consent') {
+    if (!REG.c.conduct) return 'Tick the code of conduct to continue.';
+    if (REG.who.some((id) => famById(id).age < 18) && !REG.c.guardian) return 'Parent or guardian consent is needed for players under 18.';
+  }
+  return '';
+}
+function regNext() {
+  const a = actById(REG.aid), steps = regSteps(a), st = steps[REG.step], err = regValidate(st);
+  if (err) { REG.err = err; const e = $('#regErr'); e.hidden = false; e.lastElementChild.textContent = err; return; }
+  REG.err = ''; REG.resumed = false;
+  if (REG.step < steps.length - 1) { REG.step++; regRender(); return; }
+  if (st === 'pay') { const b = $('#regGo'); b.disabled = true; b.innerHTML = `${ic('smartphone')}Waiting for ${pickedUpi('regApp')}…`;
+    setTimeout(() => { if (REG.failNext) { REG.failNext = false; REG.failed = true; regRender(); } else regFinish(); }, 1100); return; }
+  regFinish();
+}
+function regFinish() {
+  const a = actById(REG.aid), who = REG.who.slice();
+  if (REG.keep) S.profiles = clone(REG.d);
+  if (!S.joined.includes(a.id)) S.joined.push(a.id);
+  S.bookings[a.id] = Array.from(new Set((S.bookings[a.id] || []).concat(who)));
+  S.taken[a.id] = (S.taken[a.id] || 0) + who.length;
+  notes().unshift({ id: 'n' + Date.now(), pri: 'info', cat: 'booking', icon: 'circle-check', when: 'Just now', ref: a.id, title: `Booked: ${a.title}`, body: `${who.map(firstName).join(' and ')} ${who.length > 1 ? 'are' : 'is'} in for ${when(a)}. A reminder comes 2 hours before.`, actions: [['View game', 'view']], read: false, done: false });
+  REG = null; celebrateJoin(a.id, who);
+}
+function waitlistSheet(a) {
+  const on = S.waitlist.includes(a.id);
+  sheet(`${head(on ? 'You’re on the waitlist' : 'This game is full', `${esc(a.title)} · ${when(a)}`)}
+    <div class="xp-burst"><span class="up-ic">${ic('timer')}</span><h2 class="num">${on ? '#3 in line' : '2 ahead of you'}</h2><div class="muted" style="max-width:32ch">If a place opens, we hold it for you for 30 minutes and send a notification. You only pay if you take it.</div></div>
+    ${on ? `<button class="pill block soft" data-act="waitLeave" data-id="${a.id}">Leave the waitlist</button>` : `<button class="pill block" data-act="waitJoin" data-id="${a.id}">${ic('timer')}Join the waitlist</button>`}
+    <button class="pill block soft" data-act="similar" data-id="${a.id}">${ic('search')}Find similar games</button>`);
+}
+function addFamilySheet(ret) {
+  sheet(`${head('Add a family member', 'Book games for them from your account')}
+    <label class="fld"><span>Full name</span><input id="famName" placeholder="For example Diya Mehta" autocomplete="off"></label>
+    <label class="fld"><span>Age</span><input id="famAge" inputmode="numeric" placeholder="Years"></label>
+    <div class="faint" style="font-size:13px">For under-18s you give guardian consent when you book. Their details stay on your account.</div>
+    <div class="errbox" id="famErr" hidden>${ic('info')}<div></div></div>
+    <button class="pill block" data-act="famSave" data-id="${ret || ''}">Add to family</button>`);
+}
+
+/* ── Notifications: what changed, what it means, what to do ── */
+function notes() { if (!S.notes) S.notes = NOTE_SEED.map((n) => Object.assign({ read: false, done: false }, n)); return S.notes; }
+function prefs() { if (!S.notePrefs) S.notePrefs = { club: true, promo: true, recs: true }; return S.notePrefs; }
+const noteVisible = (n) => !(n.cat === 'club' && !prefs().club) && !(n.cat === 'promo' && !prefs().promo) && !(n.cat === 'recs' && !prefs().recs);
+const unread = () => notes().filter((n) => !n.read && noteVisible(n)).length;
+function bellHTML() { const n = unread(); return `<button class="bell" data-act="notes" aria-label="Notifications${n ? ', ' + n + ' unread' : ''}">${ic('bell')}${n ? `<i class="tcount num">${n}</i>` : ''}</button>`; }
+let noteTab = 'all';
+function notesSheet() {
+  const list = notes().filter(noteVisible).filter((n) => noteTab === 'all' || (noteTab === 'action' ? n.pri === 'urgent' || n.pri === 'action' : n.pri === 'info' || n.pri === 'promo'));
+  const cnt = notes().filter((n) => noteVisible(n) && !n.done && (n.pri === 'urgent' || n.pri === 'action')).length;
+  sheet(`<div class="sheet-head"><div><h2>Notifications</h2></div><div style="display:flex;gap:8px"><button class="x" data-act="notePrefs" aria-label="Notification settings">${ic('settings')}</button><button class="x" data-act="close" aria-label="Close">${ic('x')}</button></div></div>
+    <div class="seg" role="group" aria-label="Filter notifications"><button data-act="noteTab" data-id="all" aria-pressed="${noteTab === 'all'}">All</button><button data-act="noteTab" data-id="action" aria-pressed="${noteTab === 'action'}">To do${cnt ? ` · ${cnt}` : ''}</button><button data-act="noteTab" data-id="updates" aria-pressed="${noteTab === 'updates'}">Updates</button></div>
+    ${list.length ? list.map((n) => `<div class="ntf pri-${n.pri} ${n.done ? 'done' : ''} ${n.read ? '' : 'unread'}"><span class="ltile">${ic(n.icon)}</span>
+      <div style="min-width:0;display:grid;gap:6px;flex:1"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b>${esc(n.title)}</b><span class="faint" style="font-size:12px;white-space:nowrap">${esc(n.when)}</span></div>
+        <span class="muted" style="font-size:14px">${esc(n.body)}</span>
+        ${n.done ? `<span class="okchip">${ic('check')}${esc(n.done)}</span>` : `<div style="display:flex;gap:8px;flex-wrap:wrap">${n.actions.map(([l, k], i) => `<button class="pill sm ${i ? 'soft' : ''}" data-act="noteAct" data-id="${n.id}" data-do="${k}">${esc(l)}</button>`).join('')}</div>`}</div></div>`).join('') : `<div class="empty">${ic('bell')}<b>You’re all caught up</b></div>`}
+    <div class="faint" style="font-size:12.5px">Cancellations, venue and time changes, payments and deadlines always reach you. Choose the rest in settings.</div>`);
+  setTimeout(() => { notes().forEach((n) => (n.read = true)); save(); refreshBells(); }, 800);
+}
+function refreshBells() { $$('.bell').forEach((b) => (b.outerHTML = bellHTML())); renderTabbar(); }
+function notePrefsSheet() {
+  const P = prefs(), row = (k, t, d, locked) => rowHTML({ act: locked ? null : 'prefToggle', id: k, pressed: locked ? true : P[k], icon: locked ? 'lock' : 'bell', title: t, sub: d, end: `<span class="tickbox">${ic('check')}</span>` });
+  sheet(`${head('Notification settings')}<div class="lrows">${row('x', 'Cancellations and changes', 'Venue, time and weather changes. Always on.', true)}${row('y', 'Payments and deadlines', 'Fees due and registration deadlines. Always on.', true)}
+    ${row('club', 'Club news and coach updates', 'Kit lists and announcements from your clubs')}${row('recs', 'Suggestions near you', 'New games that match your sports')}${row('promo', 'Offers and deals', 'Marketplace and sponsor promotions')}</div>
+    <button class="pill block" data-act="notes">Done</button>`);
+}
+function noteAct(id, k) {
+  const n = notes().find((x) => x.id === id); if (!n) return;
+  const res = { keep: 'Your spot is kept. We’ll update you at 5 am.', cancelSpot: 'Place cancelled. Refund on its way.', ack: 'Noted.', yes: 'You’re marked as playing.', no: 'Captain told you can’t make it.', snooze: 'We’ll remind you tomorrow.', pay: 'Paid ₹300 via UPI.' };
+  if (k === 'view') { if (actById(n.ref)) openDetail(n.ref); return; }
+  if (k === 'shop') { go('shop'); return; }
+  if (k === 'cancelSpot') { S.joined = S.joined.filter((x) => x !== n.ref); delete S.bookings[n.ref]; S.taken[n.ref] = Math.max(0, (S.taken[n.ref] || 1) - 1); }
+  if (k === 'yes' || k === 'no') { const t = S.teams.find((x) => x.id === n.ref); if (t) t.members[0].status = k; }
+  n.done = res[k] || 'Done'; n.read = true; save(); notesSheet(); renderTabbar(); toast(n.done, 'check');
+  if (tab === 'games') renderGames();
+}
+
+/* ── My games: upcoming · family calendar · book a court ── */
+function gamesHead() {
+  const v = S.gamesView;
+  return `<div class="head"><div><h1>My games</h1></div>${bellHTML()}</div>
+    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">Book a court</button></div>`;
+}
+function renderGames() { if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else renderUpcoming(); }
+function famEvents() {
+  const ev = [];
+  allActs().filter((a) => S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'g' + a.id, ref: a.id, kind: 'game', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: S.bookings[a.id] || ['f0'], sport: a.sport }));
+  S.hosted.filter((a) => !S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'h' + a.id, ref: a.id, kind: 'host', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: ['f0'], sport: a.sport }));
+  S.turf.forEach((b) => { const v = VB(b.vid); ev.push({ key: 't' + b.id, ref: b.id, kind: 'turf', title: v.name, d: b.d, t: pad2(b.start) + ':00', mins: b.dur * 60, venue: v.name, who: ['f0'], sport: v.sports[0] }); });
+  if (can.teams()) S.teams.forEach((t) => t.next && ev.push({ key: 'm' + t.id, ref: t.id, kind: 'team', title: `${t.name} v ${t.next.vs}`, d: t.next.d, t: t.next.t, mins: 120, venue: t.next.venue, who: ['f0'], sport: t.sport }));
+  return ev.filter((e) => e.d >= 0 && e.d <= 6).sort((x, y) => x.d - y.d || toMin(x.t) - toMin(y.t));
+}
+function findClashes(ev) {
+  const out = [];
+  for (let i = 0; i < ev.length; i++) for (let j = i + 1; j < ev.length; j++) {
+    const a = ev[i], b = ev[j]; if (a.d !== b.d) continue;
+    const s1 = toMin(a.t), e1 = s1 + a.mins, s2 = toMin(b.t), e2 = s2 + b.mins, same = a.who.some((w) => b.who.includes(w));
+    if (s1 < e2 && s2 < e1 && (same || a.venue.split(' · ')[0] !== b.venue.split(' · ')[0])) out.push({ a, b, from: fromMin(Math.max(s1, s2)), to: fromMin(Math.min(e1, e2)), same });
+  }
+  return out;
+}
+const fmtT = (d, t) => tf.format(dateAt(d, t));
+const FAMC = { f0: '#5B3FE6', f1: '#D93065', f2: '#0A7CAE' };
+const famColor = (id) => FAMC[id] || '#0C8353';
+function evRow(e, clash) {
+  const s = sp(e.sport), tagTxt = { turf: 'Court booking', team: 'Team match', host: 'You’re hosting' }[e.kind];
+  return `<button class="evrow ${clash ? 'clashing' : ''}" style="--c:${s.c}" data-act="evOpen" data-kind="${e.kind}" data-id="${e.ref}">
+    <span class="evtime num"><b>${fmtT(e.d, e.t)}</b><small>${fmtT(e.d, fromMin(toMin(e.t) + e.mins))}</small></span>
+    <span class="ltext"><b>${esc(e.title)}</b><small>${tagTxt ? `<span class="evtag">${tagTxt}</span>` : ''}${clash ? '<span class="evtag live">Clash</span>' : ''}${esc(e.venue.split(' · ')[0])}</small></span>
+    <span class="avs">${e.who.map((w) => `<i style="background:${famColor(w)}" title="${esc(firstName(w))}">${esc(firstName(w)[0])}</i>`).join('')}</span></button>`;
+}
+function renderUpcoming() {
+  const ev = famEvents(), clashes = findClashes(ev), open = notes().filter((n) => !n.done && noteVisible(n) && (n.pri === 'urgent' || n.pri === 'action'));
+  const next = ev.find((e) => dateAt(e.d, e.t) > Date.now());
+  const mins = next ? Math.round((dateAt(next.d, next.t) - Date.now()) / 60000) : 0;
+  const days = [...new Set(ev.map((e) => e.d))];
+  $('#scr-games').innerHTML = `${gamesHead()}
+    ${next ? `<button class="nexthero" style="--c:${sp(next.sport).c}" data-act="evOpen" data-kind="${next.kind}" data-id="${next.ref}"><span class="eyebrow" style="color:rgba(255,255,255,.85)">Up next${next.who[0] !== 'f0' || next.who.length > 1 ? ' · ' + next.who.map(firstName).join(', ') : ''}</span><h2>${esc(next.title)}</h2><span>${dayLabel(next.d)} · ${fmtT(next.d, next.t)} · ${esc(next.venue.split(' · ')[0])}</span><b class="count num">${mins < 60 ? mins + ' min' : mins < 1440 ? Math.floor(mins / 60) + ' h ' + (mins % 60) + ' min' : Math.floor(mins / 1440) + ' days'}<small>to go</small></b></button>` : ''}
+    ${open.length || clashes.length ? `<div class="section"><h2>Needs you</h2><div class="lrows">${open.slice(0, 3).map((n) => rowHTML({ act: 'notes', icon: n.icon, c: n.pri === 'urgent' ? 'var(--live)' : null, title: esc(n.title), sub: esc(n.body.split('. ')[0]) + '.' })).join('')}
+      ${clashes.length ? rowHTML({ act: 'gamesView', id: 'family', icon: 'calendar-days', c: 'var(--live)', title: `${clashes.length} clash${clashes.length > 1 ? 'es' : ''} in the family calendar`, sub: `${dayLabel(clashes[0].a.d)}: ${esc(clashes[0].a.title)} overlaps ${esc(clashes[0].b.title)}` }) : ''}</div></div>` : ''}
+    ${days.length ? days.map((d) => `<div class="section"><h2>${dayLabel(d)} <span class="faint" style="font:600 13px var(--f-body)">${longFmt.format(dateAt(d, '12:00'))}</span></h2><div class="lrows">${ev.filter((e) => e.d === d).map((e) => evRow(e, clashes.some((c) => c.a.key === e.key || c.b.key === e.key))).join('')}</div></div>`).join('')
+      : `<div class="empty section">${ic('calendar-days')}<b>Nothing booked this week</b><button class="pill sm" data-act="tab" data-id="play">Find a game</button></div>`}
+    ${can.pin() ? `<div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>` : ''}`;
+}
+function renderFamily() {
+  const ev = famEvents(), who = S.calWho, day = S.calDay, clashes = findClashes(ev);
+  const shown = ev.filter((e) => who === 'all' || e.who.includes(who)), dayEv = shown.filter((e) => e.d === day);
+  const inClash = (e) => clashes.some((c) => c.a.key === e.key || c.b.key === e.key);
+  $('#scr-games').innerHTML = `${gamesHead()}
+    <div class="chips"><button class="chip neutral" data-act="calWho" data-id="all" aria-pressed="${who === 'all'}">${ic('users')}Everyone</button>${family().map((f) => `<button class="chip neutral" data-act="calWho" data-id="${f.id}" aria-pressed="${who === f.id}"><i class="dotc" style="background:${famColor(f.id)}"></i>${esc(firstName(f.id))}</button>`).join('')}</div>
+    <div class="daypick">${[0, 1, 2, 3, 4, 5, 6].map((d) => { const dt = dateAt(d, '12:00'), ws = [...new Set(shown.filter((e) => e.d === d).flatMap((e) => e.who))]; return `<button data-act="calDay" data-id="${d}" aria-pressed="${day === d}">${wf.format(dt)}<b class="num">${dt.getDate()}</b><span class="dots">${ws.map((w) => `<i style="background:${famColor(w)}"></i>`).join('') || '<i style="opacity:0"></i>'}</span></button>`; }).join('')}</div>
+    ${clashes.length ? clashes.map((c) => { const wa = c.a.who.map(firstName).join(' & '), wb = c.b.who.map(firstName).join(' & ');
+      return `<div class="clash section" role="status">${ic('info')}<div style="display:grid;gap:6px;flex:1"><b>Clash on ${dayLabel(c.a.d)}, ${fmtT(c.a.d, c.from)}–${fmtT(c.a.d, c.to)}</b><span>${c.same ? `${wa} is booked in two places at once.` : `${wa} at ${esc(c.a.venue.split(' · ')[0])} and ${wb} at ${esc(c.b.venue.split(' · ')[0])}. One adult can’t do both drop-offs.`}</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pill sm" data-act="clashSlot" data-id="${c.b.sport}">Find another slot</button><button class="pill sm soft" data-act="carpool" data-id="${esc(c.a.venue.split(' · ')[0])}" data-d="${c.a.d}">${ic('share-2')}Ask for a carpool</button></div></div></div>`; }).join('')
+      : `<div class="section faint" style="font-size:13.5px;display:flex;gap:6px;align-items:center">${ic('circle-check')}No clashes this week.</div>`}
+    <div class="section"><h2>${dayLabel(day)} <span class="faint" style="font:600 13px var(--f-body)">${longFmt.format(dateAt(day, '12:00'))}</span></h2>
+      ${dayEv.length ? `<div class="lrows">${dayEv.map((e) => evRow(e, inClash(e))).join('')}</div>` : `<div class="empty">${ic('calendar-days')}<b>Nothing on ${dayLabel(day) === 'Today' ? 'today' : dayLabel(day)}</b><button class="pill sm soft" data-act="tab" data-id="play">Find something to play</button></div>`}</div>
+    <div class="section"><button class="pill block soft" disabled>${ic('calendar')}Sync to phone calendar · coming soon</button></div>`;
+}
+
+/* ── Shop: deals, categories, product pages, bag and checkout, promote your business ── */
+const memberOff = () => S.tier !== 'lite';
+const unitPrice = (p) => (memberOff() ? Math.round(p.price * 0.9) : p.price);
+const cartCount = () => S.cart.reduce((n, c) => n + c.qty, 0);
+function renderShop() {
+  const cats = [['all', 'All', 'layers'], ['equipment', 'Equipment', 'dumbbell'], ['footwear', 'Footwear', 'footprints'], ['apparel', 'Outfits', 'shirt'], ['accessories', 'Accessories', 'package'], ['deals', 'Deals', 'percent']];
+  const q = S.shopQ.trim().toLowerCase();
+  const list = PRODUCTS.filter((p) => (S.shopCat === 'all' || p.cat === S.shopCat || (S.shopCat === 'deals' && p.was)) && (!q || (p.name + ' ' + p.brand + ' ' + p.cat).toLowerCase().includes(q)));
+  const n = cartCount();
+  $('#scr-shop').innerHTML = `<div class="head"><div><h1>Shop</h1><div class="sub">Local sellers${memberOff() ? ' · <b style="color:var(--you-text)">10% off for you</b>' : ''}</div></div><button class="bell" data-act="cart" aria-label="Bag, ${n} item${n === 1 ? '' : 's'}">${ic('shopping-bag')}${n ? `<i class="tcount num">${n}</i>` : ''}</button></div>
+    <label class="search">${ic('search')}<input id="shopQ" type="search" placeholder="Search balls, shoes, jerseys" value="${esc(S.shopQ)}" aria-label="Search products"></label>
+    <div class="promos">
+      <button class="promo" data-act="shopCat" data-id="apparel"><img src="${IMG}gym.jpg" alt=""><span class="ptag">Up to 30% off</span><h3>Monsoon kit drop</h3><p>Quick-dry jerseys and training outfits.</p></button>
+      <button class="promo" data-act="promoCricket"><img src="${IMG}cricket2.jpg" alt=""><span class="sponsor">Sponsored</span><span class="ptag">Riverfront Sports Co.</span><h3>Flat 20% off cricket gear</h3><p>Bats, pads and helmets. Click and collect in 2 hours.</p></button>
+      ${S.tier === 'lite' ? `<button class="promo dark" data-act="plans"><span class="ptag">${ic('zap')}Pro</span><h3>Pro saves 10%</h3><p>On every order, plus free delivery over ${inr(FREE_DELIVERY)}.</p></button>` : ''}
+    </div>
+    <div class="chips" style="margin-top:16px">${cats.map(([k, l, i]) => `<button class="chip neutral" data-act="shopCat" data-id="${k}" aria-pressed="${S.shopCat === k}">${ic(i)}${l}</button>`).join('')}</div>
+    <div class="section">${list.length ? `<div class="pgrid">${list.map((p) => `<button class="prod" data-act="product" data-id="${p.id}"><span class="pimg"><img src="${IMG + p.img}.jpg" alt="" loading="lazy">${p.was ? `<span class="ptag">−${Math.round((1 - p.price / p.was) * 100)}%</span>` : ''}</span>
+        <span class="faint" style="font-size:12px;font-weight:700">${esc(p.brand)}</span><b class="pname">${esc(p.name)}</b><span class="pprice num"><b>${inr(unitPrice(p))}</b>${p.was || memberOff() ? `<s>${inr(p.was || p.price)}</s>` : ''}</span><span class="faint num" style="font-size:12px">${ic('star')}${p.rating} · ${p.reviews}</span></button>`).join('')}</div>`
+      : `<div class="empty">${ic('search')}<b>No gear matches “${esc(S.shopQ)}”</b><button class="pill sm soft" data-act="shopClear">Clear search</button></div>`}
+      <div class="faint" style="font-size:12.5px">Sample products, sellers, prices and ratings.</div></div>
+    ${can.org() ? `<div class="section">${rowHTML({ act: 'bulkKits', icon: 'shirt', c: 'var(--you)', title: `Team kits for ${ORG.name}`, sub: `Printed jerseys for all ${ORG.teams.length} department teams, one invoice` })}</div>` : ''}
+    <div class="section">${rowHTML({ act: 'promote', icon: 'megaphone', title: 'Promote your business', sub: 'Featured map pins, shop banners and event sponsorship' })}</div>`;
+  const qi = $('#shopQ'); qi.addEventListener('input', () => { S.shopQ = qi.value; const pos = qi.selectionStart; renderShop(); const n2 = $('#shopQ'); n2.focus(); n2.setSelectionRange(pos, pos); });
+}
+let PS = null;
+function productSheet(id) {
+  const p = PRODUCTS.find((x) => x.id === id); PS = PS && PS.id === id ? PS : { id, size: p.sizes ? p.sizes[Math.min(2, p.sizes.length - 1)] : null, qty: 1 };
+  sheet(`<div class="pimg big"><img src="${IMG + p.img}.jpg" alt=""><button class="x" data-act="close" aria-label="Close" style="position:absolute;right:12px;top:12px">${ic('x')}</button></div>
+    <div><div class="faint" style="font-size:13px;font-weight:700">${esc(p.brand)} · sold by ${esc(p.seller)}</div><h2>${esc(p.name)}</h2><div class="faint num" style="font-size:13px;margin-top:4px">${ic('star')} ${p.rating} · ${p.reviews} reviews</div></div>
+    <div class="pprice num" style="font-size:20px"><b>${inr(unitPrice(p))}</b>${p.was || memberOff() ? `<s>${inr(p.was || p.price)}</s>` : ''}${memberOff() ? '<span class="save-tag">Member price</span>' : ''}</div>
+    ${p.sizes ? `<div class="fgrp"><b>Size</b><div class="chips wrap">${p.sizes.map((s) => `<button class="chip neutral" data-act="pSize" data-id="${s}" aria-pressed="${PS.size === s}">${s}</button>`).join('')}</div></div>` : ''}
+    <div style="display:flex;justify-content:space-between;align-items:center"><b>Quantity</b><div class="stepper"><button data-act="pQty" data-d="-1" aria-label="One fewer">${ic('minus')}</button><b class="num">${PS.qty}</b><button data-act="pQty" data-d="1" aria-label="One more">${ic('plus')}</button></div></div>
+    <div class="faint" style="font-size:13px">${ic('truck')} Delivery in 2 days. Free over ${inr(FREE_DELIVERY)}. Easy 7-day returns.</div>
+    <button class="pill block" style="min-height:56px" data-act="addCart">${ic('shopping-bag')}Add to bag · ${inr(unitPrice(p) * PS.qty)}</button>`);
+}
+function cartSheet() {
+  const items = S.cart.map((c) => ({ c, p: PRODUCTS.find((x) => x.id === c.id) })), sub = items.reduce((n, { c, p }) => n + unitPrice(p) * c.qty, 0);
+  const del = sub >= FREE_DELIVERY || !sub ? 0 : DELIVERY_FEE;
+  sheet(`${head('Your bag', items.length ? `${cartCount()} item${cartCount() === 1 ? '' : 's'}` : '')}
+    ${items.length ? `<div class="lrows">${items.map(({ c, p }, i) => `<div class="lrow"><span class="ltile img"><img src="${IMG + p.img}.jpg" alt=""></span><span class="ltext"><b>${esc(p.name)}</b><small>${c.size ? esc(c.size) + ' · ' : ''}${inr(unitPrice(p))} each</small></span><div class="stepper sm"><button data-act="cartQty" data-i="${i}" data-d="-1" aria-label="One fewer">${ic('minus')}</button><b class="num">${c.qty}</b><button data-act="cartQty" data-i="${i}" data-d="1" aria-label="One more">${ic('plus')}</button></div></div>`).join('')}</div>
+      <div class="sum card"><div><span class="muted">Items</span><span class="num">${inr(sub)}</span></div><div><span class="muted">Delivery</span><span class="num">${del ? inr(del) : 'Free'}</span></div>${del ? `<div class="faint"><span>Add ${inr(FREE_DELIVERY - sub)} more for free delivery</span><span></span></div>` : ''}<div class="total"><span>Total</span><span class="num">${inr(sub + del)}</span></div></div>
+      <div style="display:grid;gap:8px"><b style="font-size:14px">Pay via UPI</b>${upiChips('cartApp')}</div>
+      <button class="pill block" style="min-height:56px" data-act="payCart" id="cartGo">${ic('smartphone')}Pay ${inr(sub + del)}</button>`
+      : `<div class="empty">${ic('shopping-bag')}<b>Your bag is empty</b><button class="pill sm" data-act="close">Keep browsing</button></div>`}`);
+}
+function promoteSheet() {
+  const pk = [['map-pin', 'Featured map pin', 'Your store or venue highlighted on the map within 5 km.', '₹2,999/week'], ['megaphone', 'Shop banner', 'A banner slot in the marketplace carousel.', '₹5,999/week'], ['trophy', 'Event sponsorship', 'Brand a league, tournament or run club.', 'Custom']];
+  sheet(`${head('Promote your business', 'Reach active players near you')}
+    <div class="opts">${pk.map(([i, t, d, p], n) => `<button class="opt" data-act="toggleMe" aria-pressed="${n === 0}"><span class="ltile">${ic(i)}</span><span class="ltext"><b>${t}</b><small>${d}</small><small class="num" style="color:var(--ink);font-weight:800">${p}</small></span><span class="tickbox">${ic('check')}</span></button>`).join('')}</div>
+    <div class="faint" style="font-size:12.5px">Example packages and pricing.</div>
+    <button class="pill block" data-act="doneToast" data-id="Thanks! Our partnerships team will call you within a day">Request a call back</button>`);
+}
+
+/* ── Me: family, payments, notifications, accessibility ── */
+function meSettingsHTML() {
+  return `<div class="section"><h2>Family and settings</h2><div class="lrows">
+    ${rowHTML({ act: 'familySheet', icon: 'users', title: 'Family profiles', sub: family().map((f) => esc(firstName(f.id))).join(', ') })}
+    ${rowHTML({ act: 'paySheet', icon: 'wallet', title: 'Payments', sub: `UPI · ${S.payApp} by default` })}
+    ${rowHTML({ act: 'notePrefs', icon: 'bell', title: 'Notifications', sub: 'Choose updates, offers and suggestions' })}
+    ${rowHTML({ act: 'bigText', icon: 'accessibility', pressed: !!S.bigText, title: 'Larger text', sub: 'Easier reading across the app', end: `<span class="tickbox">${ic('check')}</span>` })}</div></div>`;
+}
+
+/* Inputs inside sheets write straight into the registration draft (data-r="path.to.field"). */
+document.addEventListener('input', (e) => {
+  const el = e.target.closest('[data-r]'); if (!el || !REG) return;
+  const path = el.dataset.r.split('.'); let o = REG; while (path.length > 1) o = o[path.shift()];
+  o[path[0]] = el.type === 'checkbox' ? el.checked : el.value;
+});
+
+Object.assign(A, {
+  advOpen: () => advSheet(),
+  advSet: (el) => { adv()[el.dataset.k] = el.dataset.id; advChanged(); },
+  advAccess: () => { adv().access = !adv().access; advChanged(); },
+  advReset: () => { S.adv = Object.assign({}, ADV0); save(); renderPlay(); if ($('.sheet')) advSheet(); },
+  regWho: (el) => { const id = el.dataset.id; REG.who = REG.who.includes(id) ? REG.who.filter((x) => x !== id) : REG.who.concat(id); regRender(); },
+  regNext: () => regNext(),
+  regBack: () => { REG.step = Math.max(0, REG.step - 1); REG.err = ''; regRender(); },
+  regFail: () => { REG.failNext = true; toast('The next payment will fail, to show recovery', 'info'); },
+  waitJoin: (el) => { S.waitlist.push(el.dataset.id); save(); waitlistSheet(actById(el.dataset.id)); if (tab === 'play') renderPlay(); toast('You’re on the waitlist', 'timer'); },
+  waitLeave: (el) => { S.waitlist = S.waitlist.filter((x) => x !== el.dataset.id); save(); closeSheet(); if (tab === 'play') renderPlay(); toast('Left the waitlist', 'check'); },
+  similar: (el) => { const a = actById(el.dataset.id); S.mood = a.sport; save(); closeSheet(); go('play'); setSheet(1); toast(`Showing ${sp(a.sport).name.toLowerCase()} games`, 'search'); },
+  addFamily: (el) => addFamilySheet(el.dataset.id),
+  famSave: (el) => { const name = $('#famName').value.trim(), age = parseInt($('#famAge').value, 10), err = $('#famErr');
+    const bad = !name ? 'Enter their name.' : !(age >= 1 && age <= 99) ? 'Enter an age between 1 and 99.' : '';
+    if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; return; }
+    S.family = S.family || []; const f = { id: 'fx' + Date.now(), name, age, note: age < 18 ? `Age ${age} · consent given at booking` : `Age ${age}` }; S.family.push(f); profiles(); save();
+    if (el.dataset.id === 'reg' && REG) { REG.d = Object.assign(clone(profiles()), REG.d); regRender(); } else familySheetOpen();
+    toast(`${name.split(' ')[0]} added to your family`, 'users'); },
+  notes: () => { noteTab = 'all'; notesSheet(); },
+  noteTab: (el) => { noteTab = el.dataset.id; notesSheet(); },
+  notePrefs: () => notePrefsSheet(),
+  prefToggle: (el) => { prefs()[el.dataset.id] = !prefs()[el.dataset.id]; save(); notePrefsSheet(); },
+  noteAct: (el) => noteAct(el.dataset.id, el.dataset.do),
+  gamesView: (el) => { S.gamesView = el.dataset.id; save(); if (tab !== 'games') go('games'); else renderGames(); },
+  openBook: () => { S.gamesView = 'book'; save(); go('games'); },
+  calWho: (el) => { S.calWho = el.dataset.id; save(); renderFamily(); },
+  calDay: (el) => { S.calDay = +el.dataset.id; save(); renderFamily(); },
+  clashSlot: (el) => { S.mood = el.dataset.id; save(); go('play'); setSheet(1); toast(`Showing other ${sp(el.dataset.id).name.toLowerCase()} times`, 'search'); },
+  carpool: (el) => shareAny('Carpool?', `Anyone heading to ${el.dataset.id} on ${dayLabel(+el.dataset.d)}? I can’t do both drop-offs, happy to swap a ride.`, 'https://letsplay.app/carpool'),
+  evOpen: (el) => { const k = el.dataset.kind, id = el.dataset.id;
+    if (k === 'game' || k === 'host') openDetail(id);
+    else if (k === 'team') { go('team'); openTeam(id); }
+    else { const b = S.turf.find((x) => x.id === id), v = VB(b.vid); sheet(`${head(esc(v.name), `${dayLabel(b.d)} · ${fmtT(b.d, pad2(b.start) + ':00')}–${fmtT(b.d, pad2(b.start + b.dur) + ':00')}`)}<div class="lrows">${rowHTML({ icon: 'users', title: `Split ${b.players} ways`, sub: 'UPI requests sent. Unpaid shares get a reminder.' })}${rowHTML({ icon: 'map-pin', title: 'Directions', sub: v.amenities.join(' · ') })}</div>${b.players > 1 ? `<button class="pill block soft" data-act="postSpots" data-id="${b.id}">${ic('megaphone')}Post open spots as a game</button>` : ''}<button class="pill block" data-act="close">Done</button>`); } },
+  shopCat: (el) => { S.shopCat = el.dataset.id; save(); renderShop(); },
+  shopClear: () => { S.shopQ = ''; renderShop(); },
+  promoCricket: () => { S.shopCat = 'equipment'; renderShop(); toast('Showing equipment deals', 'tag'); },
+  product: (el) => productSheet(el.dataset.id),
+  pSize: (el) => { PS.size = el.dataset.id; productSheet(PS.id); },
+  pQty: (el) => { PS.qty = Math.max(1, Math.min(9, PS.qty + +el.dataset.d)); productSheet(PS.id); },
+  addCart: () => { const ex = S.cart.find((c) => c.id === PS.id && c.size === PS.size); if (ex) ex.qty += PS.qty; else S.cart.push({ id: PS.id, size: PS.size, qty: PS.qty }); PS = null; save(); closeSheet(); renderTabbar(); renderShop(); toast('Added to your bag', 'shopping-bag'); },
+  cart: () => cartSheet(),
+  cartQty: (el) => { const c = S.cart[+el.dataset.i]; c.qty += +el.dataset.d; if (c.qty < 1) S.cart.splice(+el.dataset.i, 1); save(); cartSheet(); renderTabbar(); renderShop(); },
+  payCart: () => { const b = $('#cartGo'); b.disabled = true; b.innerHTML = `${ic('smartphone')}Waiting for ${pickedUpi('cartApp')}…`;
+    setTimeout(() => { S.cart = []; save(); renderTabbar(); renderShop(); buzz(25); sheet(`<div class="xp-burst"><span class="up-ic">${ic('package')}</span><h2>Order placed</h2><div class="muted">Arriving in 2 days. We’ll message you with tracking.</div></div><button class="pill block" data-act="close">Done</button>`); }, 1100); },
+  promote: () => promoteSheet(),
+  bulkKits: () => sheet(`${head('Team kits', `${ORG.name} · ${ORG.teams.length} teams`)}<div class="lrows">${ORG.teams.map((t) => rowHTML({ lead: `<span class="crest" style="--c:${t.c}">${t.ab}</span>`, title: esc(t.name), sub: `${t.players} players · printed names and numbers`, end: `<b class="num">${inr(t.players * 649)}</b>` })).join('')}</div>
+      <div class="sum card"><div class="total"><span>${ORG.teams.reduce((n, t) => n + t.players, 0)} jerseys at ₹649</span><span class="num">${inr(ORG.teams.reduce((n, t) => n + t.players, 0) * 649)}</span></div><div class="faint"><span>One GST invoice to ${ORG.name}</span><span></span></div></div><button class="pill block" data-act="doneToast" data-id="Quote sent to your company admin for approval">Request a quote</button>`),
+  toggleMe: (el) => el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'),
+  doneToast: (el) => { closeSheet(); toast(el.dataset.id, 'check'); },
+  familySheet: () => familySheetOpen(),
+  paySheet: () => sheet(`${head('Payments', 'Your default UPI app for games, courts and the shop')}${upiChips('regApp')}<div class="faint" style="font-size:13px">You always confirm each payment in your UPI app. Card and net banking are coming soon.</div><button class="pill block" data-act="close">Done</button>`),
+  bigText: () => { S.bigText = !S.bigText; save(); applyPrefs(); renderMe(); },
+});
+function familySheetOpen() {
+  sheet(`${head('Family profiles', 'Book for anyone in your family')}<div class="lrows">${family().map((f) => rowHTML({ lead: `<i class="dotc lg" style="background:${famColor(f.id)}">${esc(f.name[0])}</i>`, title: esc(f.name), sub: esc(f.note) })).join('')}</div>
+    <button class="pill block soft" data-act="addFamily" data-id="me">${ic('plus')}Add family member</button><button class="pill block" data-act="close">Done</button>`);
+}
+
+/* ═════ PRO: add places · host games anywhere · teams · add players · match day ═════ */
+
+/* Update the open sheet in place, keeping its scroll position (for long, live-filtered sheets). */
+function sheetUpdate(html) { const sh = $('.sheet'); if (!sh) { sheet(html); return; } const top = sh.scrollTop; sh.innerHTML = html; sh.scrollTop = top; }
+function nearestRoad(list, v) { return list.reduce((b, r) => (Math.abs(r[0] - v) < Math.abs(b[0] - v) ? r : b)); }
+function addrOf(x, y) { const v = nearestRoad(VROADS, x), h = nearestRoad(HROADS, y); return `${Math.abs(v[0] - x) < Math.abs(h[0] - y) ? v[1] + ', near ' + h[1] : h[1] + ', near ' + v[1]}, ${AREA}`; }
+/* Photos are resized to 720 px before saving so the demo stays light. */
+function readPhoto(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const img = new Image(); img.onerror = rej; img.onload = () => {
+    const k = Math.min(1, 720 / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', 0.8)); }; img.src = r.result; }; r.readAsDataURL(file); });
+}
+const placeById = (id) => COMMUNITY_SPOTS.concat(S.places).find((p) => p.id === id);
+
+/* ── Point on the map: drag the map under a fixed crosshair, then confirm ── */
+let PICK = null;
+function startPick(purpose) {
+  PICK = { purpose }; closeSheet(); if (tab !== 'play') go('play');
+  $('#scr-play').classList.add('picking');
+  const m = $('#map'); const o = document.createElement('div'); o.id = 'pickUI'; o.className = 'pick-ui';
+  o.innerHTML = `<span class="crosshair" aria-hidden="true">${ic('map-pin')}</span><div class="pickbar"><div><b>Drag the map to the spot</b><small id="pickAddr">${esc(addrOf(...pickXY()))}</small></div><div style="display:flex;gap:8px"><button class="pill sm soft" data-act="pickCancel">Cancel</button><button class="pill sm" data-act="pickUse">Use this spot</button></div></div>`;
+  m.appendChild(o); positionCrosshair();
+  PICK.timer = setInterval(() => { const a = $('#pickAddr'); if (a) a.textContent = addrOf(...pickXY()); }, 400);
+}
+function pickXY() { const [cx, cy] = mapCentre(); return [Math.round((cx - mapPos.x) / mz), Math.round((cy - mapPos.y) / mz)]; }
+function positionCrosshair() { const c = $('#pickUI .crosshair'); if (!c) return; const [cx, cy] = mapCentre(); c.style.left = cx + 'px'; c.style.top = cy + 'px'; }
+function endPick() { if (PICK) clearInterval(PICK.timer); const o = $('#pickUI'); if (o) o.remove(); $('#scr-play').classList.remove('picking'); const p = PICK; PICK = null; return p; }
+
+/* ── Add a place: photo + name, visible to everyone ── */
+let NP = null;
+function addPlaceSheet() {
+  const sports = ['cricket', 'football', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'running'];
+  sheetUpdate(`${head('Add a place', 'Everyone nearby will see it on the map')}
+    <label class="photo-drop ${NP.photo ? 'has' : ''}">${NP.photo ? `<img src="${NP.photo}" alt="Your photo of the place">` : `<span class="up-ic">${ic('camera')}</span><b>Take a photo of the place</b><small>Or choose one from your gallery</small>`}<input type="file" accept="image/*" capture="environment" id="npPhoto" aria-label="Photo of the place"></label>
+    <label class="fld"><span>Name</span><input id="npName" value="${esc(NP.name)}" placeholder="For example Colony park court"></label>
+    <div class="fgrp"><b>Good for</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="npSport" data-id="${k}" aria-pressed="${NP.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="seg" role="group" aria-label="Setting">${['Outdoor', 'Indoor'].map((s) => `<button data-act="npSet" data-id="${s}" aria-pressed="${NP.setting === s}">${s}</button>`).join('')}</div>
+    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Set the location', sub: NP.x ? 'Tap to move the pin' : 'Point to it on the map' })}
+    <label class="fld"><span>Note for players (optional)</span><input id="npNote" value="${esc(NP.note)}" placeholder="Lights until 10 pm, bring your own net"></label>
+    <div class="errbox" id="npErr" hidden>${ic('info')}<div></div></div>
+    <button class="pill block" style="min-height:56px" data-act="npSave">${ic('map-pin-plus')}Save place for everyone</button>`);
+  const f = $('#npPhoto'); f.addEventListener('change', async () => { if (!f.files[0]) return; try { NP.photo = await readPhoto(f.files[0]); addPlaceSheet(); } catch (e) { toast('That photo could not be read. Try another', 'info'); } });
+  ['npName', 'npNote'].forEach((id) => $('#' + id).addEventListener('input', (e) => { NP[id === 'npName' ? 'name' : 'note'] = e.target.value; }));
+}
+function placeSheet(id) {
+  const p = placeById(id), s = sp(p.sport) || sp('football');
+  sheet(`${p.photo ? `<div class="pimg big"><img src="${p.photo}" alt="Photo of ${esc(p.name)}"></div>` : ''}${head(esc(p.name), `${p.setting} · ${esc(addrOf(p.x, p.y))}`)}
+    <div class="lrows">${rowHTML({ icon: s.icon, c: s.c, title: `Good for ${s.name.toLowerCase()}`, sub: esc(p.note || 'No notes yet') })}${rowHTML({ icon: 'user', title: `Added by ${esc(p.by)}`, sub: `Visible to ${esc(p.visibility || 'everyone').toLowerCase()}` })}</div>
+    <button class="pill block" data-act="hostHere" data-id="${p.id}">${ic('megaphone')}Host a game here${can.pin() ? '' : ' · Pro'}</button>`);
+}
+
+/* ── Host a game at any address ── */
+let HOST = null;
+function hostFresh(loc) { return { loc: loc || null, title: '', sport: 'football', d: 1, t: '18:30', mins: 90, players: 10, fee: 100, vis: 'everyone', landmark: '', invites: [] }; }
+function hostStart(loc) { if (!can.pin()) { upsell('host'); return; } HOST = HOST && !loc ? HOST : hostFresh(loc); if (loc) HOST.loc = loc; hostSheet(); }
+function hostSheet() {
+  const H = HOST, sports = ['football', 'cricket', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'pickleball'];
+  const venues = VENUES_BOOK.map((v) => ({ id: v.id, name: v.name, x: v.x, y: v.y, photo: null })).concat(S.places.map((p) => ({ id: p.id, name: p.name, x: p.x, y: p.y, photo: p.photo })));
+  sheetUpdate(`${head('Host a game', 'Publish it to people nearby or just your invitees')}
+    <div class="fgrp"><b>Where</b>
+      ${H.loc ? `<div class="card loccard"><span class="ltile">${ic('map-pin')}</span><div style="flex:1;min-width:0;display:grid;gap:8px"><label class="fld"><span>Address players will see</span><input id="hAddr" value="${esc(H.loc.address)}"></label><label class="fld"><span>Landmark (optional)</span><input id="hLand" value="${esc(H.landmark)}" placeholder="Gate 2, opposite the chai stall"></label></div></div>` : ''}
+      <div class="chips wrap"><button class="chip neutral" data-act="hostPick">${ic('map-pin')}Point on the map</button><button class="chip neutral" data-act="hostMe">${ic('locate-fixed')}My location</button><button class="chip neutral" data-act="placeNew" data-id="host">${ic('camera')}Snap a new place</button></div>
+      <div class="chips">${venues.map((v) => `<button class="chip neutral" data-act="hostVenue" data-id="${v.id}" aria-pressed="${!!(H.loc && H.loc.id === v.id)}">${esc(v.name)}</button>`).join('')}</div></div>
+    <label class="fld"><span>Title</span><input id="hTitle" value="${esc(H.title)}" placeholder="For example Friday night 5-a-side"></label>
+    <div class="fgrp"><b>Sport</b><div class="chips">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="hostSport" data-id="${k}" aria-pressed="${H.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>When</b><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="hostDay" data-id="${d}" aria-pressed="${H.d === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
+      <div class="chips">${['06:30', '07:30', '17:30', '18:30', '19:30', '20:30'].map((t) => `<button class="chip neutral" data-act="hostTime" data-id="${t}" aria-pressed="${H.t === t}">${tf.format(dateAt(0, t))}</button>`).join('')}</div></div>
+    <div class="two"><div class="fgrp"><b>Players needed</b><div class="stepper"><button data-act="hostN" data-k="players" data-d="-1" aria-label="One fewer player">${ic('minus')}</button><b class="num">${H.players}</b><button data-act="hostN" data-k="players" data-d="1" aria-label="One more player">${ic('plus')}</button></div></div>
+      <div class="fgrp"><b>Fee each</b><div class="stepper"><button data-act="hostN" data-k="fee" data-d="-50" aria-label="₹50 less">${ic('minus')}</button><b class="num">${H.fee ? inr(H.fee) : 'Free'}</b><button data-act="hostN" data-k="fee" data-d="50" aria-label="₹50 more">${ic('plus')}</button></div></div></div>
+    <div class="fgrp"><b>Who can see it</b><div class="seg" role="group" aria-label="Visibility"><button data-act="hostVis" data-id="everyone" aria-pressed="${H.vis === 'everyone'}">Everyone nearby</button><button data-act="hostVis" data-id="invited" aria-pressed="${H.vis === 'invited'}">Invited only</button></div></div>
+    ${S.teams.length ? `<div class="fgrp"><b>Invite your teams</b><div class="chips wrap">${S.teams.map((t) => `<button class="chip" style="--c:${t.color}" data-act="hostInv" data-id="${t.id}" aria-pressed="${H.invites.includes(t.id)}">${ic('users')}${esc(t.name)} · ${t.members.length}</button>`).join('')}</div></div>` : ''}
+    <div class="errbox" id="hErr" hidden>${ic('info')}<div></div></div>
+    <button class="pill block" style="min-height:56px" data-act="hostPublish">${ic('megaphone')}Publish game</button>`);
+  [['hTitle', 'title'], ['hAddr', 'address'], ['hLand', 'landmark']].forEach(([id, k]) => { const el = $('#' + id); if (el) el.addEventListener('input', () => { if (k === 'address') H.loc.address = el.value; else H[k] = el.value; }); });
+}
+function publishHost() {
+  const H = HOST, err = $('#hErr');
+  const bad = !H.loc ? 'Choose where the game is.' : !H.title.trim() ? 'Give the game a title.' : !H.loc.address.trim() ? 'Add the address players will see.' : '';
+  if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; err.scrollIntoView({ block: 'nearest' }); return; }
+  const id = 'h' + Date.now(), invitees = H.invites.reduce((n, tid) => n + S.teams.find((t) => t.id === tid).members.length - 1, 0);
+  const a = { id, title: H.title.trim(), sport: H.sport, venue: H.loc.address.trim(), landmark: H.landmark.trim(), x: H.loc.x, y: H.loc.y, d: H.d, t: H.t, mins: H.mins, level: 'All levels', ages: '16+',
+    spots: H.players, total: H.players, price: H.fee, host: 'Arjun Mehta', img: SPORT_IMG[H.sport] || 'field', photo: H.loc.photo || null, setting: 'Outdoor', surface: 'As described by the host', equipment: 'Ask the host in the game chat.', access: 'Ask the host about access.', cancel: 'Free cancellation up to 2 hours before.', hostedByYou: true, vis: H.vis };
+  S.hosted.push(a); HOST = null; S.xp += 40; save(); closeSheet();
+  focused = id; S.mood = 'all'; go('play'); setTimeout(() => focusGame(id, true), 80); confetti(sp(a.sport).c); buzz(25);
+  toast(H.vis === 'invited' ? `Published to ${invitees || 'your'} invitees with the address and map pin` : `Published. ${invitees ? invitees + ' teammates invited, and ' : ''}players nearby can join`, 'megaphone');
+}
+
+/* ── Teams ── */
+let TV = null, teamTab = 'match';
+const teamOf = (id) => S.teams.find((t) => t.id === id);
+const tmOf = (t) => { if (!S.tm[t.id]) S.tm[t.id] = { lineup: {}, picks: [], cap: 0, vote: null, chat: [['Rohan Iyer', 'Nets at 6 before the match?'], ['Vikram Singh', 'I can bring the stumps and two balls.']] }; return S.tm[t.id]; };
+const teamCode = (t) => t.name.replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() + '-' + (1000 + (t.id.length * 7919 + t.name.length * 31) % 9000);
+const teamLink = (t) => 'https://letsplay.app/join/' + teamCode(t).toLowerCase();
+const crestTxt = (t) => t.name.split(' ').map((w) => w[0]).join('').slice(0, 2);
+function renderTeam() {
+  if (can.org()) { renderCorp(); return; }
+  if (TV && teamOf(TV) && can.teams()) { renderTeamView(); return; }
+  const el = $('#scr-team');
+  if (!can.teams()) {
+    el.innerHTML = `<div class="head"><div><h1>Team</h1><div class="sub">Organise your crew with Pro</div></div></div>
+      <div class="up-hero t-pro"><span class="up-ic">${ic('users')}</span><h2>Your team, sorted</h2><div>Create teams, add players who live near you, set the lineup and know who’s coming before match day.</div></div>
+      <div class="section"><h2>What you get</h2><div class="lrows">${[['user-plus', 'Add players nearest first', 'Browse everyone on LetsPlay sorted by distance, and share an invite to any app'], ['list-checks', 'Match day', 'Availability poll, lineup with captain, attendance and quick messages'], ['megaphone', 'Host games anywhere', 'Pick any address, set the fee, publish to people nearby'], ['map-pin-plus', 'Put new places on the map', 'Snap a photo of a court and everyone can find it']].map(([i, t, d]) => rowHTML({ icon: i, title: t, sub: d })).join('')}</div></div>
+      <div class="section"><button class="pill block" style="min-height:56px" data-act="subscribe" data-id="pro" data-period="yearly">Get Pro · ${inr(Math.floor(yearlyPrice(PLANS.pro.monthly) / 12))}/month, billed yearly</button><button class="pill block soft" data-act="plans">Compare plans</button></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="head"><div><h1>Your teams</h1><div class="sub">${S.teams.length} team${S.teams.length === 1 ? '' : 's'} · you captain ${S.teams.filter((t) => t.members[0].role === 'Captain').length}</div></div><button class="pill sm" data-act="newTeam">${ic('plus')}New team</button></div>
+    <div class="tcards">${S.teams.map((t) => { const yes = t.members.filter((m) => m.status === 'yes').length; return `<button class="tcard" style="--c:${t.color}" data-act="openTeam" data-id="${t.id}">
+      <span class="crest lg" style="--c:${t.color}">${esc(crestTxt(t))}</span><span class="ltext"><b>${esc(t.name)}</b><small>${sp(t.sport).name} · ${t.members.length} members · ${esc(t.privacy)}</small>
+      ${t.next ? `<small class="tnext">${ic('calendar-days')}v ${esc(t.next.vs)} · ${dayLabel(t.next.d)} ${fmtT(t.next.d, t.next.t)}</small>` : '<small class="tnext">No match scheduled</small>'}</span>
+      <span class="tyes num"><b>${yes}</b><small>in</small></span></button>`; }).join('')}</div>
+    <div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>`;
+}
+function openTeam(id) { TV = id; teamTab = 'match'; if (tab !== 'team') go('team'); else renderTeam(); $('#scr-team').scrollTop = 0; }
+const POS = [['Bowler', 50, 28], ['Keeper', 50, 72], ['Slip', 63, 77], ['Point', 18, 50], ['Cover', 25, 31], ['Mid-off', 38, 17], ['Mid-on', 62, 17], ['Midwicket', 77, 33], ['Sq. leg', 82, 54], ['Fine leg', 70, 84], ['Third man', 30, 84]];
+let picking = null;
+function renderTeamView() {
+  const t = teamOf(TV), M = tmOf(t), s = sp(t.sport), size = LINEUP_SIZE[t.sport] || 6;
+  const cnt = (st) => t.members.filter((m) => m.status === st).length, noReply = t.members.filter((m) => m.status === 'maybe' || m.status === 'invited').length;
+  let body = '';
+  if (teamTab === 'match') {
+    const placed = Object.values(M.lineup);
+    body = `<div class="section"><h2>Who’s playing?</h2><div class="avail"><div><b class="num" style="color:var(--ok)">${cnt('yes')}</b><small>In</small></div><div><b class="num">${noReply}</b><small>No reply or maybe</small></div><div><b class="num" style="color:var(--live)">${cnt('no')}</b><small>Out</small></div></div>
+        <div class="poll">${[['yes', 'I’m in'], ['maybe', 'Maybe'], ['no', 'Can’t make it']].map(([k, l]) => `<button data-act="tVote" data-id="${k}" aria-pressed="${t.members[0].status === k}"><i style="width:${Math.round((cnt(k) / t.members.length) * 100)}%"></i><span>${l}</span><span class="num">${cnt(k)}</span></button>`).join('')}</div>
+        ${noReply ? `<button class="pill sm soft" style="justify-self:start" data-act="tNudge">${ic('send')}Nudge ${noReply} who haven’t replied</button>` : ''}</div>
+      ${t.sport === 'cricket' ? `<div class="section"><h2>Set the field</h2><div class="muted" style="font-size:14px">${picking ? `Tap a spot for <b style="color:var(--ink)">${esc(picking)}</b>` : 'Pick a player, then tap a fielding spot. Tap a placed player to bench them.'}</div>
+        <div class="field ${picking ? 'placing' : ''}" role="group" aria-label="Fielding positions">${POS.map(([n, x, y]) => { const who = M.lineup[n]; return `<button class="pos ${who ? 'filled' : ''}" style="left:${x}%;top:${y}%" data-act="pos" data-id="${n}" aria-label="${n}${who ? ': ' + esc(who) : ', empty'}"><span class="dot">${who ? esc(who.split(' ').map((w) => w[0]).join('')) : ''}</span><small>${n}</small></button>`; }).join('')}</div>
+        <div class="bench">${t.members.filter((m) => m.status !== 'no').map((m) => `<button class="chip" data-act="pick" data-id="${esc(m.name)}" aria-pressed="${picking === m.name}" ${placed.includes(m.name) ? 'disabled' : ''}>${avatar(m.name)}${esc(m.name.split(' ')[0])}</button>`).join('')}</div>
+        <div class="faint" style="font-size:13px"><span class="num">${placed.length}</span> of 11 placed${placed.length < 11 ? `. ${11 - placed.length} more needed for a full side.` : '. Full side.'}</div></div>`
+      : `<div class="section"><h2>Lineup <span class="faint num" style="font:700 14px var(--f-body)">${M.picks.length}/${size}</span></h2>${M.picks.length < size ? `<div class="faint" style="font-size:13.5px">${size - M.picks.length} more for a full ${s.name.toLowerCase()} side.</div>` : ''}
+        <div class="lrows">${t.members.map((m, i) => { const on = M.picks.includes(i); return `<div class="lrow">${avatar(m.name)}<span class="ltext"><b>${esc(m.name)}${M.cap === i ? ' <span class="okchip">C</span>' : ''}</b><small>${on ? 'In the lineup' : 'On the bench'} · ${m.status === 'yes' ? 'said yes' : m.status === 'no' ? 'said no' : 'no reply yet'}</small></span><button class="round sm" data-act="tCap" data-i="${i}" aria-label="Make ${esc(m.name)} captain" aria-pressed="${M.cap === i}">${ic('crown')}</button><button class="pill sm ${on ? 'soft' : ''}" data-act="tPick" data-i="${i}">${on ? 'Bench' : 'Add'}</button></div>`; }).join('')}</div></div>`}
+      <div class="section"><button class="pill block soft" data-act="tShareLineup">${ic('share-2')}Share the lineup</button></div>`;
+  } else if (teamTab === 'roster') {
+    body = `<div class="section share-card"><div style="min-width:0"><b>Invite with a link or code</b><div class="faint" style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${teamLink(t)} · code <b class="num" style="color:var(--ink)">${teamCode(t)}</b></div></div><button class="pill sm" data-act="shareTeam" data-id="${t.id}">${ic('share-2')}Share</button></div>
+      <div class="section"><div style="display:flex;justify-content:space-between;align-items:center"><h2>${t.members.length} members</h2><button class="pill sm" data-act="addPlayers" data-id="${t.id}">${ic('user-plus')}Add players</button></div>
+      <div class="lrows">${t.members.map((m) => rowHTML({ lead: avatar(m.name), title: esc(m.name), sub: m.role + (m.status === 'invited' ? ' · invite sent' : ''), end: `<span class="stchip st-${m.status}">${{ yes: 'In', maybe: 'Maybe', no: 'Out', invited: 'Invited' }[m.status]}</span>` })).join('')}</div></div>`;
+  } else {
+    body = `<div class="section"><div class="chat">${M.chat.map(([w, m]) => `<div class="msg ${w === 'You' ? 'mine' : ''}">${w === 'You' ? '' : `<b>${esc(w)}</b>`}${esc(m)}</div>`).join('')}</div>
+      <div class="chips">${['On my way', 'Who has the kit?', 'Running 10 min late', 'Great game, team!'].map((m) => `<button class="chip neutral" data-act="say" data-id="${m}">${ic('send')}${m}</button>`).join('')}</div></div>`;
+  }
+  $('#scr-team').innerHTML = `<div class="head"><button class="round" data-act="teamBack" aria-label="Back to your teams">${ic('arrow-left')}</button><div style="flex:1;min-width:0"><h1 style="font-size:22px">${esc(t.name)}</h1><div class="sub">${s.name} · ${t.members.length} members</div></div><button class="round" data-act="shareTeam" data-id="${t.id}" aria-label="Share team invite">${ic('share-2')}</button></div>
+    <button class="nexthero" style="--c:${t.color}" data-act="tSchedule">${t.next ? `<span class="eyebrow" style="color:rgba(255,255,255,.85)">Next match</span><h2>v ${esc(t.next.vs)}</h2><span>${longFmt.format(dateAt(t.next.d, t.next.t))} · ${fmtT(t.next.d, t.next.t)} · ${esc(t.next.venue)}</span><span class="faint" style="color:rgba(255,255,255,.8);font-size:13px">Tap to reschedule</span>` : `<span class="eyebrow" style="color:rgba(255,255,255,.85)">No match yet</span><h2>Schedule a match</h2><span>Pick an opponent, day and ground</span>`}</button>
+    <div class="seg" role="group" aria-label="Team section" style="margin-top:16px"><button data-act="teamTab" data-id="match" aria-pressed="${teamTab === 'match'}">Match day</button><button data-act="teamTab" data-id="roster" aria-pressed="${teamTab === 'roster'}">Roster</button><button data-act="teamTab" data-id="chat" aria-pressed="${teamTab === 'chat'}">Chat</button></div>
+    ${body}`;
+}
+function newTeamSheet() {
+  const N = NT;
+  sheetUpdate(`${head('New team', 'You’ll be the captain')}
+    <label class="fld"><span>Team name</span><input id="ntName" value="${esc(N.name)}" placeholder="For example Lake Road Legends"></label>
+    <div class="fgrp"><b>Sport</b><div class="chips wrap">${Object.keys(LINEUP_SIZE).map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="ntSport" data-id="${k}" aria-pressed="${N.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Who can join</b><div class="seg" role="group" aria-label="Privacy"><button data-act="ntPriv" data-id="Invite only" aria-pressed="${N.priv === 'Invite only'}">Invite only</button><button data-act="ntPriv" data-id="Public" aria-pressed="${N.priv === 'Public'}">Anyone can ask</button></div></div>
+    <div class="errbox" id="ntErr" hidden>${ic('info')}<div></div></div>
+    <button class="pill block" style="min-height:56px" data-act="ntCreate">Create and add players</button>`);
+  $('#ntName').addEventListener('input', (e) => { NT.name = e.target.value; });
+}
+let NT = null;
+
+/* ── Add players: everyone on LetsPlay, nearest first, grouped by distance ── */
+let AP = null;
+function apList() {
+  const q = AP.q.trim().toLowerCase();
+  return PLAYERS.filter((p) => (AP.sport === 'all' || p.sports.includes(AP.sport)) && (AP.km === 'any' || p.km <= +AP.km) && (!AP.lft || p.lft) && (!q || (p.name + ' ' + p.sports.map((k) => sp(k).name).join(' ')).toLowerCase().includes(q))).sort((a, b) => a.km - b.km);
+}
+function apSheet() {
+  const t = teamOf(AP.tid), list = apList(), bands = [[0, 1, 'Within 1 km'], [1, 3, '1–3 km away'], [3, 99, 'More than 3 km']];
+  const sportsList = ['all'].concat(Object.keys(SPORTS).filter((k) => PLAYERS.some((p) => p.sports.includes(k))));
+  const row = (p) => { const inT = t.members.some((m) => m.name === p.name), on = AP.sel.includes(p.id);
+    return `<button class="lrow" ${inT ? 'disabled' : `data-act="apToggle" data-id="${p.id}" aria-pressed="${on}"`}>${avatar(p.name)}<span class="ltext"><b>${esc(p.name)}${p.lft ? ' <span class="okchip">Looking for a team</span>' : ''}</b><small>${p.sports.map((k) => sp(k).name).join(' · ')} · ${p.level} · ${p.games} games</small><small>${esc(p.bio)}</small></span>
+      <span class="apside"><span class="gi-dist">${ic('map-pin')}${fmtKm(p.km)}</span>${inT ? '<small class="faint">In team</small>' : `<span class="tickbox">${ic('check')}</span>`}</span></button>`; };
+  sheetUpdate(`${head('Add players', `${esc(t.name)} · ${sp(t.sport).name}`)}
+    <div class="share-card"><div style="min-width:0"><b>Invite anyone with a link</b><div class="faint" style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${teamLink(t)}</div></div><button class="pill sm" data-act="shareTeam" data-id="${t.id}">${ic('share-2')}Share</button></div>
+    <label class="search">${ic('search')}<input id="apQ" type="search" placeholder="Search by name or sport" value="${esc(AP.q)}" aria-label="Search players"></label>
+    <div class="chips">${sportsList.map((k) => `<button class="chip ${k === 'all' ? 'neutral' : ''}" style="${k !== 'all' ? '--c:' + sp(k).c : ''}" data-act="apSport" data-id="${k}" aria-pressed="${AP.sport === k}">${k === 'all' ? ic('layers') + 'All' : ic(sp(k).icon) + sp(k).name}</button>`).join('')}</div>
+    <div style="display:flex;gap:8px;align-items:center"><div class="seg" style="flex:1" role="group" aria-label="Distance">${[['1', '1 km'], ['3', '3 km'], ['5', '5 km'], ['any', 'Any']].map(([k, l]) => `<button data-act="apKm" data-id="${k}" aria-pressed="${AP.km === k}">${l}</button>`).join('')}</div><button class="chip neutral" data-act="apLft" aria-pressed="${AP.lft}">${ic('user-plus')}Free agents</button></div>
+    <div class="faint" style="font-size:12.5px;display:flex;gap:6px;align-items:center">${ic('navigation')}${list.length} player${list.length === 1 ? '' : 's'}, nearest first</div>
+    ${list.length ? bands.map(([lo, hi, l]) => { const g = list.filter((p) => p.km >= lo && p.km < hi); return g.length ? `<div class="fgrp"><b class="faint" style="font-size:13px">${l}</b><div class="lrows">${g.map(row).join('')}</div></div>` : ''; }).join('')
+      : `<div class="empty">${ic('search')}<b>No players match</b><span class="muted">Widen the distance or share the invite link.</span></div>`}
+    <div class="stickybar"><span class="faint num">${AP.sel.length} selected</span><button class="pill" data-act="apAdd" ${AP.sel.length ? '' : 'disabled'}>${ic('user-plus')}${AP.sel.length ? `Invite ${AP.sel.length}` : 'Select players'}</button></div>`);
+  const qi = $('#apQ'); qi.addEventListener('input', () => { AP.q = qi.value; const pos = qi.selectionStart; apSheet(); const n = $('#apQ'); n.focus(); n.setSelectionRange(pos, pos); });
+}
+function openAddPlayers(tid, isNew) { if (!can.teams()) { upsell('teams'); return; } const t = teamOf(tid); AP = { tid, q: '', sport: t.sport, km: 'any', lft: false, sel: [], isNew }; closeSheet(); apSheet(); }
+function scheduleSheet() {
+  const t = teamOf(TV), n = t.next || { vs: '', d: 3, t: '19:00', venue: VENUES_BOOK[0].name };
+  SCH = SCH || clone(n);
+  sheetUpdate(`${head(t.next ? 'Reschedule match' : 'Schedule a match', esc(t.name))}
+    <label class="fld"><span>Opponent</span><input id="schVs" value="${esc(SCH.vs)}" placeholder="Team name"></label>
+    <div class="fgrp"><b>Day</b><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="schDay" data-id="${d}" aria-pressed="${SCH.d === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Time</b><div class="chips">${['07:00', '17:30', '18:30', '19:00', '20:00'].map((x) => `<button class="chip neutral" data-act="schTime" data-id="${x}" aria-pressed="${SCH.t === x}">${tf.format(dateAt(0, x))}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Ground</b><div class="chips wrap">${VENUES_BOOK.filter((v) => v.sports.includes(t.sport)).concat(VENUES_BOOK.filter((v) => !v.sports.includes(t.sport))).slice(0, 4).map((v) => `<button class="chip neutral" data-act="schVenue" data-id="${esc(v.name)}" aria-pressed="${SCH.venue === v.name}">${esc(v.name)}</button>`).join('')}</div></div>
+    <button class="pill block" data-act="schSave">${ic('send')}Save and ask the team who’s in</button>`);
+  $('#schVs').addEventListener('input', (e) => { SCH.vs = e.target.value; });
+}
+let SCH = null;
+
+Object.assign(A, {
+  addToMap: () => { if (!can.pin()) { upsell('pin'); return; }
+    sheet(`${head('Add to the map')}<div class="lrows">${rowHTML({ act: 'placeNew', icon: 'camera', title: 'Add a place', sub: 'Snap a photo of a court or ground. Everyone will see it.' })}${rowHTML({ act: 'hostStart', icon: 'megaphone', title: 'Host a game', sub: 'At any address, published to people nearby or invitees' })}</div>`); },
+  place: (el) => placeSheet(el.dataset.id),
+  placeNew: (el) => { if (!can.pin()) { upsell('pin'); return; } NP = { photo: null, name: '', sport: 'football', setting: 'Outdoor', note: '', x: 0, y: 0, ret: el.dataset.id || null }; addPlaceSheet(); },
+  npSport: (el) => { NP.sport = el.dataset.id; addPlaceSheet(); },
+  npSet: (el) => { NP.setting = el.dataset.id; addPlaceSheet(); },
+  npPick: () => startPick('place'),
+  npSave: () => { const err = $('#npErr'), bad = !NP.name.trim() ? 'Give the place a name.' : !NP.x ? 'Set the location on the map.' : '';
+    if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; return; }
+    const p = { id: 'c' + Date.now(), name: NP.name.trim(), sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photo, by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
+    S.places.push(p); S.xp += 20; save(); const ret = NP.ret; NP = null;
+    if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
+    closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); },
+  pickUse: () => { const [x, y] = pickXY(), p = endPick();
+    if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else hostStart({ id: null, x, y, address: addrOf(x, y) }); },
+  pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
+  hostStart: () => hostStart(),
+  hostHere: (el) => { const p = placeById(el.dataset.id); hostStart({ id: p.id, x: p.x, y: p.y, address: `${p.name}, ${addrOf(p.x, p.y)}`, photo: p.photo }); },
+  hostPick: () => startPick('host'),
+  hostMe: () => { HOST.loc = { id: 'me', x: ME.x + 6, y: ME.y + 6, address: addrOf(ME.x, ME.y) }; hostSheet(); },
+  hostVenue: (el) => { const v = VENUES_BOOK.find((x) => x.id === el.dataset.id) || placeById(el.dataset.id); HOST.loc = { id: el.dataset.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}`, photo: v.photo || null }; if (v.sports) HOST.sport = v.sports[0]; hostSheet(); },
+  hostSport: (el) => { HOST.sport = el.dataset.id; hostSheet(); },
+  hostDay: (el) => { HOST.d = +el.dataset.id; hostSheet(); },
+  hostTime: (el) => { HOST.t = el.dataset.id; hostSheet(); },
+  hostN: (el) => { const k = el.dataset.k; HOST[k] = k === 'fee' ? Math.max(0, Math.min(1000, HOST.fee + +el.dataset.d)) : Math.max(2, Math.min(30, HOST.players + +el.dataset.d)); hostSheet(); },
+  hostVis: (el) => { HOST.vis = el.dataset.id; hostSheet(); },
+  hostInv: (el) => { const id = el.dataset.id; HOST.invites = HOST.invites.includes(id) ? HOST.invites.filter((x) => x !== id) : HOST.invites.concat(id); hostSheet(); },
+  hostPublish: () => publishHost(),
+  postSpots: (el) => { if (!can.pin()) { upsell('host'); return; } const b = S.turf.find((x) => x.id === el.dataset.id), v = VB(b.vid);
+    HOST = hostFresh({ id: v.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}` }); Object.assign(HOST, { sport: v.sports[0], d: b.d, t: pad2(b.start) + ':00', mins: b.dur * 60, players: Math.max(2, b.players - 1), fee: Math.ceil((b.dur * v.peak) / b.players / 10) * 10, title: `Open spots at ${v.name}` }); hostSheet(); },
+  newTeam: () => { if (!can.teams()) { upsell('teams'); return; } NT = { name: '', sport: 'football', priv: 'Invite only' }; newTeamSheet(); },
+  ntSport: (el) => { NT.sport = el.dataset.id; newTeamSheet(); },
+  ntPriv: (el) => { NT.priv = el.dataset.id; newTeamSheet(); },
+  ntCreate: () => { if (!NT.name.trim()) { const e = $('#ntErr'); e.hidden = false; e.lastElementChild.textContent = 'Give your team a name.'; return; }
+    const t = { id: 't' + Date.now(), name: NT.name.trim(), sport: NT.sport, color: TEAM_COLORS[S.teams.length % TEAM_COLORS.length], privacy: NT.priv, members: [{ name: 'Arjun Mehta', role: 'Captain', status: 'yes' }], next: null };
+    S.teams.push(t); save(); NT = null; TV = t.id; teamTab = 'roster'; renderTeam(); openAddPlayers(t.id, true); },
+  openTeam: (el) => openTeam(el.dataset.id),
+  teamBack: () => { TV = null; picking = null; renderTeam(); },
+  teamTab: (el) => { teamTab = el.dataset.id; renderTeamView(); },
+  tVote: (el) => { const t = teamOf(TV); t.members[0].status = el.dataset.id; save(); renderTeamView(); },
+  tNudge: () => toast('Reminder sent to everyone who hasn’t replied', 'send'),
+  tCap: (el) => { tmOf(teamOf(TV)).cap = +el.dataset.i; save(); renderTeamView(); },
+  tPick: (el) => { const M = tmOf(teamOf(TV)), i = +el.dataset.i; M.picks = M.picks.includes(i) ? M.picks.filter((x) => x !== i) : M.picks.concat(i); save(); renderTeamView(); },
+  tShareLineup: () => { const t = teamOf(TV), M = tmOf(t), names = t.sport === 'cricket' ? Object.entries(M.lineup).map(([p, n]) => `${n} (${p})`) : M.picks.map((i) => t.members[i].name);
+    shareAny(`${t.name} lineup`, `${t.name}${t.next ? ' v ' + t.next.vs : ''}: ${names.length ? names.join(', ') : 'lineup to be confirmed'}.`, teamLink(t)); },
+  tSchedule: () => { SCH = null; scheduleSheet(); },
+  schDay: (el) => { SCH.d = +el.dataset.id; scheduleSheet(); },
+  schTime: (el) => { SCH.t = el.dataset.id; scheduleSheet(); },
+  schVenue: (el) => { SCH.venue = el.dataset.id; scheduleSheet(); },
+  schSave: () => { if (!SCH.vs.trim()) { toast('Add the opponent’s name', 'info'); return; } const t = teamOf(TV); t.next = { vs: SCH.vs.trim(), d: SCH.d, t: SCH.t, venue: SCH.venue }; t.members.forEach((m, i) => { if (i && m.status !== 'invited') m.status = 'maybe'; }); SCH = null; save(); closeSheet(); renderTeamView(); toast('Match saved. The team was asked who’s in', 'calendar-days'); },
+  pick: (el) => { picking = picking === el.dataset.id ? null : el.dataset.id; renderTeamView(); },
+  pos: (el) => { const M = tmOf(teamOf(TV)), n = el.dataset.id;
+    if (M.lineup[n]) { delete M.lineup[n]; save(); renderTeamView(); return; }
+    if (!picking) { toast('Pick a player from the bench first', 'info'); return; }
+    M.lineup[n] = picking; picking = null; save(); buzz(10); renderTeamView(); },
+  say: (el) => { tmOf(teamOf(TV)).chat.push(['You', el.dataset.id]); save(); renderTeamView(); const c = $('.chat'); if (c) c.lastElementChild.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'nearest' }); },
+  addPlayers: (el) => openAddPlayers(el.dataset.id),
+  apToggle: (el) => { const id = el.dataset.id; AP.sel = AP.sel.includes(id) ? AP.sel.filter((x) => x !== id) : AP.sel.concat(id); apSheet(); },
+  apSport: (el) => { AP.sport = el.dataset.id; apSheet(); },
+  apKm: (el) => { AP.km = el.dataset.id; apSheet(); },
+  apLft: () => { AP.lft = !AP.lft; apSheet(); },
+  apAdd: () => { const t = teamOf(AP.tid), add = PLAYERS.filter((p) => AP.sel.includes(p.id)); add.forEach((p) => t.members.push({ name: p.name, role: 'Player', status: 'invited', pid: p.id }));
+    const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); },
+  shareTeam: (el) => { const t = teamOf(el.dataset.id); shareAny(`Join ${t.name} on LetsPlay`, `Join my ${sp(t.sport).name.toLowerCase()} team ${t.name} on LetsPlay. Team code ${teamCode(t)}.`, teamLink(t)); },
+});
+
+/* ═════ CORPORATE: company league · fixtures · insights · tournament organizer ═════
+   The generator, scheduler and bracket logic come from the shared tour-engine.js. */
+const teamById = (id) => ORG.teams.find((t) => t.id === id);
+function standings() { return ORG.teams.map((t) => ({ ...t, p: t.w + t.d + t.l, pts: t.w * 3 + t.d })).sort((a, b) => b.pts - a.pts || b.w - a.w); }
+const crest = (id, cls = '') => { const t = teamById(id); return t ? `<span class="crest ${cls}" style="--c:${t.c}">${t.ab}</span>` : `<span class="crest ${cls} tbd">?</span>`; };
+const matchMeta = (m) => (m.bye ? 'Advances on a bye' : `${dayLabel(m.d)} ${dateAt(m.d, '12:00').getDate()} · ${fmtT(m.d, m.t)} · ${esc((m.venue || '').split(' · ')[0])}`);
+
+let TOUR = null, tourTab = 'bracket', PREV = null;   /* open tournament id, its tab, and an unpublished preview */
+function renderCorp() {
+  if (TOUR) { renderTour(); return; }
+  const v = S.corpView, el = $('#scr-team');
+  let body = '';
+  if (v === 'league') {
+    const st = standings(), played = st.reduce((n, t) => n + t.p, 0) / 2, fx = S.fixtures.slice().sort((a, b) => a.d - b.d || toMin(a.t) - toMin(b.t));
+    body = `<div class="org-hero"><span class="eyebrow">${esc(ORG.name)}</span><h2>${esc(ORG.league)}</h2>
+        <div class="ostats"><div><b class="num">${ORG.teams.length}</b><small>Teams</small></div><div><b class="num">${ORG.employees}</b><small>Employees</small></div><div><b class="num">${played}</b><small>Matches played</small></div></div></div>
+      <div class="section"><h2>Leaderboard</h2>
+        <div class="podium">${[1, 0, 2].map((i) => { const t = st[i]; return `<div class="pod p${i + 1}" style="--c:${t.c}"><span class="crest lg" style="--c:${t.c}">${t.ab}</span><b>${esc(t.name.split(' ')[0])}</b><span class="num">${t.pts} pts</span><i>${i + 1}</i></div>`; }).join('')}</div>
+        <div class="table card"><div class="tr th"><span>#</span><span>Team</span><span>P</span><span>W</span><span>Pts</span><span>Form</span></div>
+          ${st.map((t, i) => `<div class="tr ${i < 4 ? 'q' : ''}"><span class="num">${i + 1}</span><span class="tname">${crest(t.id, 'sm')}${esc(t.name)}</span><span class="num">${t.p}</span><span class="num">${t.w}</span><b class="num">${t.pts}</b><span class="form">${[...t.form].map((r) => `<i class="f${r}" title="${{ W: 'Won', D: 'Drew', L: 'Lost' }[r]}">${r}</i>`).join('')}</span></div>`).join('')}</div>
+        <div class="faint" style="font-size:12.5px">Top four reach the cup semifinals. Win 3 points, draw 1.</div></div>
+      <div class="section"><div style="display:flex;justify-content:space-between;align-items:center"><h2>This week</h2><button class="pill sm" data-act="addFixture">${ic('plus')}Add fixture</button></div>
+        <div class="lrows">${fx.map((f) => { const a = teamById(f.a), b = teamById(f.b), s = sp(f.sport); return `<div class="lrow fx"><span class="evtime num"><b>${dayLabel(f.d)}</b><small>${fmtT(f.d, f.t)}</small></span><span class="ltext"><b>${crest(f.a, 'sm')}${esc(a.name.split(' ')[0])} <span class="faint">v</span> ${crest(f.b, 'sm')}${esc(b.name.split(' ')[0])}</b><small><span class="evtag" style="--c:${s.c}">${s.name}</span>${esc(f.venue.split(' · ')[0])}</small></span></div>`; }).join('')}</div></div>
+      <div class="section"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Participation</h2><button class="pill sm soft" data-act="nudgeDepts">${ic('send')}Nudge low</button></div>
+        <div class="card bars">${ORG.participation.map(([d, p]) => `<div class="bar"><span>${d}</span><span class="track"><i style="width:${p}%;${p < 50 ? 'background:var(--live)' : ''}"></i></span><b class="num">${p}%</b></div>`).join('')}</div>
+        <div class="faint" style="font-size:12.5px">Share of each department that played this month. Below 50% is marked.</div></div>`;
+  } else if (v === 'cups') {
+    body = `<button class="pill block" style="min-height:56px" data-act="tourNew">${ic('trophy')}Create a tournament</button>
+      <div class="faint" style="font-size:13px;margin-top:8px">Pick teams and a format. LetsPlay builds the groups, bracket and full schedule, and moves winners on as results come in.</div>
+      <div class="section"><h2>Tournaments</h2><div class="tcards">${tours().map((T) => { const st = tourStatus(T), pr = tourProgress(T), s = sp(T.sport); return `<button class="tcard" style="--c:${s.c}" data-act="tourOpen" data-id="${T.id}"><span class="crest lg" style="--c:${s.c}">${ic(s.icon)}</span><span class="ltext"><b>${esc(T.name)}</b><small>${s.name} · ${T.seeds.length} teams · ${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'}</small><small class="tnext">${st.done ? ic('crown') : ic('timer')}${esc(st.text)}</small><span class="prog"><i style="width:${Math.round((pr.played / pr.total) * 100)}%"></i></span></span><span class="tyes num"><b>${pr.played}/${pr.total}</b><small>played</small></span></button>`; }).join('')}</div></div>`;
+  } else {
+    body = `<div class="section" style="margin-top:0"><div class="lrows">${ORG.teams.map((t) => rowHTML({ act: 'deptTeam', id: t.id, lead: `<span class="crest" style="--c:${t.c}">${t.ab}</span>`, title: esc(t.name), sub: `${t.dept} · ${t.players} players · ${t.w}W ${t.d}D ${t.l}L` })).join('')}</div></div>`;
+  }
+  el.innerHTML = `<div class="head"><div><h1>League</h1><div class="sub">${esc(ORG.name)} · Corporate</div></div>${bellHTML()}</div>
+    <div class="seg" role="group" aria-label="League section"><button data-act="corpView" data-id="league" aria-pressed="${v === 'league'}">League</button><button data-act="corpView" data-id="cups" aria-pressed="${v === 'cups'}">Cups</button><button data-act="corpView" data-id="teams" aria-pressed="${v === 'teams'}">Teams</button></div>
+    <div style="margin-top:16px">${body}</div>`;
+}
+
+/* ── Fixture builder ── */
+let FX = null;
+function fixtureSheet() {
+  sheetUpdate(`${head('Add fixture', ORG.league)}
+    <div class="fgrp"><b>Home</b><div class="chips wrap">${ORG.teams.map((t) => `<button class="chip" style="--c:${t.c}" data-act="fxTeam" data-k="a" data-id="${t.id}" aria-pressed="${FX.a === t.id}" ${FX.b === t.id ? 'disabled' : ''}>${esc(t.name.split(' ')[0])}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Away</b><div class="chips wrap">${ORG.teams.map((t) => `<button class="chip" style="--c:${t.c}" data-act="fxTeam" data-k="b" data-id="${t.id}" aria-pressed="${FX.b === t.id}" ${FX.a === t.id ? 'disabled' : ''}>${esc(t.name.split(' ')[0])}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Sport</b><div class="chips">${TOUR_SPORTS.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="fxSport" data-id="${k}" aria-pressed="${FX.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Day and time</b><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="fxDay" data-id="${d}" aria-pressed="${FX.d === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
+      <div class="chips">${['07:00', '13:00', '17:30', '18:30', '19:30'].map((t) => `<button class="chip neutral" data-act="fxTime" data-id="${t}" aria-pressed="${FX.t === t}">${tf.format(dateAt(0, t))}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Venue</b><div class="chips wrap">${VENUES_ENT.map((v) => `<button class="chip neutral" data-act="fxVenue" data-id="${esc(v)}" aria-pressed="${FX.venue === v}">${esc(v.split(' · ')[0])}</button>`).join('')}</div></div>
+    ${FX.clash ? `<div class="errbox">${ic('info')}<div>${esc(FX.clash)}</div></div>` : ''}
+    <button class="pill block" data-act="fxSave" ${FX.a && FX.b ? '' : 'disabled'}>${ic('calendar-days')}Add to the schedule</button>`);
+}
+
+/* ── Tournament generator ── */
+let TD = null;
+const freshTD = () => ({ name: 'Diwali Cup', sport: 'football', format: 'groups', teams: ORG.teams.map((t) => t.id), seeding: 'standings', startDay: 2, days: 'weekdays', time: '18:00', mins: 60, perDay: 2, venues: [VENUES_ENT[1], VENUES_ENT[3]], thirdPlace: true });
+function genSheet() {
+  const n = TD.teams.length, err = n < 4 ? 'Pick at least 4 teams.' : !TD.venues.length ? 'Pick at least one venue.' : !TD.name.trim() ? 'Name the tournament.' : '';
+  const summary = !err ? (() => { const T = buildTournament(Object.assign({}, TD), rng(3)); const ms = T.matches.filter((m) => !m.bye).length; return `${ms} matches over ${T.matchDays} match days, ${dayLabel(T.startDay)} to ${dayLabel(T.endDay)} ${dateAt(T.endDay, '12:00').getDate()}`; })() : '';
+  sheetUpdate(`${head('Create a tournament', 'LetsPlay builds the plan and schedule')}
+    <label class="fld"><span>Name</span><input id="tdName" value="${esc(TD.name)}"></label>
+    <div class="fgrp"><b>Sport</b><div class="chips">${TOUR_SPORTS.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="tdSet" data-k="sport" data-id="${k}" aria-pressed="${TD.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Format</b><div class="seg" role="group" aria-label="Format"><button data-act="tdSet" data-k="format" data-id="groups" aria-pressed="${TD.format === 'groups'}">Groups + knockout</button><button data-act="tdSet" data-k="format" data-id="knockout" aria-pressed="${TD.format === 'knockout'}">Knockout</button></div></div>
+    <div class="fgrp"><b>Teams <span class="faint num">${n} picked</span></b><div class="chips wrap">${ORG.teams.map((t) => `<button class="chip" style="--c:${t.c}" data-act="tdTeam" data-id="${t.id}" aria-pressed="${TD.teams.includes(t.id)}">${esc(t.name.split(' ')[0])}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Seeding</b><div class="seg" role="group" aria-label="Seeding"><button data-act="tdSet" data-k="seeding" data-id="standings" aria-pressed="${TD.seeding === 'standings'}">League table</button><button data-act="tdSet" data-k="seeding" data-id="random" aria-pressed="${TD.seeding === 'random'}">Random draw</button></div></div>
+    <div class="fgrp"><b>Starts</b><div class="chips">${[1, 2, 3, 4, 5, 6, 7].map((d) => `<button class="chip neutral" data-act="tdSet" data-k="startDay" data-id="${d}" aria-pressed="${TD.startDay === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Play on"><button data-act="tdSet" data-k="days" data-id="weekdays" aria-pressed="${TD.days === 'weekdays'}">Weekdays</button><button data-act="tdSet" data-k="days" data-id="weekends" aria-pressed="${TD.days === 'weekends'}">Weekends</button><button data-act="tdSet" data-k="days" data-id="every" aria-pressed="${TD.days === 'every'}">Every day</button></div></div>
+    <div class="fgrp"><b>First match, length and matches a day</b><div class="chips">${['07:00', '13:00', '17:30', '18:00', '19:00'].map((t) => `<button class="chip neutral" data-act="tdSet" data-k="time" data-id="${t}" aria-pressed="${TD.time === t}">${tf.format(dateAt(0, t))}</button>`).join('')}</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="seg" style="flex:1;min-width:180px" role="group" aria-label="Match length">${[45, 60, 90, 120].map((m) => `<button data-act="tdSet" data-k="mins" data-id="${m}" aria-pressed="${TD.mins === m}">${m} min</button>`).join('')}</div>
+      <div class="stepper"><button data-act="tdPer" data-d="-1" aria-label="Fewer slots a day">${ic('minus')}</button><b class="num">${TD.perDay}/day</b><button data-act="tdPer" data-d="1" aria-label="More slots a day">${ic('plus')}</button></div></div></div>
+    <div class="fgrp"><b>Venues <span class="faint">matches run in parallel</span></b><div class="chips wrap">${VENUES_ENT.map((v) => `<button class="chip neutral" data-act="tdVenue" data-id="${esc(v)}" aria-pressed="${TD.venues.includes(v)}">${esc(v.split(' · ')[0])}</button>`).join('')}</div></div>
+    ${rowHTML({ act: 'tdThird', pressed: TD.thirdPlace, icon: 'medal', title: 'Third-place match', sub: 'Losing semifinalists play for bronze', end: `<span class="tickbox">${ic('check')}</span>` })}
+    ${err ? `<div class="errbox">${ic('info')}<div>${err}</div></div>` : `<div class="okbox">${ic('calendar-days')}<div><b>Plan ready</b><br>${summary}</div></div>`}
+    <button class="pill block" style="min-height:56px" data-act="tdGen" ${err ? 'disabled' : ''}>${ic('sparkles')}Generate the plan</button>`);
+  $('#tdName').addEventListener('input', (e) => { TD.name = e.target.value; });
+}
+
+/* ── Tournament view: bracket · schedule · groups ── */
+const curTour = () => (PREV && TOUR === PREV.id ? PREV : tours().find((x) => x.id === TOUR));
+function teamLine(T, m, side) {
+  const id = m[side], src = m[side === 'a' ? 'srcA' : 'srcB'], sc = m[side === 'a' ? 'sa' : 'sb'], won = m.winner && m.winner === id;
+  return `<span class="mline ${won ? 'won' : ''} ${m.winner && !won && id ? 'lost' : ''}">${id ? crest(id, 'sm') : '<span class="crest sm tbd">?</span>'}<span class="mname">${id ? esc(teamById(id).name) : esc(srcLabel(T, src))}</span><b class="num">${sc != null ? sc : ''}</b></span>`;
+}
+const mCard = (T, m) => `<button class="mcard ${m.round === 'Final' ? 'final' : ''}" data-act="tourMatch" data-id="${m.id}" ${m.a && m.b && !m.bye ? '' : 'disabled'}><span class="mlab">${esc(m.label)}${m.tb ? ` · won on ${esc(scoreOf(T.sport)[2])}` : ''}</span>${teamLine(T, m, 'a')}${teamLine(T, m, 'b')}<small class="faint">${matchMeta(m)}</small></button>`;
+function renderTour() {
+  const T = curTour(); if (!T) { TOUR = null; renderCorp(); return; }
+  const s = sp(T.sport), st = tourStatus(T), pr = tourProgress(T), preview = PREV && PREV.id === T.id, nr = nextRound(T);
+  let body = '';
+  if (tourTab === 'bracket') {
+    const ko = T.matches.filter((m) => m.stage === 'ko' && m.round !== 'Third place'), rounds = [...new Set(ko.sort((a, b) => a.rk - b.rk).map((m) => m.round))], third = T.matches.find((m) => m.round === 'Third place');
+    body = `${T.champion ? `<div class="champ" style="--c:${teamById(T.champion).c}">${ic('crown')}<div><span class="eyebrow">Champion</span><h2>${esc(teamById(T.champion).name)}</h2></div></div>` : ''}
+      <div class="bracket">${rounds.map((r) => `<div class="bcol"><b class="bhead">${esc(r)}</b>${ko.filter((m) => m.round === r).map((m) => mCard(T, m)).join('')}</div>`).join('')}</div>
+      ${third ? `<div class="section"><h2>Third place</h2>${mCard(T, third)}</div>` : ''}`;
+  } else if (tourTab === 'schedule') {
+    const ms = T.matches.filter((m) => !m.bye).sort((a, b) => a.d - b.d || toMin(a.t) - toMin(b.t)), days = [...new Set(ms.map((m) => m.d))];
+    body = days.map((d) => `<div class="section"><h2>${dayLabel(d)} <span class="faint" style="font:600 13px var(--f-body)">${longFmt.format(dateAt(d, '12:00'))}</span></h2><div class="mlist">${ms.filter((m) => m.d === d).map((m) => mCard(T, m)).join('')}</div></div>`).join('');
+  } else {
+    body = T.groups ? Object.keys(T.groups).map((g) => `<div class="section"><h2>Group ${g}</h2><div class="table card"><div class="tr th g"><span>#</span><span>Team</span><span>P</span><span>W</span><span>D</span><span>Pts</span></div>
+      ${groupTable(T, g).map((r, i) => `<div class="tr g ${i < (Object.keys(T.groups).length === 1 ? 4 : 2) ? 'q' : ''}"><span class="num">${i + 1}</span><span class="tname">${crest(r.id, 'sm')}${esc(teamById(r.id).name)}</span><span class="num">${r.p}</span><span class="num">${r.w}</span><span class="num">${r.d}</span><b class="num">${r.pts}</b></div>`).join('')}</div></div>`).join('') + '<div class="faint" style="font-size:12.5px;margin-top:8px">Highlighted teams go through to the semifinals.</div>'
+      : `<div class="empty section">${ic('list')}<b>Straight knockout</b><span class="muted">This tournament has no group stage.</span></div>`;
+  }
+  $('#scr-team').innerHTML = `<div class="head"><button class="round" data-act="tourBack" aria-label="Back to tournaments">${ic('arrow-left')}</button><div style="flex:1;min-width:0"><h1 style="font-size:22px">${esc(T.name)}</h1><div class="sub">${s.name} · ${T.seeds.length} teams · ${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'}</div></div></div>
+    ${preview ? `<div class="okbox">${ic('sparkles')}<div><b>Preview</b><br>${pr.total} matches, ${dayLabel(T.startDay)} to ${dayLabel(T.endDay)} ${dateAt(T.endDay, '12:00').getDate()}. Publish to send the schedule to every captain.</div></div>
+      <div style="display:flex;gap:8px;margin-top:10px">${T.seeding === 'random' ? `<button class="pill sm soft" data-act="tdRedraw">${ic('shuffle')}Redraw</button>` : ''}<button class="pill sm soft" data-act="tdEdit">${ic('pencil')}Edit</button><button class="pill sm" style="flex:1" data-act="tdPublish">${ic('send')}Publish</button></div>`
+      : `<div class="tstatus"><span>${st.done ? ic('crown') : ic('timer')}<b>${esc(st.text)}</b></span><span class="faint num">${pr.played}/${pr.total} played</span></div><span class="prog"><i style="width:${Math.round((pr.played / pr.total) * 100)}%"></i></span>
+      ${nr.length ? `<button class="pill sm soft" style="margin-top:10px" data-act="tourSim">${ic('zap')}Simulate ${esc(nr[0].stage === 'group' ? 'next matchday' : nr[0].round.toLowerCase())}</button>` : ''}`}
+    <div class="seg" role="group" aria-label="Tournament view" style="margin-top:16px"><button data-act="tourTab" data-id="bracket" aria-pressed="${tourTab === 'bracket'}">Bracket</button><button data-act="tourTab" data-id="schedule" aria-pressed="${tourTab === 'schedule'}">Schedule</button><button data-act="tourTab" data-id="groups" aria-pressed="${tourTab === 'groups'}">Groups</button></div>
+    ${body}`;
+}
+let RS = null;
+function resultSheet(T, m) {
+  const [unit, , tbName] = scoreOf(T.sport), A1 = teamById(m.a), B1 = teamById(m.b), level = RS.sa === RS.sb;
+  sheetUpdate(`${head(`${esc(m.label)} · enter result`, matchMeta(m))}
+    ${[['sa', A1], ['sb', B1]].map(([k, t]) => `<div class="card scorerow"><span class="crest lg" style="--c:${t.c}">${t.ab}</span><b style="flex:1">${esc(t.name)}</b><div class="stepper"><button data-act="rsN" data-k="${k}" data-d="-1" aria-label="Less">${ic('minus')}</button><b class="num">${RS[k]}</b><button data-act="rsN" data-k="${k}" data-d="1" aria-label="More">${ic('plus')}</button></div></div>`).join('')}
+    <div class="faint" style="font-size:13px">Score in ${unit}.</div>
+    ${level && m.stage === 'ko' ? `<div class="fgrp"><b>Level. Who won the ${esc(tbName)}?</b><div class="seg" role="group" aria-label="Tie-break winner"><button data-act="rsTb" data-id="${m.a}" aria-pressed="${RS.tb === m.a}">${esc(A1.name.split(' ')[0])}</button><button data-act="rsTb" data-id="${m.b}" aria-pressed="${RS.tb === m.b}">${esc(B1.name.split(' ')[0])}</button></div></div>` : ''}
+    <button class="pill block" data-act="rsSave" ${level && m.stage === 'ko' && !RS.tb ? 'disabled' : ''}>${ic('check')}Save result</button>`);
+}
+function afterResult(T, m) {
+  if (T.champion) { confetti(teamById(T.champion).c); toast(`${teamById(T.champion).name} are champions!`, 'crown'); return; }
+  const nxt = T.matches.find((x) => x.stage === 'ko' && ((x.srcA && x.srcA.ref === m.id) || (x.srcB && x.srcB.ref === m.id)));
+  if (m.winner && nxt) toast(`${teamById(m.winner).name} go through to the ${nxt.round === 'Final' ? 'final' : nxt.round.toLowerCase()}`, 'trophy');
+  else toast('Result saved. Tables updated', 'check');
+}
+
+Object.assign(A, {
+  corpView: (el) => { S.corpView = el.dataset.id; TOUR = null; save(); renderCorp(); },
+  addFixture: () => { FX = { a: null, b: null, sport: 'cricket', d: 1, t: '18:30', venue: VENUES_ENT[0], clash: '' }; fixtureSheet(); },
+  fxTeam: (el) => { FX[el.dataset.k] = el.dataset.id; fixtureSheet(); },
+  fxSport: (el) => { FX.sport = el.dataset.id; fixtureSheet(); },
+  fxDay: (el) => { FX.d = +el.dataset.id; fixtureSheet(); },
+  fxTime: (el) => { FX.t = el.dataset.id; fixtureSheet(); },
+  fxVenue: (el) => { FX.venue = el.dataset.id; fixtureSheet(); },
+  fxSave: () => { const c = S.fixtures.find((f) => f.d === FX.d && f.t === FX.t && (f.venue === FX.venue || [f.a, f.b].some((x) => x === FX.a || x === FX.b)));
+    if (c && !FX.clash) { FX.clash = `${teamById(c.a).name.split(' ')[0]} v ${teamById(c.b).name.split(' ')[0]} is already at that time${c.venue === FX.venue ? ' and venue' : ''}. Save again to add it anyway.`; fixtureSheet(); return; }
+    S.fixtures.push({ id: 'x' + Date.now(), a: FX.a, b: FX.b, sport: FX.sport, d: FX.d, t: FX.t, venue: FX.venue }); FX = null; save(); closeSheet(); renderCorp(); toast('Fixture added. Both captains were notified', 'calendar-days'); },
+  nudgeDepts: () => toast(`Reminder sent to ${ORG.participation.filter(([, p]) => p < 50).map(([d]) => d).join(', ')}`, 'send'),
+  deptTeam: (el) => { const t = teamById(el.dataset.id); sheet(`${head(esc(t.name), `${t.dept} · ${t.players} players`)}<div class="facts"><div class="fact"><b class="num">${t.w}-${t.d}-${t.l}</b><span>Won, drawn, lost</span></div><div class="fact"><b class="num">${t.w * 3 + t.d}</b><span>League points</span></div></div><div class="lrows">${['Captain', 'Vice-captain', 'Player', 'Player'].map((r, i) => rowHTML({ lead: avatar(PLAYERS[(i * 3 + t.id.charCodeAt(1)) % PLAYERS.length].name), title: esc(PLAYERS[(i * 3 + t.id.charCodeAt(1)) % PLAYERS.length].name), sub: r })).join('')}</div><button class="pill block" data-act="close">Done</button>`); },
+  tourNew: () => { TD = TD || freshTD(); genSheet(); },
+  tdSet: (el) => { const k = el.dataset.k, v = el.dataset.id; TD[k] = ['startDay', 'mins'].includes(k) ? +v : v; genSheet(); },
+  tdTeam: (el) => { const id = el.dataset.id; TD.teams = TD.teams.includes(id) ? TD.teams.filter((x) => x !== id) : TD.teams.concat(id); genSheet(); },
+  tdVenue: (el) => { const v = el.dataset.id; TD.venues = TD.venues.includes(v) ? TD.venues.filter((x) => x !== v) : TD.venues.concat(v); genSheet(); },
+  tdPer: (el) => { TD.perDay = Math.max(1, Math.min(6, TD.perDay + +el.dataset.d)); genSheet(); },
+  tdThird: () => { TD.thirdPlace = !TD.thirdPlace; genSheet(); },
+  tdGen: () => { PREV = buildTournament(Object.assign({}, TD)); TOUR = PREV.id; tourTab = 'bracket'; closeSheet(); S.corpView = 'cups'; renderCorp(); $('#scr-team').scrollTop = 0; },
+  tdRedraw: () => { PREV = buildTournament(Object.assign({}, TD)); TOUR = PREV.id; renderTour(); toast('New draw', 'shuffle'); },
+  tdEdit: () => { PREV = null; TOUR = null; renderCorp(); genSheet(); },
+  tdPublish: () => { tours().unshift(PREV); const T = PREV; PREV = null; TD = null; save(); renderTour(); confetti(sp(T.sport).c); toast(`Published. Schedule sent to ${T.seeds.length} captains`, 'send'); },
+  tourOpen: (el) => { TOUR = el.dataset.id; tourTab = 'bracket'; PREV = null; renderTour(); $('#scr-team').scrollTop = 0; },
+  tourBack: () => { TOUR = null; PREV = null; renderCorp(); },
+  tourTab: (el) => { tourTab = el.dataset.id; renderTour(); },
+  tourSim: () => { const T = curTour(), r = rng(Date.now() % 100000); nextRound(T).forEach((m) => simulateMatch(T, m, r)); save(); renderTour(); if (T.champion) { confetti(teamById(T.champion).c); toast(`${teamById(T.champion).name} are champions!`, 'crown'); } else toast('Results in. Winners moved on', 'zap'); },
+  tourMatch: (el) => { const T = curTour(), m = T.matches.find((x) => x.id === el.dataset.id); const hi = scoreOf(T.sport)[1][1], big = hi > 10; RS = { id: m.id, sa: m.sa != null ? m.sa : big ? Math.round(hi * 0.8 / 5) * 5 : 0, sb: m.sb != null ? m.sb : big ? Math.round(hi * 0.7 / 5) * 5 : 0, tb: m.tb }; resultSheet(T, m); },
+  rsN: (el) => { const T = curTour(), m = T.matches.find((x) => x.id === RS.id), step = scoreOf(T.sport)[1][1] > 50 ? 5 : 1; RS[el.dataset.k] = Math.max(0, RS[el.dataset.k] + +el.dataset.d * step); if (RS.sa !== RS.sb) RS.tb = null; resultSheet(T, m); },
+  rsTb: (el) => { const T = curTour(), m = T.matches.find((x) => x.id === RS.id); RS.tb = el.dataset.id; resultSheet(T, m); },
+  rsSave: () => { const T = curTour(), m = T.matches.find((x) => x.id === RS.id); playMatch(T, m, RS.sa, RS.sb, RS.tb); RS = null; if (!PREV || PREV.id !== T.id) save(); closeSheet(); renderTour(); afterResult(T, m); },
+});
+
+
 document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { if ($('#storyView')) closeStory(); else closeSheet(); }
@@ -973,6 +2306,8 @@ document.addEventListener('keydown', (e) => {
 });
 
 applyTheme();
+applyPrefs();
+renderNote();
 go('play');
 requestAnimationFrame(() => focusMap(false));
 })();

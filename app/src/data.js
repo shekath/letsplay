@@ -94,7 +94,7 @@ const SAMPLE_TEAMS = [
     next: { vs: 'Shuttle Social mixer', d: 1, t: '20:00', venue: 'Shuttle Zone Arena' } },
 ];
 
-/* Enterprise: a fictional company running an internal league. */
+/* Corporate: a fictional company running an internal league. */
 const ORG = {
   name: 'Halcyon Systems',
   league: 'Monsoon Corporate Cup',
@@ -142,7 +142,7 @@ const PLANS = {
   pro: { name: 'Pro', monthly: 199, icon: 'zap', blurb: 'Organise teams and grow your local scene.',
     feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
     no: ['Company leagues and leaderboards'] },
-  enterprise: { name: 'Enterprise', monthly: 149, perSeat: true, minSeats: 20, icon: 'building-2', blurb: 'Run sport across your company.',
+  corporate: { name: 'Corporate', monthly: 149, perSeat: true, minSeats: 20, icon: 'building-2', blurb: 'Run sport across your company.',
     feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };

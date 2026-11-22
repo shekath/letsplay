@@ -16,20 +16,26 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 
 ## Design 2: Playground
 
-A second, engagement-first direction at `http://localhost:8080/design2.html`, built on the same data:
+A second, engagement-first direction at `http://localhost:8080/design2.html`, built on the same data. It has every plan and feature of Design 1 (Lite, Pro and Corporate, with the same billing), in its own style. On a desktop, the side panel switches plans instantly for demos.
 
-- **Play:** a list of games in a bottom sheet over the live map (drag or tap to expand). Each game is a clean row: the game name, then day and time in bold with the distance as a map-pin chip, then price, spots left and venue. Tap a game to move the map to its pin and open details; tap a pin to highlight its card; tap + to join. Full games say so instead of offering to join. Zoom with the + and − buttons, pinch or the scroll wheel; pins keep the same size at every zoom, and the locate button re-centres on you.
+Tabs: **Play · Games · Team** (League on Corporate) **· Shop · Me**.
+
+- **Play:** a list of games in a bottom sheet over the live map (drag or tap to expand). Each game is a clean row: the game name, then day and time in bold with the distance as a map-pin chip, then price, spots left and venue. Tap a game to move the map to its pin and open details; tap a pin to highlight its card; tap + to join. Full games offer the waitlist. **Filters** (day, time, distance, fee, ability, age, setting, step-free access), the notification bell, zoom and locate controls, and a map pin button to add places or host games (Pro).
+- **Joining:** step-by-step registration (who’s playing with family members and age checks, saved details and emergency contacts, consent with guardian consent for under-18s, UPI payment with a failed-payment demo), then XP and a short celebration.
 - **Starting soon:** story rings for games today and tomorrow; a full-screen viewer that advances every 5 seconds (hold to pause, tap the sides to move; manual when reduced motion is on).
-- **Progress:** joining earns XP with a short celebration, levels with titles, a weekly goal ring you can adjust, a streak chart and earnable badges.
-- **Book:** pick a court from a photo carousel and drag a time window along the day. Booked hours are striped, peak hours tinted, clashes turn the window red. A slider splits the cost live.
-- **Squad:** pick a player and tap a fielding position on a cricket field, vote in the availability poll, send quick chat messages.
-- **Look:** Kanit bold italic for titles, scores and numbers (athletic, scoreboard feel) with Manrope for reading, a neutral base where each card takes its sport colour, violet only for your progress, a floating pill tab bar, and light and dark themes.
+- **Games:** Upcoming (next game countdown, what needs you, every booking by day), **Family** calendar (filter by family member, clash warnings for two drop-offs at once, with fixes) and **Book a court** (drag a time window along the day, split the cost live; Pro can post the open spots as a game).
+- **Notifications:** urgent changes, to-dos and updates with one-tap actions, and settings for the optional ones.
+- **Shop:** deals carousel with a sponsored slot, search, categories, product pages with sizes, bag and UPI checkout, member prices (10% off on Pro and Corporate), **Promote your business**, and bulk team kits on Corporate.
+- **Pro:** snap a photo of a new place and put it on the map for everyone; host a game at any address (point on the map, your location, a saved venue or a new photo place; editable address and landmark, fee, players, visibility and team invites); teams with match day (availability poll and nudges, cricket field placement or a lineup with captain), roster with invite link and code, team chat, match scheduling; **Add players** nearest first, grouped by distance, filterable, with sharing to any app.
+- **Corporate:** company league with leaderboard podium, standings and form, this week’s fixtures with **Add fixture** (warns about clashes), department participation with nudges, department teams; **Cups**: create a tournament (sport, format, teams, seeding, start day, weekdays or weekends, first match, length, slots per day, venues, third-place match) with a live summary, preview, redraw and publish; bracket, schedule and group tables; enter results with tie-breaks, and winners move on to the semifinals and final automatically.
+- **Me:** level, XP, weekly goal, streak and badges; plan card with upgrade, manage and switch-to-yearly; family profiles, default UPI app, notification settings, larger text, appearance and reset.
+- **Look:** Kanit bold italic for titles, scores and numbers (athletic, scoreboard feel) with Manrope for reading, a neutral base where each card takes its sport colour, violet only for your progress, one hue per plan, a floating pill tab bar, and light and dark themes.
 
-Source: `app/design2/src` (shell, `d2.css`, `d2.js`); `scripts/build.py` bundles it with the shared `data.js` and `icons.js`.
+Source: `app/design2/src` (shell, `d2.css`, `d2.js` for the core, `d2-plans.js`, `d2-lite.js`, `d2-pro.js`, `d2-corp.js` for plan features); `scripts/build.py` bundles it with the shared `data.js`, `icons.js` and `tour-engine.js`.
 
 ## Plans (tiers)
 
-| Capability | Lite | Pro | Enterprise |
+| Capability | Lite | Pro | Corporate |
 | --- | :---: | :---: | :---: |
 | Live map of nearby sports, filters, search | ✓ | ✓ | ✓ |
 | Join games, family profiles, payment, My games calendar | ✓ | ✓ | ✓ |
@@ -50,7 +56,7 @@ Every paid plan can be paid monthly or yearly. Yearly is 12 months less 20%.
 | --- | --- | --- |
 | Lite | Free | Free |
 | Pro | ₹199/month | ₹1,910/year (instead of ₹2,388, about ₹159/month) |
-| Enterprise | ₹149 per employee/month | ₹1,430 per employee/year (instead of ₹1,788), minimum 20 employees |
+| Corporate | ₹149 per employee/month | ₹1,430 per employee/year (instead of ₹1,788), minimum 20 employees |
 
 Choosing a plan opens a checkout with a Monthly/Yearly switch, the yearly saving shown as a line item, the renewal date, and UPI payment (AutoPay mandate for monthly, a single payment for yearly). Monthly subscribers see a "Switch to yearly, save 20%" shortcut on their plan card. All prices are **placeholders** for validation, as the pitch recommends. The plan switcher on the desktop demo panel still changes plans instantly, for demos.
 
@@ -71,11 +77,11 @@ Locked features stay visible to Lite users and lead to an upgrade sheet, so peop
 
 - **Explore (home):** pan, pinch or scroll to zoom the map; tap a sport chip to filter; tap a pin for a preview card; drag the "games near you" sheet up and down; tap **Join**.
 - **Join flow:** choose family members, accept the code of conduct, pay via UPI (GPay, PhonePe, Paytm, BHIM), and the game is added to **My games** with a countdown and schedule-change alerts.
-- **Add place (Pro/Enterprise):** take a photo with the phone camera (or drop a pin), name it and save. The place is public, so everyone sees it on the map with its photo.
-- **Host a game (Pro/Enterprise):** from My games, a place sheet, or Add place. Set the location by pointing on the map, using your current location, searching saved venues and places, or snapping a new place. Edit the address shown to players, add a landmark ("Gate 2, opposite the chai stall"), set time, players needed, fee in ₹ and visibility (everyone nearby or invited only), invite teams and people, and publish. Invitees get the address and a map pin, and the game appears on the map.
+- **Add place (Pro/Corporate):** take a photo with the phone camera (or drop a pin), name it and save. The place is public, so everyone sees it on the map with its photo.
+- **Host a game (Pro/Corporate):** from My games, a place sheet, or Add place. Set the location by pointing on the map, using your current location, searching saved venues and places, or snapping a new place. Edit the address shown to players, add a landmark ("Gate 2, opposite the chai stall"), set time, players needed, fee in ₹ and visibility (everyone nearby or invited only), invite teams and people, and publish. Invitees get the address and a map pin, and the game appears on the map.
 - **Teams (Pro):** create a team, open a roster, invite players, schedule a match.
-- **League (Enterprise):** overview stats, week schedule with **Add fixture**, podium and standings table, department teams.
-- **Tournaments (Enterprise):** League → Tournaments → **Create a tournament**. Choose sport, format (groups + knockout, or straight knockout), teams, seeding (league table or random draw), start day, weekdays/weekends, first match time, match length, slots per day, venues and an optional third-place match. The generator builds the plan and schedules every match across dates, times and parallel venues. Preview it, redraw if random, then publish. Enter results by tapping a match: group tables update, the top teams fill the semifinals, knockout winners advance automatically (level scores are settled by super over, penalties or another tie-break), and the final crowns the champion. A sample **Monsoon Cricket Cup** opens with the group stage done and the semifinals today. **Simulate** fills a round with random results for demos.
+- **League (Corporate):** overview stats, week schedule with **Add fixture**, podium and standings table, department teams.
+- **Tournaments (Corporate):** League → Tournaments → **Create a tournament**. Choose sport, format (groups + knockout, or straight knockout), teams, seeding (league table or random draw), start day, weekdays/weekends, first match time, match length, slots per day, venues and an optional third-place match. The generator builds the plan and schedules every match across dates, times and parallel venues. Preview it, redraw if random, then publish. Enter results by tapping a match: group tables update, the top teams fill the semifinals, knockout winners advance automatically (level scores are settled by super over, penalties or another tie-break), and the final crowns the champion. A sample **Monsoon Cricket Cup** opens with the group stage done and the semifinals today. **Simulate** fills a round with random results for demos.
 - **Shop:** promo carousel with sponsored placements, categories, product pages, bag and checkout, and **Promote your business** ad packages (featured map pin, shop banner, event sponsorship).
 - **Profile:** plan card and plan comparison, family profiles, settings, and **Reset demo data**.
 
@@ -90,17 +96,20 @@ app/
     styles.css     design tokens (light + dark) and all components
     data.js        sample sports, activities, teams, company league, products, plans
     app.js         navigation, map engine, tier gating, every screen and flow
-    tournament.js  tournament generator, scheduler, bracket progression and UI (Enterprise)
+    tour-engine.js tournament generator, scheduler and bracket progression (shared by both designs)
+    tournament.js  tournament UI for Design 1 (Corporate)
     features.js    filters, registration steps, waitlist, family calendar, notifications, coach match day, venue booking
     icons.js       inlined Lucide icon paths (ISC licence); custom sport glyphs live in app.js
+  design2/src/     Design 2: shell.html, d2.css, d2.js (core) and d2-plans/lite/pro/corp.js (plan features)
   img/             optimised photos (Unsplash licence)
   index.html       built standalone PWA (generated)
   embed.html       built page fragment for hosted previews (generated)
+  design2.html, design2-embed.html   built Design 2 (generated)
   manifest.webmanifest, sw.js, icon-*.png
-scripts/build.py   bundles app/src into index.html and embed.html
+scripts/build.py   bundles both designs
 ```
 
-After editing anything in `app/src`, run `python3 scripts/build.py`.
+After editing anything in `app/src` or `app/design2/src`, run `python3 scripts/build.py`.
 
 ## Design system
 
@@ -120,7 +129,7 @@ The screens, data model and tier rules map directly onto a native build. Two sug
 1. **React Native + Expo** (recommended): one codebase for iOS and Android. Replace the illustrative SVG map with `react-native-maps` (Apple Maps / Google Maps) or Mapbox. Reuse `data.js` as API fixtures and `styles.css` tokens as a theme file.
 2. **Capacitor wrapper:** package this web app as store apps quickly for pilots, then move to native as features grow.
 
-Backend needs: auth and family accounts, geo-search of activities (for example PostGIS), payments (Stripe with Apple Pay / Google Pay), push notifications, an organisation/seat model for Enterprise, plan entitlements, and a marketplace catalogue with seller and promotion management.
+Backend needs: auth and family accounts, geo-search of activities (for example PostGIS), payments (Stripe with Apple Pay / Google Pay), push notifications, an organisation/seat model for Corporate, plan entitlements, and a marketplace catalogue with seller and promotion management.
 
 ## Notes
 

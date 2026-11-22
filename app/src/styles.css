@@ -25,7 +25,7 @@
   --ent-fill: #6A45F5;
   --volt: #D6F23A;           /* the one accent: today, deals, champion */
   --volt-ink: #1A2200;
-  --ent-deep: #2E1F7A;       /* solid ground for Enterprise hero cards */
+  --ent-deep: #2E1F7A;       /* solid ground for Corporate hero cards */
   --motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160' viewBox='0 0 240 160' fill='none' stroke='white' stroke-opacity='.14' stroke-width='2'%3E%3Crect x='1' y='1' width='238' height='158' rx='6'/%3E%3Cpath d='M120 1v158'/%3E%3Ccircle cx='120' cy='80' r='30'/%3E%3Cpath d='M1 45h34v70H1M239 45h-34v70h34'/%3E%3C/svg%3E");
   --hot: #D14023;            /* urgent, today */
   --ok: #0C8353;
@@ -204,7 +204,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 
 .tier { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #fff; background: var(--tc); }
 .tier .ic { width: 13px; height: 13px; }
-.t-lite { --tc: var(--lite); } .t-pro { --tc: var(--pro); } .t-enterprise { --tc: var(--ent-fill); }
+.t-lite { --tc: var(--lite); } .t-pro { --tc: var(--pro); } .t-corporate { --tc: var(--ent-fill); }
 
 .badge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
 .badge .ic { width: 13px; height: 13px; }
@@ -443,7 +443,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .avail b { font-family: var(--f-display); font-size: 26px; display: block; line-height: 1; }
 .avail small { font-size: 12px; color: var(--ink-2); }
 
-/* Enterprise */
+/* Corporate */
 .org-hero { border-radius: var(--r-lg); padding: 18px; color: #fff; background-color: var(--ent-deep); background-image: var(--motif); background-repeat: no-repeat; background-position: right -50px center; background-size: auto 125%; position: relative; overflow: hidden; display: grid; gap: 12px; }
 .org-hero h2 { font-size: 30px; font-style: italic; text-transform: uppercase; font-weight: 800; line-height: .95; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
