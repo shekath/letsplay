@@ -105,9 +105,8 @@ function upsell(kind) {
 }
 function planCardHTML() {
   const P = PLANS[S.tier];
-  return `<div class="section plan-card t-${S.tier}"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="tierword t-${S.tier}">${ic(P.icon)}${P.name}</span><button class="pill sm soft" data-act="plans">${S.tier === 'lite' ? 'Upgrade' : 'Manage'}</button></div>
-    <div class="muted" style="font-size:14px">${P.blurb}</div><div class="faint num" style="font-size:13px">${planSummary()}</div>
-    ${S.tier !== 'lite' && S.billing === 'monthly' ? `<button class="pill sm" style="justify-self:start" data-act="subscribe" data-id="${S.tier}" data-period="yearly">${ic('percent')}Switch to yearly, save 20%</button>` : ''}</div>`;
+  return `<div class="section"><h2>Plan</h2><div class="plan-row t-${S.tier}"><span class="ltile" style="--c:var(--tc)">${ic(P.icon)}</span><span class="ltext"><b>${P.name} plan</b><small class="num">${planSummary()}</small></span><button class="pill sm ${S.tier === 'lite' ? '' : 'soft'}" data-act="plans">${S.tier === 'lite' ? 'Upgrade' : 'Manage'}</button></div>
+    ${S.tier !== 'lite' && S.billing === 'monthly' ? `<button class="linkbtn" data-act="subscribe" data-id="${S.tier}" data-period="yearly">${ic('percent')} Switch to yearly and save 20%</button>` : ''}</div>`;
 }
 
 /* ── Desktop side note: plan switcher and things to try ── */

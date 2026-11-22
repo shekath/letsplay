@@ -34,24 +34,24 @@ function shapeEl(shape, s) {
   return `<path d="${SHIELD}" transform="translate(${50 - 50 * s} ${50 - 50 * s}) scale(${s})"`;
 }
 let badgeUid = 0;
+/* Neon medals: a dark enamel body, a glowing gradient rim in the tier's neon pair, a dashed inner ring,
+   and the emblem drawn as a lit tube (coloured glow with a white-hot core). Locked badges are unlit tubes. */
+const NEON = { bronze: ['#FFB36B', '#FF5A36'], silver: ['#B9F4FF', '#33B4FF'], gold: ['#FFF27A', '#FFA21C'], epic: ['#FF7EF0', '#8A5CFF'] };
 function badgeSVG(b, earned, px) {
-  const T = earned ? TIERS[b.tier] : null, u = 'bg' + (++badgeUid);
-  const c = T ? { hi: T.hi, lo: T.lo, rim: T.rim, core: T.core, r1: T.rib[0], r2: T.rib[1], g: '#fff' }
-    : { hi: 'var(--lk-hi)', lo: 'var(--lk-lo)', rim: 'var(--lk-rim)', core: 'var(--lk-core)', r1: 'var(--lk-lo)', r2: 'var(--lk-rim)', g: 'var(--lk-glyph)' };
-  const glyph = GLYPHS[b.glyph] || ICONS[b.glyph] || ICONS.award;
-  const ribbon = b.shape !== 'shield' ? `<path d="M34 62 L46 66 L42 97 L35 89 L27 95 Z" style="fill:${c.r1}"/><path d="M66 62 L54 66 L58 97 L65 89 L73 95 Z" style="fill:${c.r2}"/>` : '';
-  const sparkle = earned && b.tier === 'epic' ? ['M86 12 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z', 'M12 22 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5 -4.5 -4.5 -1.5 4.5 -1.5z', 'M90 70 l1.2 3.6 3.6 1.2 -3.6 1.2 -1.2 3.6 -1.2 -3.6 -3.6 -1.2 3.6 -1.2z'].map((d) => `<path class="spark" d="${d}" fill="#FFE9A3"/>`).join('') : '';
+  const u = 'bg' + (++badgeUid), [c1, c2] = earned ? NEON[b.tier] : ['#4B4F5D', '#30333C'];
+  const glyph = GLYPHS[b.glyph] || ICONS[b.glyph] || ICONS.award, glow = earned ? `filter="url(#${u}g)"` : '';
+  const chev = b.shape !== 'shield' ? `<path d="M37 84 L50 93 L63 84" fill="none" stroke="url(#${u}s)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" ${glow}/><path d="M41 79 L50 85 L59 79" fill="none" stroke="${c1}" stroke-opacity=".6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>` : '';
+  const sparks = earned && (b.tier === 'epic' || b.tier === 'gold') ? [[87, 13, 1], [13, 20, 0.75], [90, 66, 0.6]].map(([x, y, k]) => `<path class="spark" d="M${x} ${y - 6 * k} L${x + 1.6 * k} ${y - 1.6 * k} L${x + 6 * k} ${y} L${x + 1.6 * k} ${y + 1.6 * k} L${x} ${y + 6 * k} L${x - 1.6 * k} ${y + 1.6 * k} L${x - 6 * k} ${y} L${x - 1.6 * k} ${y - 1.6 * k}Z" fill="${c1}" ${glow}/>`).join('') : '';
   return `<svg class="bart ${earned ? 'on t-' + b.tier : 'off'}" width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true">
-    <defs><linearGradient id="${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:${c.hi}"/><stop offset="1" style="stop-color:${c.lo}"/></linearGradient>
-      <linearGradient id="${u}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${c.lo}"/><stop offset="1" style="stop-color:${c.rim}"/></linearGradient></defs>
-    ${ribbon}
-    ${shapeEl(b.shape, 1)} fill="url(#${u}r)"/>
-    ${shapeEl(b.shape, 0.86)} fill="url(#${u})"/>
-    ${shapeEl(b.shape, 0.76)} fill="none" style="stroke:${c.rim}" stroke-opacity=".35" stroke-width="1.5"/>
-    <circle cx="50" cy="46" r="18" style="fill:${c.core}" stroke="#fff" stroke-opacity=".28" stroke-width="2"/>
-    <g transform="translate(35.6 31.6) scale(1.2)" fill="none" style="stroke:${c.g}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${glyph}</g>
-    ${earned ? '<path d="M24 30 C30 16 44 10 58 12 C46 16 34 22 28 34 Z" fill="#fff" opacity=".42"/>' : ''}
-    ${sparkle}
+    <defs><linearGradient id="${u}s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>
+      <radialGradient id="${u}f" cx="50%" cy="40%" r="62%"><stop offset="0" stop-color="${c2}" stop-opacity="${earned ? 0.38 : 0.12}"/><stop offset=".75" stop-color="#0B0C13" stop-opacity="0"/></radialGradient>
+      <filter id="${u}g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    ${chev}
+    ${shapeEl(b.shape, 1)} fill="#0B0C13" stroke="url(#${u}s)" stroke-width="3.4" stroke-linejoin="round" ${glow}/>
+    ${shapeEl(b.shape, 1)} fill="url(#${u}f)"/>
+    ${shapeEl(b.shape, 0.79)} fill="none" stroke="${c1}" stroke-opacity="${earned ? 0.55 : 0.45}" stroke-width="1.3" stroke-dasharray="${b.tier === 'epic' || b.tier === 'gold' ? '2.5 3' : '0'}"/>
+    <g transform="translate(32 28) scale(1.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="${c1}" stroke-width="2.1" ${glow}>${glyph}</g>${earned ? `<g stroke="#fff" stroke-width=".8" stroke-opacity=".9">${glyph}</g>` : ''}</g>
+    ${sparks}
   </svg>`;
 }
 
@@ -67,21 +67,53 @@ const snowSVG = (px) => `<svg class="snow" width="${px}" height="${px}" viewBox=
 const MAX_FREEZES = 3, FREEZE_EVERY = 4;
 const bestStreak = () => { let best = 0, run = 0; S.streak.forEach((v) => { run = v === 1 ? run + 1 : v === 2 ? run : 0; best = Math.max(best, run); }); return Math.max(best, S.bestStreak || 0); };
 const curWeek = () => S.streak[S.streak.length - 1];
+/* ── Player banner: an arena at night, your avatar inside a neon XP ring with a level shield ── */
+function heroHTML() {
+  const lv = level(), title = TITLES[Math.min(lv - 1, TITLES.length - 1)], into = S.xp % LV, pct = into / LV, C = 2 * Math.PI * 44, got = BADGES.filter(badgeEarned).length;
+  return `<div class="hero">
+    <svg class="hero-art" viewBox="0 0 360 230" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs><linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#170B3B"/><stop offset=".6" stop-color="#0C1030"/><stop offset="1" stop-color="#05121E"/></linearGradient>
+        <radialGradient id="hg1"><stop offset="0" stop-color="#8A5CFF" stop-opacity=".75"/><stop offset="1" stop-color="#8A5CFF" stop-opacity="0"/></radialGradient>
+        <radialGradient id="hg2"><stop offset="0" stop-color="#21D4FD" stop-opacity=".55"/><stop offset="1" stop-color="#21D4FD" stop-opacity="0"/></radialGradient>
+        <linearGradient id="hsl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".5"/></linearGradient></defs>
+      <rect width="360" height="230" fill="url(#hbg)"/><circle cx="62" cy="70" r="120" fill="url(#hg1)"/><circle cx="330" cy="210" r="140" fill="url(#hg2)"/>
+      <g fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="1.5"><circle cx="62" cy="70" r="60"/><circle cx="62" cy="70" r="88"/><path d="M180 0 V230"/><circle cx="180" cy="230" r="70"/></g>
+      <g stroke="url(#hsl)" stroke-linecap="round">${[[190, 40, 330, 18, 2], [210, 70, 350, 50, 1.4], [240, 98, 356, 82, 1], [170, 120, 300, 104, 1.2]].map(([x1, y1, x2, y2, w]) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w}"/>`).join('')}</g>
+      <g fill="#fff">${[[300, 30, 1.4], [256, 22, 1], [338, 120, 1.2], [140, 26, 0.9], [118, 200, 1.1], [220, 190, 0.8]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" opacity=".7"/>`).join('')}</g>
+    </svg>
+    <button class="hero-plan tierword t-${S.tier}" data-act="plans">${ic(PLANS[S.tier].icon)}${PLANS[S.tier].name}</button>
+    <div class="hero-in">
+      <div class="hero-av"><svg viewBox="0 0 100 100" class="xpring" aria-hidden="true"><defs><linearGradient id="xpg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7EF0"/><stop offset="1" stop-color="#21D4FD"/></linearGradient><filter id="xpf" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <circle cx="50" cy="50" r="44" class="trk"/><circle cx="50" cy="50" r="44" class="val" stroke="url(#xpg)" filter="url(#xpf)" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}"/></svg>
+        <span class="ava">AM</span>
+        <span class="lvl" aria-label="Level ${lv}"><svg viewBox="0 0 40 44" aria-hidden="true"><path d="M20 2 L37 11 V31 L20 42 L3 31 V11 Z" fill="#0B0C13" stroke="url(#xpg)" stroke-width="2.5"/></svg><b class="num">${lv}</b></span></div>
+      <div class="hero-id"><span class="hero-title">${esc(title)}</span><h2>Arjun Mehta</h2>
+        <span class="xpt num"><b>${into}</b> / ${LV} XP <span>to level ${lv + 1}</span></span><span class="neonbar"><i style="width:${(pct * 100).toFixed(1)}%"></i></span></div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><span class="hs-ic" style="--n:#21D4FD">${ic('calendar-days')}</span><b class="num">${S.joined.length}</b><small>Games</small></div>
+      <div class="hs"><span class="hs-ic" style="--n:#FF8A3D">${ic('flame')}</span><b class="num">${streakWeeks()}</b><small>Week streak</small></div>
+      <div class="hs"><span class="hs-ic" style="--n:#FFD23F">${ic('award')}</span><b class="num">${got}/${BADGES.length}</b><small>Badges</small></div>
+      <div class="hs"><span class="hs-ic" style="--n:#FF7EF0">${ic('zap')}</span><b class="num">${S.xp.toLocaleString('en-IN')}</b><small>Total XP</small></div>
+    </div>
+  </div>`;
+}
+/* ── This week: streak, the last 8 weeks, freezes and the weekly goal in one compact card ── */
 function streakCardHTML() {
   const n = streakWeeks(), left = Math.max(0, S.goal - S.week), last = S.streak.length - 1, cw = curWeek();
-  const miles = [[3, 'hattrick'], [5, null], [8, 'iron'], [12, null]];
-  const next = miles.find(([w]) => w > n), toFreeze = FREEZE_EVERY - (n % FREEZE_EVERY);
-  const msg = cw === 1 ? '<b>Goal hit this week.</b> Your streak is safe.'
-    : cw === 2 ? `<b>This week is frozen.</b> Your streak is safe even if you can’t play. Hit your goal anyway and you get the freeze back.`
-    : `Play <b>${left} more game${left > 1 ? 's' : ''}</b> this week to keep your streak alive.${S.freezes ? ' If you can’t, a freeze saves it.' : ''}`;
-  return `<div class="section streak-card">
-    <div class="sc-top">${flameSVG(84, n > 0)}<div class="sc-num"><b class="num">${n}</b><span>week streak</span></div><div class="sc-best"><small>Best</small><b class="num">${bestStreak()}</b></div></div>
-    <div class="sc-msg">${msg}</div>
-    <div class="chain" aria-label="Your last ${S.streak.length} weeks">${S.streak.map((v, i) => { const now = i === last, pct = Math.min(1, S.week / S.goal), st = v === 1 ? 'hit' : v === 2 ? 'ice' : 'miss';
-      return `<div class="link ${st} ${now ? 'now' : ''}" title="${now ? 'This week' : `${last - i} weeks ago`}: ${{ hit: 'goal hit', ice: 'frozen', miss: now ? 'in progress' : 'missed' }[st]}"><span class="node">${now && v !== 1 ? `<svg viewBox="0 0 36 36" class="ringp"><circle cx="18" cy="18" r="15" class="tr"/><circle cx="18" cy="18" r="15" class="vl" stroke-dasharray="${(94.2 * pct).toFixed(1)} 94.2"/></svg>` : ''}${v === 1 ? flameSVG(22) : v === 2 ? snowSVG(18) : now ? flameSVG(18, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
-    <div class="miles">${miles.map(([w, id]) => { const b = id && BADGES.find((x) => x.id === id), done = n >= w; return `<div class="mile ${done ? 'done' : ''}">${b ? badgeSVG(b, done, 34) : `<span class="xpmile">+${w * 20}</span>`}<small class="num">${w} wk</small></div>`; }).join('')}</div>
-    <div class="sc-foot"><button class="freeze" data-act="freezeSheet" aria-label="${S.freezes} streak freeze${S.freezes === 1 ? '' : 's'}. Manage">${snowSVG(15)}<span class="num">${S.freezes}</span> freeze${S.freezes === 1 ? '' : 's'}${cw === 2 ? ' · on' : ''}</button><span>${next ? `Next: ${next[0]} weeks${next[1] ? ' · ' + BADGES.find((x) => x.id === next[1]).name : ` · +${next[0] * 20} XP`}` : 'Every milestone reached'}</span></div>
-    ${S.freezes < MAX_FREEZES ? `<div class="sc-earn">${snowSVG(13)}Next freeze in ${toFreeze} week${toFreeze === 1 ? '' : 's'} of streak</div>` : ''}
+  const miles = [[3, 'Hat-trick badge'], [5, '+100 XP'], [8, 'Iron streak badge'], [12, '+240 XP']], next = miles.find(([w]) => w > n);
+  const msg = cw === 1 ? '<b>Goal hit.</b> Streak safe'
+    : cw === 2 ? '<b>Week frozen.</b> Streak safe'
+    : `<b>${left} more game${left > 1 ? 's' : ''}</b> to keep the streak`;
+  const r = 15, Cr = 2 * Math.PI * r, done = Math.min(S.week, S.goal);
+  return `<div class="section wk">
+    <div class="wk-top">${flameSVG(46, n > 0)}<div class="wk-id"><b><span class="num">${n}</span>-week streak</b><small>Best ${bestStreak()} · ${next ? `next: ${next[0]} weeks, ${next[1]}` : 'every milestone reached'}</small></div>
+      <button class="freeze" data-act="freezeSheet" aria-label="${S.freezes} streak freeze${S.freezes === 1 ? '' : 's'}${cw === 2 ? ', this week frozen' : ''}. Manage">${snowSVG(15)}<span class="num">${S.freezes}</span>${cw === 2 ? ' · on' : ''}</button></div>
+    <div class="chain sm" aria-label="Your last ${S.streak.length} weeks">${S.streak.map((v, i) => { const now = i === last, st = v === 1 ? 'hit' : v === 2 ? 'ice' : 'miss';
+      return `<div class="link ${st} ${now ? 'now' : ''}" title="${now ? 'This week' : `${last - i} weeks ago`}: ${{ hit: 'goal hit', ice: 'frozen', miss: now ? 'in progress' : 'missed' }[st]}"><span class="node">${v === 1 ? flameSVG(16) : v === 2 ? snowSVG(13) : now ? flameSVG(14, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
+    <div class="wk-goal"><span class="wk-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="${r}" class="tr"/><circle cx="18" cy="18" r="${r}" class="vl" stroke-dasharray="${(Cr * done / S.goal).toFixed(1)} ${Cr.toFixed(1)}"/></svg><b class="num">${done}/${S.goal}</b></span>
+      <div class="wk-msg"><small>Weekly goal</small><span>${msg}</span></div>
+      <div class="stepper sm dark"><button data-act="goal" data-d="-1" aria-label="Lower weekly goal">${ic('minus')}</button><b class="num">${S.goal}</b><button data-act="goal" data-d="1" aria-label="Raise weekly goal">${ic('plus')}</button></div></div>
   </div>`;
 }
 function freezeSheet() {
@@ -125,16 +157,28 @@ function endWeek() {
 }
 
 /* ── Badge grid and detail ── */
+/* Earned badges first (rarest first), then the closest to being earned. */
+const TIER_RANK = { epic: 4, gold: 3, silver: 2, bronze: 1 };
+function badgeOrder() {
+  return BADGES.map((b, k) => { const [c, g] = b.prog(); return { b, k, on: c >= g, p: c / g }; })
+    .sort((x, y) => (y.on - x.on) || (x.on ? TIER_RANK[y.b.tier] - TIER_RANK[x.b.tier] : y.p - x.p));
+}
+const badgeCard = ({ b, k, on }) => { const [c, g] = b.prog(), [n1] = NEON[b.tier];
+  return `<button class="bcard ${on ? 'on' : ''}" style="--n:${n1}" data-act="badge" data-i="${k}" aria-label="${esc(b.name)}: ${on ? TIERS[b.tier].name + ' badge earned' : `${c} of ${g}, not yet earned`}">${badgeSVG(b, on, 76)}<b>${esc(b.name)}</b>${on ? `<span class="ntier">${TIERS[b.tier].name}</span>` : `<span class="nprog"><i style="width:${Math.round((c / g) * 100)}%"></i></span><small class="num">${c}/${g}</small>`}</button>`; };
 function badgesHTML() {
   const got = BADGES.filter(badgeEarned).length;
-  return `<div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Badges</h2><span class="faint num" style="font-weight:700;font-size:13px">${got} of ${BADGES.length} earned</span></div>
-    <div class="bgrid">${BADGES.map((b, k) => { const on = badgeEarned(b), [c, g] = b.prog();
-      return `<button class="bdg ${on ? 'on' : ''}" data-act="badge" data-i="${k}" aria-label="${esc(b.name)}: ${on ? TIERS[b.tier].name + ' badge earned' : `${c} of ${g}, not yet earned`}">${badgeSVG(b, on, 78)}<b>${esc(b.name)}</b>${on ? `<span class="tier-lbl t-${b.tier}">${TIERS[b.tier].name}</span>` : `<span class="bprog"><i style="width:${Math.round((c / g) * 100)}%"></i></span><small class="num">${c}/${g}</small>`}</button>`; }).join('')}</div></div>`;
+  return `<div class="section"><div class="shead"><h2>Badges <span class="faint num" style="font:700 13px var(--f-body)">${got} of ${BADGES.length}</span></h2><button class="pill sm soft" data-act="badgesAll">See all</button></div>
+    <div class="brail" role="list">${badgeOrder().map(badgeCard).join('')}</div></div>`;
+}
+function badgesAllSheet() {
+  const got = BADGES.filter(badgeEarned).length;
+  sheet(`${head('Badges', `${got} of ${BADGES.length} earned · ${BADGES.filter(badgeEarned).reduce((n, b) => n + TIERS[b.tier].xp, 0)} XP from badges`)}
+    <div class="ball">${badgeOrder().map(badgeCard).join('')}</div>`);
 }
 function badgeSheet(b, unlocked) {
-  const on = badgeEarned(b), [c, g] = b.prog(), T = TIERS[b.tier];
+  const on = badgeEarned(b), [c, g] = b.prog(), T = TIERS[b.tier], [n1] = NEON[b.tier];
   sheet(`${unlocked ? '' : head('', '')}
-    <div class="bhero ${on ? 't-' + b.tier : ''} ${unlocked ? 'unlock' : ''}">${unlocked ? '<span class="eyebrow">Badge unlocked</span>' : ''}${badgeSVG(b, on, 168)}<h2>${esc(b.name)}</h2><span class="tier-lbl t-${b.tier}">${T.name} · +${T.xp} XP</span><div class="muted">${esc(b.how)}</div>
+    <div class="bhero ${on ? 't-' + b.tier : ''} ${unlocked ? 'unlock' : ''}"><div class="bstage ${on ? 'on' : ''}" style="--n:${n1}">${unlocked ? '<span class="eyebrow">Badge unlocked</span>' : ''}${badgeSVG(b, on, 160)}<h2>${esc(b.name)}</h2><span class="ntier">${T.name} · +${T.xp} XP</span></div><div class="muted">${esc(b.how)}</div>
       ${on ? '' : `<div class="bbar"><span class="bprog lg"><i style="width:${Math.round((c / g) * 100)}%"></i></span><b class="num">${c} / ${g}</b></div>`}</div>
     ${on ? `<button class="pill block" data-act="shareBadge" data-id="${b.id}">${ic('share-2')}Share your badge</button><button class="pill block soft" data-act="close">Nice</button>`
       : `<button class="pill block" data-act="${b.cta[0]}" data-id="${b.cta[1]}">${esc(b.cta[2])}</button>`}`);
@@ -157,6 +201,7 @@ Object.assign(A, {
   unfreeze: () => { if (curWeek() !== 2) return; S.freezes = Math.min(MAX_FREEZES, S.freezes + 1); S.streak[S.streak.length - 1] = 0; save(); freezeSheet(); renderMe(); toast('Freeze cancelled and returned', 'rotate-ccw'); },
   endWeek: () => endWeek(),
   badge: (el) => badgeSheet(BADGES[+el.dataset.i]),
+  badgesAll: () => badgesAllSheet(),
   badgeId: (el) => badgeSheet(BADGES.find((b) => b.id === el.dataset.id), true),
   shareBadge: (el) => { const b = BADGES.find((x) => x.id === el.dataset.id); shareAny(`${b.name} badge`, `I just earned the ${TIERS[b.tier].name.toLowerCase()} ${b.name} badge on LetsPlay. ${b.how}. Come play:`, 'https://letsplay.app/b/' + b.id); },
 });

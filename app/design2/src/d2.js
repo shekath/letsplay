@@ -312,14 +312,11 @@ function renderBook() {
 
 /* ═════ ME: player card, goal, streak, badges (badge art and streak card in d2-badges.js) ═════ */
 function renderMe() {
-  const lv = level(), title = TITLES[Math.min(lv - 1, TITLES.length - 1)];
-  $('#scr-me').innerHTML = `<div class="player"><div class="row1"><span class="ava">AM</span><div><h2>Arjun Mehta</h2><div class="lvl">Level ${lv} · ${title}</div></div></div>
-      <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:6px"><span>${S.xp % LV} / ${LV} XP to level ${lv + 1}</span><span class="num">${S.xp} total</span></div><div class="xpbar"><i style="width:${((S.xp % LV) / LV) * 100}%"></i></div></div>
-      <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter(badgeEarned).length}/${BADGES.length}</b><span>Badges</span></div></div></div>
-    ${planCardHTML()}
-    <div class="section card goal-set"><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div><b>Weekly goal</b><div class="muted" style="font-size:13.5px">${Math.min(S.week, S.goal)} of ${S.goal} games this week</div></div></div><div class="stepper"><button data-act="goal" data-d="-1" aria-label="Lower goal">${ic('minus')}</button><b class="num">${S.goal}</b><button data-act="goal" data-d="1" aria-label="Raise goal">${ic('plus')}</button></div></div>
+  /* Player banner, this week (streak + goal), a swipeable badge rail, then plan and settings. */
+  $('#scr-me').innerHTML = `${heroHTML()}
     ${streakCardHTML()}
     ${badgesHTML()}
+    ${planCardHTML()}
     ${meSettingsHTML()}
     <div class="section"><h2>Appearance</h2><div class="seg">${[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join('')}</div></div>
     <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks, people and prices are sample data.</div></div>`;
