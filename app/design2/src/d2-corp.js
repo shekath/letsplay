@@ -58,9 +58,17 @@ const matchMeta = (m) => (m.bye ? 'Advances on a bye' : `${dayLabel(m.d)} ${date
 const myTeamIds = () => you().teams;
 /* Company notifications land in the bell for employees, as they would on their phones. */
 function companyNote(icon, title, body, pri = 'info') { notes().unshift({ id: 'n' + Date.now() + Math.floor(Math.random() * 999), pri, cat: 'company', icon, when: 'Just now', title, body, actions: [['Open company page', 'company']], read: false, done: false }); refreshBells(); }
-function download(name, text, mime) {
-  try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: mime || 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); return true; } catch (e) { return false; }
+/* Save a generated file. Inside claude.ai the viewer confirms through the downloads capability;
+   as a standalone app it's an ordinary browser download. Resolves 'saved', 'declined' or 'unavailable'. */
+async function download(name, text) {
+  if (window.claude && window.claude.use) {
+    const dl = await window.claude.use('downloads');
+    if (!dl) return 'unavailable';
+    try { await dl.save({ filename: name, data: text }); return 'saved'; } catch (e) { return e && e.code === 'declined' ? 'declined' : 'unavailable'; }
+  }
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); return 'saved'; } catch (e) { return 'unavailable'; }
 }
+const savedToast = (r, what) => toast(r === 'saved' ? `${what} saved` : r === 'declined' ? 'Download cancelled' : 'Downloads aren’t available in this view', r === 'saved' ? 'download' : 'info');
 const csvCell = (v) => (/[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
 
 /* ═════ Layout ═════ */
@@ -426,7 +434,7 @@ Object.assign(A, {
   empRemove: (el) => { const ws = W(), e = empById(el.dataset.id); ws.emps = ws.emps.filter((x) => x.id !== e.id); Object.keys(ws.caps).forEach((k) => { if (ws.caps[k] === e.id) delete ws.caps[k]; }); flowAfterTeamChange(); toast(`${e.name} removed. Their seat is free`, 'check'); },
   inviteLink: () => shareAny(`Join ${ORG.name} on LetsPlay`, `Join ${ORG.name} sports on LetsPlay with your @${DOMAIN} email: leagues, tournaments and games after work.`, 'https://letsplay.app/c/halcyon'),
   importOpen: () => { IMP = { rows: null, invite: true, auto: true, file: '', error: '' }; importSheet(); },
-  tplDownload: () => { const ok = download('letsplay-employees-template.csv', TEMPLATE); toast(ok ? 'Template downloaded' : 'Download blocked here. Copy the columns from the sheet', 'download'); },
+  tplDownload: async () => savedToast(await download('letsplay-employees-template.csv', TEMPLATE), 'Template'),
   impSample: () => { IMP.file = 'halcyon-new-joiners.csv'; const res = checkRows(parseCSV(SAMPLE_SHEET)); IMP.rows = res.rows; importSheet(); },
   impReset: () => { IMP = { rows: null, invite: IMP.invite, auto: IMP.auto, file: '', error: '' }; importSheet(); },
   impInvite: () => { IMP.invite = !IMP.invite; importSheet(); },
@@ -483,9 +491,8 @@ Object.assign(A, {
     const ch = ANN.ch.map((c) => CH[c][0]).join(', '); ANN = null; save(); closeSheet(); renderCorp(); toast(`Sent to ${n} people by ${ch}`, 'send'); },
   integrations: () => integrationsSheet(),
   integr: (el) => { const I = W().integr, k = el.dataset.id; I[k] = !I[k]; save(); integrationsSheet(); renderCorp(); toast(I[k] ? `${k === 'slack' ? 'Slack' : 'Microsoft Teams'} connected` : 'Disconnected', I[k] ? 'check' : 'x'); },
-  exportReport: () => { const rows = [['Name', 'Email', 'Department', 'Teams', 'Status', 'Games this month']].concat(emps().map((e) => [e.name, e.email, e.dept, e.teams.map((t) => teamById(t).name).join('; '), e.status, e.games]));
-    const ok = download(`letsplay-participation-${new Date().toISOString().slice(0, 10)}.csv`, rows.map((r) => r.map(csvCell).join(',')).join('\n'));
-    toast(ok ? `Report downloaded: ${emps().length} people` : 'Download blocked in this preview', 'download'); },
+  exportReport: async () => { const rows = [['Name', 'Email', 'Department', 'Teams', 'Status', 'Games this month']].concat(emps().map((e) => [e.name, e.email, e.dept, e.teams.map((t) => teamById(t).name).join('; '), e.status, e.games]));
+    savedToast(await download(`letsplay-participation-${new Date().toISOString().slice(0, 10)}.csv`, rows.map((r) => r.map(csvCell).join(',')).join('\n')), `Report for ${emps().length} people`); },
   /* Employee */
   rsvp: (el) => { const ws = W(); ws.rsvp[el.dataset.id] = ws.rsvp[el.dataset.id] === el.dataset.v ? null : el.dataset.v; save(); renderCorp(); if (ws.rsvp[el.dataset.id]) toast({ yes: 'You’re in. Your captain can see it', maybe: 'Marked as maybe', no: 'Your captain knows you can’t make it' }[el.dataset.v], 'check'); },
   empTeamOpen: (el) => { const t = teamById(el.dataset.id), m = members(t.id), capId = W().caps[t.id], fx = S.fixtures.filter((f) => f.a === t.id || f.b === t.id);
