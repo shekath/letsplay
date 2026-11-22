@@ -376,10 +376,6 @@ button.gi-act:active { transform: scale(.92); }
 .bdg small { font-size: 11.5px; font-weight: 700; color: var(--ink-3); }
 .bdg:not(.on) b { color: var(--ink-2); }
 .bart { display: block; overflow: visible; }
-.bart.on { filter: drop-shadow(0 6px 10px rgba(15,16,20,.22)); }
-.bart.on.t-epic { filter: drop-shadow(0 6px 16px rgba(91,63,230,.45)); }
-.bart.on.t-gold { filter: drop-shadow(0 6px 14px rgba(224,154,18,.35)); }
-.bart .spark { transform-origin: center; transform-box: fill-box; animation: twinkle 1.4s ease-in-out 4 alternate; }
 @keyframes twinkle { 50% { transform: scale(.5); opacity: .6; } }
 .tier-lbl { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
 .tier-lbl.t-bronze { background: #F8E3D2; color: #8A4517; } .tier-lbl.t-silver { background: #E8EBEF; color: #4B5563; }
@@ -841,25 +837,30 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .wk-msg b { color: #FFC24B; }
 .stepper.dark { background: rgba(255,255,255,.1); } .stepper.dark button { background: rgba(255,255,255,.14); color: #fff; } .stepper.dark b { color: #fff; }
 
-/* Neon badge cards: a horizontal rail, dark in both themes */
-.brail { display: grid; grid-auto-flow: column; grid-auto-columns: 116px; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -18px; padding: 4px 18px 10px; scrollbar-width: none; }
+/* Badge cards (CRED-like): matte black, hairline border, a single line of light on top of earned cards. Dark in both themes. */
+.brail { display: grid; grid-auto-flow: column; grid-auto-columns: 112px; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -18px; padding: 4px 18px 10px; scrollbar-width: none; }
 .brail::-webkit-scrollbar { display: none; }
-.bcard { scroll-snap-align: start; display: grid; justify-items: center; align-content: start; gap: 5px; padding: 12px 8px 12px; border-radius: 20px; background: radial-gradient(120% 90% at 50% 0%, #1A1B2B, #0B0C13 70%); border: 1px solid #23253A; color: #fff; text-align: center; transition: transform .15s ease; }
-.bcard:active { transform: scale(.96); }
-.bcard.on { border-color: color-mix(in srgb, var(--n) 55%, #23253A); box-shadow: 0 0 0 1px color-mix(in srgb, var(--n) 25%, transparent), 0 8px 20px color-mix(in srgb, var(--n) 22%, transparent); }
-.bcard b { font-size: 12.5px; line-height: 1.2; min-height: 2.4em; display: grid; place-items: center; color: #fff; }
-.bcard:not(.on) b { color: rgba(255,255,255,.7); }
-.bcard small { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.6); }
+.bcard { position: relative; overflow: hidden; scroll-snap-align: start; display: grid; justify-items: center; align-content: start; gap: 7px; padding: 14px 8px 12px; border-radius: 18px; background: #0A0A0C; border: 1px solid #1D1D22; color: #fff; text-align: center; transition: transform .15s ease, border-color .2s ease; }
+.bcard:active { transform: scale(.97); }
+.bcard.on::before { content: ""; position: absolute; left: 16%; right: 16%; top: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--n), transparent); }
+.bcard b { font-size: 12px; font-weight: 600; line-height: 1.2; min-height: 2.4em; display: grid; place-items: center; color: #F4F4F5; }
+.bcard:not(.on) b { color: #8A8A94; }
+.bcard small { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: #8A8A94; }
+/* Tier label: the soft-glow pill, kept from the earlier neon set. */
 .ntier { padding: 1px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: var(--n); border: 1px solid color-mix(in srgb, var(--n) 60%, transparent); text-shadow: 0 0 8px var(--n); }
-.nprog { display: block; width: 70%; height: 5px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; }
-.nprog i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #FF7EF0, #21D4FD); }
+.nprog { display: block; width: 62%; height: 2px; border-radius: 1px; background: #26262C; overflow: hidden; }
+.nprog i { display: block; height: 100%; background: #9A9AA6; }
 .ball { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .ball .bcard { width: auto; }
-.bstage { width: 100%; display: grid; justify-items: center; gap: 8px; padding: 18px 16px 16px; border-radius: 24px; background: radial-gradient(90% 80% at 50% 30%, color-mix(in srgb, var(--n) 22%, #11121C), #0B0C13 72%); color: #fff; }
-.bstage:not(.on) { background: radial-gradient(90% 80% at 50% 30%, #1A1B26, #0B0C13 72%); }
+.bstage { position: relative; overflow: hidden; width: 100%; display: grid; justify-items: center; gap: 10px; padding: 26px 16px 20px; border-radius: 24px; background: #08080A; border: 1px solid #1D1D22; color: #fff; }
+.bstage.on::before { content: ""; position: absolute; left: 20%; right: 20%; top: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--n), transparent); }
 .bstage h2 { font-size: 26px; color: #fff; }
-.bstage .eyebrow { color: rgba(255,255,255,.75); }
-.bart .spark { transform-origin: center; transform-box: fill-box; }
+.bstage .ntier { font-size: 12px; padding: 2px 11px; }
+.bstage .eyebrow { color: #A0A0AA; letter-spacing: .14em; text-transform: uppercase; font-size: 11px; }
+.bmeta { display: flex; gap: 22px; margin-top: 4px; }
+.bmeta div { display: grid; justify-items: center; gap: 2px; }
+.bmeta b { font: 800 15px var(--f-display); font-style: italic; color: #fff; }
+.bmeta small { font-size: 9.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A8A94; }
 .plan-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
 .plan-row .ltile { background: var(--tsoft); color: var(--ttext); }
 

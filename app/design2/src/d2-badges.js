@@ -34,24 +34,25 @@ function shapeEl(shape, s) {
   return `<path d="${SHIELD}" transform="translate(${50 - 50 * s} ${50 - 50 * s}) scale(${s})"`;
 }
 let badgeUid = 0;
-/* Neon medals: a dark enamel body, a glowing gradient rim in the tier's neon pair, a dashed inner ring,
-   and the emblem drawn as a lit tube (coloured glow with a white-hot core). Locked badges are unlit tubes. */
-const NEON = { bronze: ['#FFB36B', '#FF5A36'], silver: ['#B9F4FF', '#33B4FF'], gold: ['#FFF27A', '#FFA21C'], epic: ['#FF7EF0', '#8A5CFF'] };
+/* Sharp neon (CRED-like): a hairline gradient rim, a second fine rim inside, bezel tick marks on round and star badges,
+   a small diamond at the top, and a thin emblem with a white-hot core. The glow is a faint, wide halo at under half
+   strength, so the badge reads as clean linework rather than a light source. Locked badges are charcoal, unlit. */
+const NEON = { bronze: ['#FFB27A', '#FF6A3D'], silver: ['#EAF8FF', '#7FD3FF'], gold: ['#FFE9A0', '#FFB400'], epic: ['#F4B8FF', '#9B6BFF'] };
 function badgeSVG(b, earned, px) {
-  const u = 'bg' + (++badgeUid), [c1, c2] = earned ? NEON[b.tier] : ['#4B4F5D', '#30333C'];
-  const glyph = GLYPHS[b.glyph] || ICONS[b.glyph] || ICONS.award, glow = earned ? `filter="url(#${u}g)"` : '';
-  const chev = b.shape !== 'shield' ? `<path d="M37 84 L50 93 L63 84" fill="none" stroke="url(#${u}s)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" ${glow}/><path d="M41 79 L50 85 L59 79" fill="none" stroke="${c1}" stroke-opacity=".6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>` : '';
-  const sparks = earned && (b.tier === 'epic' || b.tier === 'gold') ? [[87, 13, 1], [13, 20, 0.75], [90, 66, 0.6]].map(([x, y, k]) => `<path class="spark" d="M${x} ${y - 6 * k} L${x + 1.6 * k} ${y - 1.6 * k} L${x + 6 * k} ${y} L${x + 1.6 * k} ${y + 1.6 * k} L${x} ${y + 6 * k} L${x - 1.6 * k} ${y + 1.6 * k} L${x - 6 * k} ${y} L${x - 1.6 * k} ${y - 1.6 * k}Z" fill="${c1}" ${glow}/>`).join('') : '';
+  const u = 'bg' + (++badgeUid), [a, c] = earned ? NEON[b.tier] : ['#3A3A42', '#2A2A30'], sh = b.shape;
+  const glyph = GLYPHS[b.glyph] || ICONS[b.glyph] || ICONS.award, glow = earned ? `filter="url(#${u}t)"` : '';
+  const ticks = sh === 'round' || sh === 'star' ? Array.from({ length: 36 }, (_, i) => { const t = (i * 10 - 90) * Math.PI / 180, r1 = i % 3 === 0 ? 45.5 : 46.5;
+    return `<line x1="${(50 + r1 * Math.cos(t)).toFixed(2)}" y1="${(46 + r1 * Math.sin(t)).toFixed(2)}" x2="${(50 + 48.5 * Math.cos(t)).toFixed(2)}" y2="${(46 + 48.5 * Math.sin(t)).toFixed(2)}"/>`; }).join('') : '';
+  const dy = sh === 'round' ? 6 : sh === 'shield' ? 5 : 4;
   return `<svg class="bart ${earned ? 'on t-' + b.tier : 'off'}" width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true">
-    <defs><linearGradient id="${u}s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>
-      <radialGradient id="${u}f" cx="50%" cy="40%" r="62%"><stop offset="0" stop-color="${c2}" stop-opacity="${earned ? 0.38 : 0.12}"/><stop offset=".75" stop-color="#0B0C13" stop-opacity="0"/></radialGradient>
-      <filter id="${u}g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-    ${chev}
-    ${shapeEl(b.shape, 1)} fill="#0B0C13" stroke="url(#${u}s)" stroke-width="3.4" stroke-linejoin="round" ${glow}/>
-    ${shapeEl(b.shape, 1)} fill="url(#${u}f)"/>
-    ${shapeEl(b.shape, 0.79)} fill="none" stroke="${c1}" stroke-opacity="${earned ? 0.55 : 0.45}" stroke-width="1.3" stroke-dasharray="${b.tier === 'epic' || b.tier === 'gold' ? '2.5 3' : '0'}"/>
-    <g transform="translate(32 28) scale(1.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="${c1}" stroke-width="2.1" ${glow}>${glyph}</g>${earned ? `<g stroke="#fff" stroke-width=".8" stroke-opacity=".9">${glyph}</g>` : ''}</g>
-    ${sparks}
+    <defs><linearGradient id="${u}s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${c}"/></linearGradient>
+      <linearGradient id="${u}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}" stop-opacity="${earned ? 0.1 : 0.04}"/><stop offset=".6" stop-color="${a}" stop-opacity="0"/></linearGradient>
+      <filter id="${u}t" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.8" result="g"/><feComponentTransfer in="g" result="s"><feFuncA type="linear" slope=".4"/></feComponentTransfer><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <g stroke="${a}" stroke-opacity="${earned ? 0.55 : 0.6}" stroke-width=".8">${ticks}</g>
+    ${shapeEl(sh, 1)} fill="url(#${u}f)" stroke="url(#${u}s)" stroke-width="1.5" stroke-linejoin="miter" ${glow}/>
+    ${shapeEl(sh, 0.84)} fill="none" stroke="${a}" stroke-opacity="${earned ? 0.4 : 0.45}" stroke-width=".7"/>
+    <rect x="47.6" y="${dy - 2.4}" width="4.8" height="4.8" transform="rotate(45 50 ${dy})" fill="${a}"/>
+    <g transform="translate(33.2 29.2) scale(1.4)" fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="${a}" stroke-width="1.5" ${glow}>${glyph}</g>${earned ? `<g stroke="#fff" stroke-width=".6" stroke-opacity=".85">${glyph}</g>` : ''}</g>
   </svg>`;
 }
 
@@ -177,8 +178,10 @@ function badgesAllSheet() {
 }
 function badgeSheet(b, unlocked) {
   const on = badgeEarned(b), [c, g] = b.prog(), T = TIERS[b.tier], [n1] = NEON[b.tier];
+  const at = (S.badgeAt || {})[b.id];
   sheet(`${unlocked ? '' : head('', '')}
-    <div class="bhero ${on ? 't-' + b.tier : ''} ${unlocked ? 'unlock' : ''}"><div class="bstage ${on ? 'on' : ''}" style="--n:${n1}">${unlocked ? '<span class="eyebrow">Badge unlocked</span>' : ''}${badgeSVG(b, on, 160)}<h2>${esc(b.name)}</h2><span class="ntier">${T.name} · +${T.xp} XP</span></div><div class="muted">${esc(b.how)}</div>
+    <div class="bhero ${on ? 't-' + b.tier : ''} ${unlocked ? 'unlock' : ''}"><div class="bstage ${on ? 'on' : ''}" style="--n:${n1}">${unlocked ? '<span class="eyebrow">Badge unlocked</span>' : ''}${badgeSVG(b, on, 156)}<h2>${esc(b.name)}</h2><span class="ntier">${T.name}</span>
+      <div class="bmeta"><div><b class="num">${c}/${g}</b><small>Progress</small></div><div><b class="num">+${T.xp}</b><small>XP</small></div><div><b class="num">${on && at ? new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' }).format(at) : '–'}</b><small>${on ? 'Earned' : 'Not yet'}</small></div></div></div><div class="muted">${esc(b.how)}</div>
       ${on ? '' : `<div class="bbar"><span class="bprog lg"><i style="width:${Math.round((c / g) * 100)}%"></i></span><b class="num">${c} / ${g}</b></div>`}</div>
     ${on ? `<button class="pill block" data-act="shareBadge" data-id="${b.id}">${ic('share-2')}Share your badge</button><button class="pill block soft" data-act="close">Nice</button>`
       : `<button class="pill block" data-act="${b.cta[0]}" data-id="${b.cta[1]}">${esc(b.cta[2])}</button>`}`);
@@ -186,10 +189,11 @@ function badgeSheet(b, unlocked) {
 }
 /* Badges earned since last time pay out XP and get a moment of their own. */
 function badgeCheck(inline) {
-  if (!S.badges) { S.badges = BADGES.filter(badgeEarned).map((b) => b.id); save(); return []; }
+  S.badgeAt = S.badgeAt || {};
+  if (!S.badges) { S.badges = BADGES.filter(badgeEarned).map((b) => b.id); S.badges.forEach((id) => { S.badgeAt[id] = S.badgeAt[id] || Date.now(); }); save(); return []; }
   const newly = BADGES.filter((b) => badgeEarned(b) && !S.badges.includes(b.id));
   if (!newly.length) return [];
-  newly.forEach((b) => { S.badges.push(b.id); S.xp += TIERS[b.tier].xp; }); save();
+  newly.forEach((b) => { S.badges.push(b.id); S.badgeAt[b.id] = Date.now(); S.xp += TIERS[b.tier].xp; }); save();
   if (!inline) setTimeout(() => { if (!$('.sheet')) badgeSheet(newly[0], true); else toast(`Badge unlocked: ${newly[0].name}`, 'award'); }, 1400);
   return newly;
 }
