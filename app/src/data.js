@@ -1,12 +1,14 @@
-/* LetsPlay — sample data. Everything here is illustrative mock content for the prototype. */
-const CUR = '$';
+/* LetsPlay — sample data (India). Everything here is illustrative mock content for the prototype. */
+const CUR = '₹';
+const inr = (n) => '₹' + Math.round(Number(n)).toLocaleString('en-IN');
 
 const SPORTS = {
-  football:   { name: 'Football',   icon: 's-football',      c: '#13A04B' },
-  basketball: { name: 'Basketball', icon: 's-basketball',    c: '#F06A1C' },
-  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#98B00A' },
-  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0E9FE0' },
   cricket:    { name: 'Cricket',    icon: 's-cricket',       c: '#D43B3B' },
+  football:   { name: 'Football',   icon: 's-football',      c: '#13A04B' },
+  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0E9FE0' },
+  kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#E0611A' },
+  basketball: { name: 'Basketball', icon: 's-basketball',    c: '#C2410C' },
+  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#98B00A' },
   volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#DE9B05' },
   running:    { name: 'Running',    icon: 'footprints',      c: '#E3336A' },
   yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9757E0' },
@@ -15,83 +17,93 @@ const SPORTS = {
   pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#5E9C0D' },
   climbing:   { name: 'Climbing',   icon: 'mountain',        c: '#8A6A4C' },
 };
+/* Default cover photo per sport, used for games people host themselves. */
+const SPORT_IMG = { cricket: 'cricket', football: 'field', badminton: 'badminton', kabaddi: 'field', basketball: 'basketball', tennis: 'tennis', volleyball: 'volley', running: 'running', yoga: 'yoga', swimming: 'swim', cycling: 'cycling', pickleball: 'pickle', climbing: 'climb' };
 
-/* Map units: the world is 1600×1600; the user stands at (800, 800). 1 unit ≈ 2.5 m. */
+/* Map units: the world is 1600×1600; the user stands at (800, 800). 1 unit ≈ 2.5 m.
+   Main roads: vertical at x = 400/800/1200, horizontal at y = 400/800/1200. */
 const ME = { x: 800, y: 800 };
+const VROADS = [[400, 'Station Road'], [800, 'MG Road'], [1200, 'Lake Road']];
+const HROADS = [[400, 'Ring Road'], [800, 'Nehru Marg'], [1200, 'Market Road']];
+const AREA = 'Riverfront';
 
-/* d = days from today, t = 24h start time */
+/* d = days from today, t = 24h start time, price in rupees */
 const ACTIVITIES = [
-  { id: 'a1', title: 'Sunday 5-a-side', sport: 'football', venue: 'Riverside Park · Pitch 3', x: 690, y: 645, d: 0, t: '18:30', mins: 60, level: 'All levels', ages: '16+', spots: 3, total: 10, price: 4, host: 'Riverside FC', img: 'field', setting: 'Outdoor', surface: '3G turf, floodlit', equipment: 'Shin pads, astro or moulded boots. Bibs provided.', access: 'Step-free path from Bridge Plaza. Accessible toilets at the pavilion.', cancel: 'Full refund up to 3 hours before kick-off.' },
-  { id: 'a2', title: 'Pickup Hoops', sport: 'basketball', venue: 'Northgate Courts', x: 935, y: 610, d: 0, t: '19:00', mins: 90, level: 'Intermediate', ages: '16+', spots: 4, total: 10, price: 0, host: 'Northgate Ballers', img: 'basketball', setting: 'Outdoor', surface: 'Acrylic court, lit', equipment: 'Bring a ball if you have one.', access: 'Level access from King Ave.', cancel: 'Free game. Let the host know if you cannot make it.' },
-  { id: 'a3', title: 'Doubles Ladder Night', sport: 'tennis', venue: 'Elm Street Tennis Club', x: 1030, y: 850, d: 1, t: '18:00', mins: 120, level: 'Intermediate', ages: '18+', spots: 2, total: 8, price: 8, host: 'Elm Street TC', img: 'tennis2', setting: 'Outdoor', surface: 'Clay, 4 courts', equipment: 'Racket. Balls provided.', access: 'Ramp to courts 1–2.', cancel: 'Refund up to 24 hours before.' },
-  { id: 'a4', title: 'Shuttle Social', sport: 'badminton', venue: 'Harbour Sports Hall', x: 520, y: 905, d: 1, t: '19:30', mins: 90, level: 'Beginner friendly', ages: '14+', spots: 6, total: 16, price: 5, host: 'Harbour Smashers', img: 'badminton', setting: 'Indoor', surface: 'Sprung wooden floor, 4 courts', equipment: 'Non-marking shoes. Rackets to borrow.', access: 'Lift to hall level, accessible changing room.', cancel: 'Refund up to 6 hours before.' },
-  { id: 'a5', title: 'Weekend Nets Session', sport: 'cricket', venue: 'Oval Green', x: 870, y: 1110, d: 6, t: '09:00', mins: 120, level: 'All levels', ages: '12+', spots: 5, total: 14, price: 6, host: 'Oval Green CC', img: 'cricket', setting: 'Outdoor', surface: 'Artificial nets, 3 lanes', equipment: 'Club kit available. Bring your own helmet if you have one.', access: 'Grass path; ask for the side gate for wheelchair access.', cancel: 'Full refund if rained off.' },
-  { id: 'a6', title: 'Sunset Beach Volley', sport: 'volleyball', venue: 'Lakeside Sand Courts', x: 1105, y: 1030, d: 0, t: '17:00', mins: 90, level: 'All levels', ages: '16+', spots: 2, total: 12, price: 0, host: 'Lakeside Volley', img: 'volley', setting: 'Outdoor', surface: 'Sand, 2 courts', equipment: 'Barefoot or sand socks. Water.', access: 'Boardwalk to court edge.', cancel: 'Free game.' },
-  { id: 'a7', title: 'Riverside 5K Run Club', sport: 'running', venue: 'Bridge Plaza', x: 625, y: 770, d: 1, t: '06:30', mins: 45, level: 'All paces', ages: '14+', spots: 18, total: 40, price: 0, host: 'Riverside Runners', img: 'running', setting: 'Outdoor', surface: 'Flat riverside path', equipment: 'Running shoes, a light.', access: 'Flat, paved route. Pacers for walk-run.', cancel: 'Free. Runs in light rain.' },
-  { id: 'a8', title: 'Flow Yoga in the Park', sport: 'yoga', venue: 'Botanic Lawn', x: 720, y: 1195, d: 2, t: '07:00', mins: 60, level: 'All levels', ages: '16+', spots: 9, total: 20, price: 3, host: 'Open Sky Yoga', img: 'yoga', setting: 'Outdoor', surface: 'Lawn', equipment: 'Mat and water. Spare mats available.', access: 'Firm path to the lawn; chair-yoga option.', cancel: 'Moves to the glasshouse if wet.' },
-  { id: 'a9', title: 'Lane Swim Masters', sport: 'swimming', venue: 'Westside Aquatic Centre', x: 455, y: 640, d: 2, t: '06:00', mins: 60, level: 'Advanced', ages: '18+', spots: 3, total: 12, price: 7, host: 'Westside Masters', img: 'swim', setting: 'Indoor', surface: '25 m pool, 6 lanes', equipment: 'Goggles, cap. Kickboards provided.', access: 'Pool hoist and accessible changing.', cancel: 'Refund up to 12 hours before.' },
-  { id: 'a10', title: 'Hill Climb Social Ride', sport: 'cycling', venue: 'Northgate Common', x: 1085, y: 455, d: 7, t: '08:00', mins: 150, level: 'Intermediate', ages: '18+', spots: 11, total: 25, price: 0, host: 'Spoke & Bean', img: 'cycling', setting: 'Outdoor', surface: 'Road, 42 km loop', equipment: 'Road bike, helmet, spares.', access: 'No-drop ride with a sweeper.', cancel: 'Free. Cancelled in ice.' },
-  { id: 'a11', title: 'Pickleball Drop-in', sport: 'pickleball', venue: 'Elm Street Rec Centre', x: 1200, y: 760, d: 3, t: '12:00', mins: 90, level: 'Beginner friendly', ages: 'All ages', spots: 7, total: 16, price: 4, host: 'Elm Street Rec', img: 'pickle', setting: 'Indoor', surface: '4 courts', equipment: 'Paddles to borrow.', access: 'Fully step-free.', cancel: 'Refund up to 2 hours before.' },
-  { id: 'a12', title: 'Bouldering Basics', sport: 'climbing', venue: 'The Crag Climbing Gym', x: 380, y: 1050, d: 4, t: '18:30', mins: 90, level: 'Beginner', ages: '12+', spots: 4, total: 10, price: 12, host: 'The Crag', img: 'climb', setting: 'Indoor', surface: 'Bouldering walls, padded floor', equipment: 'Shoes and chalk included.', access: 'Ground-floor walls; ask staff for adaptive sessions.', cancel: 'Refund up to 24 hours before.' },
-  { id: 'a13', title: 'Junior Futsal (8–11)', sport: 'football', venue: 'Harbour Sports Hall', x: 590, y: 985, d: 6, t: '10:00', mins: 60, level: 'Beginner', ages: '8–11', spots: 5, total: 16, price: 5, host: 'Harbour Juniors', img: 'football', setting: 'Indoor', surface: 'Sports hall', equipment: 'Trainers, water. Parent consent required.', access: 'Lift and accessible toilets. Quiet room available.', cancel: 'Refund up to 24 hours before.' },
-  { id: 'a14', title: '3×3 Street Tournament', sport: 'basketball', venue: 'Oval Courts', x: 985, y: 1065, d: 6, t: '13:00', mins: 240, level: 'Competitive', ages: '16+', spots: 3, total: 16, price: 10, host: 'City Hoops League', img: 'bball2', setting: 'Outdoor', surface: 'Asphalt, 2 courts', equipment: 'Team of 3–4. Price is per team.', access: 'Level access, seating for spectators.', cancel: 'Refund until registration closes.' },
+  { id: 'a1', title: 'Evening 5-a-side', sport: 'football', venue: 'Riverfront Maidan · Turf 3', x: 690, y: 645, d: 0, t: '19:30', mins: 60, level: 'All levels', ages: '16+', spots: 3, total: 10, price: 150, host: 'Riverfront FC', img: 'field', setting: 'Outdoor', surface: 'Artificial turf, floodlit', equipment: 'Studs or turf shoes, shin pads. Bibs provided.', access: 'Ramp from the MG Road gate. Accessible washroom near the pavilion.', cancel: 'Full refund up to 3 hours before kick-off.' },
+  { id: 'a2', title: 'Pickup Hoops', sport: 'basketball', venue: 'Northgate Courts', x: 935, y: 610, d: 0, t: '18:30', mins: 90, level: 'Intermediate', ages: '16+', spots: 4, total: 10, price: 0, host: 'Northgate Ballers', img: 'basketball', setting: 'Outdoor', surface: 'Acrylic court, lit', equipment: 'Bring a ball if you have one.', access: 'Level access from Nehru Marg.', cancel: 'Free game. Let the host know if you cannot make it.' },
+  { id: 'a3', title: 'Doubles Ladder Night', sport: 'tennis', venue: 'Lakeview Tennis Club', x: 1030, y: 850, d: 1, t: '18:00', mins: 120, level: 'Intermediate', ages: '18+', spots: 2, total: 8, price: 300, host: 'Lakeview TC', img: 'tennis2', setting: 'Outdoor', surface: 'Clay, 4 courts', equipment: 'Racquet. Balls provided.', access: 'Ramp to courts 1–2.', cancel: 'Refund up to 24 hours before.' },
+  { id: 'a4', title: 'Shuttle Social', sport: 'badminton', venue: 'Shuttle Zone Arena', x: 520, y: 905, d: 1, t: '20:00', mins: 90, level: 'Beginner friendly', ages: '14+', spots: 6, total: 16, price: 200, host: 'Shuttle Zone', img: 'badminton', setting: 'Indoor', surface: 'Synthetic mat, 6 courts', equipment: 'Non-marking shoes. Racquets to borrow.', access: 'Lift to court level, accessible changing room.', cancel: 'Refund up to 6 hours before.' },
+  { id: 'a5', title: 'Box Cricket Night', sport: 'cricket', venue: 'Oval Cricket Ground', x: 870, y: 1110, d: 0, t: '20:30', mins: 120, level: 'All levels', ages: '12+', spots: 5, total: 16, price: 250, host: 'Oval Strikers CC', img: 'cricket2', setting: 'Outdoor', surface: 'Netted box, floodlit', equipment: 'Tennis-ball cricket. Bats and stumps provided.', access: 'Paved path; side gate for wheelchair access.', cancel: 'Full refund if rained off.' },
+  { id: 'a6', title: 'Sunset Beach Volley', sport: 'volleyball', venue: 'Lakeside Sand Courts', x: 1105, y: 1030, d: 0, t: '17:00', mins: 90, level: 'All levels', ages: '16+', spots: 2, total: 12, price: 0, host: 'Lakeside Volley', img: 'volley', setting: 'Outdoor', surface: 'Sand, 2 courts', equipment: 'Barefoot. Carry water.', access: 'Boardwalk to court edge.', cancel: 'Free game.' },
+  { id: 'a7', title: 'Riverfront 5K Run Club', sport: 'running', venue: 'Riverfront Promenade', x: 625, y: 770, d: 1, t: '06:00', mins: 45, level: 'All paces', ages: '14+', spots: 18, total: 40, price: 0, host: 'Riverfront Runners', img: 'running', setting: 'Outdoor', surface: 'Flat riverside path', equipment: 'Running shoes, water.', access: 'Flat, paved route. Pacers for walk-run.', cancel: 'Free. Runs in light drizzle.' },
+  { id: 'a8', title: 'Sunrise Yoga in the Garden', sport: 'yoga', venue: 'Botanical Garden Lawn', x: 720, y: 1195, d: 2, t: '06:30', mins: 60, level: 'All levels', ages: '16+', spots: 9, total: 20, price: 100, host: 'Open Sky Yoga', img: 'yoga', setting: 'Outdoor', surface: 'Lawn', equipment: 'Mat and water. Spare mats available.', access: 'Firm path to the lawn; chair-yoga option.', cancel: 'Moves to the pavilion if it rains.' },
+  { id: 'a9', title: 'Lane Swim Masters', sport: 'swimming', venue: 'Westside Aquatic Centre', x: 455, y: 640, d: 2, t: '06:00', mins: 60, level: 'Advanced', ages: '18+', spots: 3, total: 12, price: 250, host: 'Westside Masters', img: 'swim', setting: 'Indoor', surface: '25 m pool, 6 lanes', equipment: 'Goggles, cap. Kickboards provided.', access: 'Pool hoist and accessible changing.', cancel: 'Refund up to 12 hours before.' },
+  { id: 'a10', title: 'Sunrise Hill Ride', sport: 'cycling', venue: 'Northgate Park', x: 1085, y: 455, d: 6, t: '05:45', mins: 150, level: 'Intermediate', ages: '18+', spots: 11, total: 25, price: 0, host: 'Spokes & Chai', img: 'cycling', setting: 'Outdoor', surface: 'Road, 40 km loop', equipment: 'Road or hybrid bike, helmet, lights.', access: 'No-drop ride with a sweeper.', cancel: 'Free. Cancelled in heavy rain.' },
+  { id: 'a11', title: 'Pickleball Drop-in', sport: 'pickleball', venue: 'Lake Road Sports Centre', x: 1200, y: 760, d: 3, t: '19:00', mins: 90, level: 'Beginner friendly', ages: 'All ages', spots: 7, total: 16, price: 200, host: 'Lake Road Rec', img: 'pickle', setting: 'Indoor', surface: '4 courts', equipment: 'Paddles to borrow.', access: 'Fully step-free.', cancel: 'Refund up to 2 hours before.' },
+  { id: 'a12', title: 'Bouldering Basics', sport: 'climbing', venue: 'Boulder Box Gym', x: 380, y: 1050, d: 4, t: '18:30', mins: 90, level: 'Beginner', ages: '12+', spots: 4, total: 10, price: 600, host: 'Boulder Box', img: 'climb', setting: 'Indoor', surface: 'Bouldering walls, padded floor', equipment: 'Shoes and chalk included.', access: 'Ground-floor walls; ask staff for adaptive sessions.', cancel: 'Refund up to 24 hours before.' },
+  { id: 'a13', title: 'Junior Futsal (8–11)', sport: 'football', venue: 'Shuttle Zone Arena · Hall B', x: 590, y: 985, d: 6, t: '09:00', mins: 60, level: 'Beginner', ages: '8–11', spots: 5, total: 16, price: 150, host: 'Shuttle Zone Juniors', img: 'football', setting: 'Indoor', surface: 'Sports hall', equipment: 'Sports shoes, water. Parent consent required.', access: 'Lift and accessible washrooms. Quiet room available.', cancel: 'Refund up to 24 hours before.' },
+  { id: 'a14', title: '3×3 Street Tournament', sport: 'basketball', venue: 'Oval Courts', x: 985, y: 1065, d: 6, t: '16:00', mins: 240, level: 'Competitive', ages: '16+', spots: 3, total: 16, price: 500, host: 'City Hoops League', img: 'bball2', setting: 'Outdoor', surface: 'Concrete, 2 courts', equipment: 'Team of 3–4. Price is per team.', access: 'Level access, seating for spectators.', cancel: 'Refund until registration closes.' },
+  { id: 'a15', title: 'Evening Kabaddi Practice', sport: 'kabaddi', venue: 'Hilltop Akhada Ground', x: 455, y: 415, d: 1, t: '17:30', mins: 90, level: 'All levels', ages: '14+', spots: 6, total: 14, price: 0, host: 'Hilltop Kabaddi Club', img: 'field', setting: 'Outdoor', surface: 'Mud court with mats', equipment: 'Comfortable sportswear. Barefoot play.', access: 'Ground-level court; seating under the banyan tree.', cancel: 'Free. Moves indoors if it rains.' },
 ];
 
 const STORES = [
-  { id: 's1', name: 'Riverside Sports Co.', x: 765, y: 700, promo: '20% off football boots this week', sponsored: true },
+  { id: 's1', name: 'Riverfront Sports Co.', x: 765, y: 700, promo: 'Flat 20% off cricket gear this week', sponsored: true },
 ];
 
 const COMMUNITY_SPOTS = [
-  { id: 'c1', name: 'Free table tennis tables', sport: 'pickleball', x: 1180, y: 610, by: 'Priya N.', setting: 'Outdoor', note: '2 concrete tables, bring your own bats.' },
+  { id: 'c1', name: 'Open badminton court', sport: 'badminton', x: 1180, y: 610, by: 'Priya N.', setting: 'Outdoor', note: 'Public court in the colony park, lights until 10 pm.', visibility: 'Everyone' },
 ];
 
+const ME_USER = { name: 'Arjun Mehta', img: 'av3' };
+
 const PEOPLE = [
-  { id: 'u1', name: 'Jordan Lee', img: 'av3', sport: 'Football · Basketball', dist: '0.6 km' },
-  { id: 'u2', name: 'Sofia Marin', img: 'av2', sport: 'Tennis · Running', dist: '1.1 km' },
-  { id: 'u3', name: 'Elena Park', img: 'av4', sport: 'Badminton', dist: '1.4 km' },
-  { id: 'u4', name: 'Marcus Hale', img: 'av1', sport: 'Football · Cricket', dist: '2.0 km' },
+  { id: 'u1', name: 'Rohan Iyer', sport: 'Football · Cricket', dist: '0.6 km' },
+  { id: 'u2', name: 'Ananya Rao', sport: 'Tennis · Running', dist: '1.1 km' },
+  { id: 'u3', name: 'Kavya Nair', sport: 'Badminton', dist: '1.4 km' },
+  { id: 'u4', name: 'Vikram Singh', sport: 'Cricket · Kabaddi', dist: '2.0 km' },
+  { id: 'u5', name: 'Sameer Khan', sport: 'Football', dist: '2.3 km' },
 ];
 
 const FAMILY = [
-  { id: 'f0', name: 'Alex Rivera', note: 'You', img: 'av1' },
-  { id: 'f1', name: 'Mia Rivera', note: 'Age 11 · consent on file', initials: 'MR' },
-  { id: 'f2', name: 'Leo Rivera', note: 'Age 8 · consent on file', initials: 'LR' },
+  { id: 'f0', name: 'Arjun Mehta', note: 'You', img: 'av3' },
+  { id: 'f1', name: 'Aanya Mehta', note: 'Age 11 · consent on file' },
+  { id: 'f2', name: 'Vihaan Mehta', note: 'Age 8 · consent on file' },
 ];
 
-const TEAM_COLORS = ['#13A04B', '#1D4FF2', '#E3336A', '#F06A1C', '#6A45F5', '#0E9FE0', '#D43B3B', '#0D1530'];
+const TEAM_COLORS = ['#13A04B', '#1D4FF2', '#E3336A', '#E0611A', '#6A45F5', '#0E9FE0', '#D43B3B', '#0D1530'];
 
 const SAMPLE_TEAMS = [
-  { id: 't1', name: 'Riverside Rovers', sport: 'football', color: '#13A04B', privacy: 'Invite only',
+  { id: 't1', name: 'Riverfront Strikers', sport: 'cricket', color: '#D43B3B', privacy: 'Invite only',
     members: [
-      { name: 'Alex Rivera', img: 'av1', role: 'Captain', status: 'yes' },
-      { name: 'Jordan Lee', img: 'av3', role: 'Vice-captain', status: 'yes' },
-      { name: 'Sofia Marin', img: 'av2', role: 'Player', status: 'maybe' },
-      { name: 'Elena Park', img: 'av4', role: 'Player', status: 'yes' },
-      { name: 'Sam Okafor', initials: 'SO', role: 'Player', status: 'no' },
-      { name: 'Kai Tanaka', initials: 'KT', role: 'Player', status: 'yes' },
+      { name: 'Arjun Mehta', img: 'av3', role: 'Captain', status: 'yes' },
+      { name: 'Rohan Iyer', role: 'Vice-captain', status: 'yes' },
+      { name: 'Vikram Singh', role: 'Player', status: 'maybe' },
+      { name: 'Sameer Khan', role: 'Player', status: 'yes' },
+      { name: 'Neha Joshi', role: 'Player', status: 'no' },
+      { name: 'Karthik Reddy', role: 'Player', status: 'yes' },
     ],
-    next: { vs: 'Harbour United', d: 3, t: '19:00', venue: 'Riverside Park · Pitch 1' } },
+    next: { vs: 'Oval Strikers CC', d: 3, t: '19:00', venue: 'Oval Cricket Ground' } },
   { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0E9FE0', privacy: 'Public',
     members: [
-      { name: 'Alex Rivera', img: 'av1', role: 'Captain', status: 'yes' },
-      { name: 'Elena Park', img: 'av4', role: 'Player', status: 'yes' },
-      { name: 'Ravi Shah', initials: 'RS', role: 'Player', status: 'maybe' },
-      { name: 'Ana Costa', initials: 'AC', role: 'Player', status: 'yes' },
+      { name: 'Arjun Mehta', img: 'av3', role: 'Captain', status: 'yes' },
+      { name: 'Kavya Nair', role: 'Player', status: 'yes' },
+      { name: 'Ravi Shah', role: 'Player', status: 'maybe' },
+      { name: 'Pooja Desai', role: 'Player', status: 'yes' },
     ],
-    next: { vs: 'Shuttle Social mixer', d: 1, t: '19:30', venue: 'Harbour Sports Hall' } },
+    next: { vs: 'Shuttle Social mixer', d: 1, t: '20:00', venue: 'Shuttle Zone Arena' } },
 ];
 
 /* Enterprise: a fictional company running an internal league. */
 const ORG = {
   name: 'Halcyon Systems',
-  league: 'Winter Corporate Cup',
+  league: 'Monsoon Corporate Cup',
   employees: 412,
   teams: [
     { id: 'e1', name: 'Engineering Eagles', dept: 'Engineering', c: '#1D4FF2', ab: 'EE', w: 6, d: 1, l: 1, form: 'WWDWL', players: 14 },
     { id: 'e2', name: 'Sales Sharks', dept: 'Sales', c: '#E3336A', ab: 'SS', w: 5, d: 2, l: 1, form: 'WDWWD', players: 12 },
     { id: 'e3', name: 'Design Dynamos', dept: 'Design', c: '#9757E0', ab: 'DD', w: 5, d: 0, l: 3, form: 'LWWLW', players: 9 },
     { id: 'e4', name: 'Finance Falcons', dept: 'Finance', c: '#13A04B', ab: 'FF', w: 4, d: 2, l: 2, form: 'DWLWD', players: 10 },
-    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#F06A1C', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
+    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#E0611A', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
     { id: 'e6', name: 'People Panthers', dept: 'People', c: '#0E9FE0', ab: 'PP', w: 2, d: 3, l: 3, form: 'DDLWL', players: 8 },
     { id: 'e7', name: 'Marketing Mavericks', dept: 'Marketing', c: '#DE9B05', ab: 'MM', w: 2, d: 1, l: 5, form: 'LLWLD', players: 11 },
     { id: 'e8', name: 'Legal Lions', dept: 'Legal', c: '#0D1530', ab: 'LL', w: 1, d: 1, l: 6, form: 'LLLDL', players: 7 },
@@ -100,31 +112,36 @@ const ORG = {
 };
 
 const SAMPLE_FIXTURES = [
-  { id: 'x1', a: 'e1', b: 'e2', sport: 'football', d: 1, t: '18:30', venue: 'Riverside Park · Pitch 2' },
-  { id: 'x2', a: 'e3', b: 'e5', sport: 'basketball', d: 1, t: '12:15', venue: 'Northgate Courts' },
-  { id: 'x3', a: 'e4', b: 'e8', sport: 'badminton', d: 2, t: '17:45', venue: 'Harbour Sports Hall' },
-  { id: 'x4', a: 'e6', b: 'e7', sport: 'football', d: 3, t: '18:30', venue: 'Riverside Park · Pitch 2' },
-  { id: 'x5', a: 'e2', b: 'e3', sport: 'volleyball', d: 4, t: '12:30', venue: 'Lakeside Sand Courts' },
-  { id: 'x6', a: 'e1', b: 'e4', sport: 'cricket', d: 6, t: '10:00', venue: 'Oval Green' },
+  { id: 'x1', a: 'e1', b: 'e2', sport: 'cricket', d: 1, t: '18:30', venue: 'Oval Cricket Ground' },
+  { id: 'x2', a: 'e3', b: 'e5', sport: 'badminton', d: 1, t: '13:15', venue: 'Shuttle Zone Arena' },
+  { id: 'x3', a: 'e4', b: 'e8', sport: 'football', d: 2, t: '19:00', venue: 'Riverfront Maidan · Turf 2' },
+  { id: 'x4', a: 'e6', b: 'e7', sport: 'kabaddi', d: 3, t: '17:30', venue: 'Hilltop Akhada Ground' },
+  { id: 'x5', a: 'e2', b: 'e3', sport: 'volleyball', d: 4, t: '13:00', venue: 'Lakeside Sand Courts' },
+  { id: 'x6', a: 'e1', b: 'e4', sport: 'cricket', d: 6, t: '07:00', venue: 'Oval Cricket Ground' },
 ];
 
+const VENUES_ENT = ['Oval Cricket Ground', 'Riverfront Maidan · Turf 2', 'Shuttle Zone Arena', 'Northgate Courts', 'Lakeside Sand Courts', 'Hilltop Akhada Ground'];
+
 const PRODUCTS = [
-  { id: 'p1', name: 'Match Futsal Ball, Size 4', brand: 'Kinetiq', cat: 'equipment', price: 29, was: 39, img: 'p-futsal', rating: 4.7, reviews: 212, seller: 'Riverside Sports Co.', sizes: null },
-  { id: 'p2', name: 'Velocity Trail Runner', brand: 'Stride', cat: 'footwear', price: 89, was: 110, img: 'p-running2', rating: 4.6, reviews: 98, seller: 'Stride Official', sizes: ['7', '8', '9', '10', '11'] },
-  { id: 'p3', name: 'Everyday Training Tee', brand: 'Courtline', cat: 'apparel', price: 24, img: 'p-tshirt', rating: 4.5, reviews: 340, seller: 'Courtline', sizes: ['XS', 'S', 'M', 'L', 'XL'] },
-  { id: 'p4', name: 'Pro Sparring Gloves 12oz', brand: 'Kinetiq', cat: 'equipment', price: 54, img: 'p-gloves', rating: 4.8, reviews: 61, seller: 'The Crag Pro Shop', sizes: ['10oz', '12oz', '14oz'] },
-  { id: 'p5', name: 'Insulated Sport Bottle 750 ml', brand: 'Hydra', cat: 'accessories', price: 19, img: 'p-bottle', rating: 4.9, reviews: 520, seller: 'Hydra', sizes: null },
-  { id: 'p6', name: 'Club Kit Backpack 28 L', brand: 'Courtline', cat: 'accessories', price: 49, was: 65, img: 'p-bag', rating: 4.6, reviews: 143, seller: 'Riverside Sports Co.', sizes: null },
+  { id: 'p1', name: 'Match Futsal Ball, Size 4', brand: 'Kinetiq', cat: 'equipment', price: 1299, was: 1799, img: 'p-futsal', rating: 4.7, reviews: 212, seller: 'Riverfront Sports Co.', sizes: null },
+  { id: 'p2', name: 'Velocity Trail Runner', brand: 'Stride', cat: 'footwear', price: 4499, was: 5999, img: 'p-running2', rating: 4.6, reviews: 98, seller: 'Stride Official', sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10'] },
+  { id: 'p3', name: 'Everyday Dri-Fit Tee', brand: 'Courtline', cat: 'apparel', price: 799, img: 'p-tshirt', rating: 4.5, reviews: 340, seller: 'Courtline', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+  { id: 'p4', name: 'Pro Sparring Gloves 12oz', brand: 'Kinetiq', cat: 'equipment', price: 2499, img: 'p-gloves', rating: 4.8, reviews: 61, seller: 'Boulder Box Pro Shop', sizes: ['10oz', '12oz', '14oz'] },
+  { id: 'p5', name: 'Insulated Sport Bottle 750 ml', brand: 'Hydra', cat: 'accessories', price: 899, img: 'p-bottle', rating: 4.9, reviews: 520, seller: 'Hydra', sizes: null },
+  { id: 'p6', name: 'Club Kit Backpack 28 L', brand: 'Courtline', cat: 'accessories', price: 1999, was: 2699, img: 'p-bag', rating: 4.6, reviews: 143, seller: 'Riverfront Sports Co.', sizes: null },
 ];
+
+const FREE_DELIVERY = 999;
+const DELIVERY_FEE = 49;
 
 const PLANS = {
   lite: { name: 'Lite', price: 'Free', per: '', icon: 'compass', blurb: 'Find games near you and jump in.',
     feats: ['Live map of nearby sports', 'Join games and events', 'Family profiles and calendar', 'Marketplace and deals'],
-    no: ['Pin new locations', 'Create teams and invite players', 'Company leagues and leaderboards'] },
-  pro: { name: 'Pro', price: CUR + '4.99', per: '/month', icon: 'zap', blurb: 'Organise teams and grow your local scene.',
-    feats: ['Everything in Lite', 'Pin new places to play on the map', 'Create and manage teams', 'Invite players by link, code or nearby', 'Host games and schedule matches', '10% off in the marketplace'],
+    no: ['Pin and photograph new places', 'Host games, create teams, invite players', 'Company leagues and leaderboards'] },
+  pro: { name: 'Pro', price: '₹199', per: '/month', icon: 'zap', blurb: 'Organise teams and grow your local scene.',
+    feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
     no: ['Company leagues and leaderboards'] },
-  enterprise: { name: 'Enterprise', price: CUR + '3', per: '/employee/month', icon: 'building-2', blurb: 'Run sport across your company.',
+  enterprise: { name: 'Enterprise', price: '₹149', per: '/employee/month', icon: 'building-2', blurb: 'Run sport across your company.',
     feats: ['Everything in Pro', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };

@@ -1,6 +1,6 @@
 # LetsPlay: community sports app prototype
 
-LetsPlay is a working, clickable prototype of a mobile app for discovering, joining and organising local indoor and outdoor sport. It is built mobile-first for iOS and Android. The live map opens first, so nearby games are always one tap away.
+LetsPlay is a working, clickable prototype of a mobile app for discovering, joining and organising local indoor and outdoor sport. It is built mobile-first for iOS and Android and localised for India: prices in rupees (₹, Indian number formatting), UPI payments, Indian names and places, and cricket and kabaddi alongside other sports. The live map opens first, so nearby games are always one tap away.
 
 The prototype covers the participation loop from the UX strategy (**Discover → Join → Schedule → Participate**), the three product tiers, and the marketplace.
 
@@ -20,25 +20,28 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 | Join games, family profiles, payment, My games calendar | ✓ | ✓ | ✓ |
 | Marketplace (equipment, footwear, outfits, deals) | ✓ | ✓ (10% off) | ✓ (+ bulk team kits) |
 | Pin new locations on the map | – | ✓ | ✓ |
+| Take a photo of a place and save it as a new location, visible to everyone | – | ✓ | ✓ |
+| Host a game at any address (map pin, current location, address search or new photo place) and publish it to invitees | – | ✓ | ✓ |
 | Create teams, invite players (link, code, nearby, contacts) | – | ✓ | ✓ |
 | Host games, schedule matches, availability | – | ✓ | ✓ |
 | Company league: department teams, schedule builder, leaderboards, participation insights | – | – | ✓ |
 
-Prices shown in the app ($4.99/month for Pro, $3 per employee per month for Enterprise) are **placeholders** for validation, as the pitch recommends.
+Prices shown in the app (₹199/month for Pro, ₹149 per employee per month for Enterprise) are **placeholders** for validation, as the pitch recommends.
 
 Locked features stay visible to Lite users and lead to an upgrade sheet, so people can see what Pro adds.
 
 ## What you can try
 
 - **Explore (home):** pan, pinch or scroll to zoom the map; tap a sport chip to filter; tap a pin for a preview card; drag the "games near you" sheet up and down; tap **Join**.
-- **Join flow:** choose family members, accept the code of conduct, pay (Apple Pay on iOS, Google Pay on Android), and the game is added to **My games** with a countdown and schedule-change alerts.
-- **Pin a spot (Pro):** move the map under the crosshair, set the location, and describe the spot. It appears as a community pin.
+- **Join flow:** choose family members, accept the code of conduct, pay via UPI (GPay, PhonePe, Paytm, BHIM), and the game is added to **My games** with a countdown and schedule-change alerts.
+- **Add place (Pro/Enterprise):** take a photo with the phone camera (or drop a pin), name it and save. The place is public, so everyone sees it on the map with its photo.
+- **Host a game (Pro/Enterprise):** from My games, a place sheet, or Add place. Set the location by pointing on the map, using your current location, searching saved venues and places, or snapping a new place. Edit the address shown to players, add a landmark ("Gate 2, opposite the chai stall"), set time, players needed, fee in ₹ and visibility (everyone nearby or invited only), invite teams and people, and publish. Invitees get the address and a map pin, and the game appears on the map.
 - **Teams (Pro):** create a team, open a roster, invite players, schedule a match.
 - **League (Enterprise):** overview stats, week schedule with **Add fixture**, podium and standings table, department teams.
 - **Shop:** promo carousel with sponsored placements, categories, product pages, bag and checkout, and **Promote your business** ad packages (featured map pin, shop banner, event sponsorship).
 - **Profile:** plan card and plan comparison, family profiles, settings, and **Reset demo data**.
 
-Demo state is saved in the browser's local storage.
+Demo state, including photos (resized to 720 px), is saved in the browser's local storage. In production, places, photos and hosted games would be stored on a server so every user sees them.
 
 ## Project layout
 

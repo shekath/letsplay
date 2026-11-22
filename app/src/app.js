@@ -9,7 +9,8 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const IMG = 'img/';
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const IS_IOS = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
-const PAY = IS_IOS ? 'Apple Pay' : 'Google Pay';
+const PAY = 'UPI';
+const UPI_APPS = ['GPay', 'PhonePe', 'Paytm', 'BHIM'];
 
 const SPORT_GLYPHS = {
   's-football': '<circle cx="12" cy="12" r="9"/><path d="M12 8.2l3.4 2.5-1.3 4h-4.2l-1.3-4z"/><path d="M12 3v5.2M15.4 10.7l5-1.6M14.1 14.7l3 4.2M9.9 14.7l-3 4.2M8.6 10.7l-5-1.6"/>',
@@ -17,6 +18,7 @@ const SPORT_GLYPHS = {
   's-tennis': '<circle cx="12" cy="12" r="9"/><path d="M5.2 6c2.4 1.6 3.8 3.6 3.8 6s-1.4 4.4-3.8 6M18.8 6c-2.4 1.6-3.8 3.6-3.8 6s1.4 4.4 3.8 6"/>',
   's-shuttle': '<path d="M9.5 15.5 6 4h12l-3.5 11.5z"/><path d="M10.5 15.5 10 4M13.5 15.5 14 4M7 8h10"/><path d="M9.5 15.5h5v1.5a2.5 2.5 0 0 1-5 0z"/>',
   's-cricket': '<path d="M14.5 3.5l4 4-8.8 8.8a1.5 1.5 0 0 1-2.1 0l-1.9-1.9a1.5 1.5 0 0 1 0-2.1z"/><path d="M6.5 15.5 3 19"/><circle cx="18" cy="17.5" r="2.5"/>',
+  's-kabaddi': '<circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v5.5l-4.5 7.5M12 13l4.5 7.5M5 11l7-3 7 3"/>',
   's-paddle': '<circle cx="14" cy="9.5" r="6"/><path d="M9.8 13.7 4.5 19"/><circle cx="5.5" cy="6" r="1.6"/>',
 };
 function ic(name, cls = '') {
@@ -24,30 +26,57 @@ function ic(name, cls = '') {
   return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 }
 const sp = (id) => SPORTS[id];
-const money = (n) => (n === 0 ? 'Free' : CUR + (Number.isInteger(n) ? n : n.toFixed(2)));
+const money = (n) => (n === 0 ? 'Free' : inr(n));
 const kmFrom = (x, y) => Math.hypot(x - ME.x, y - ME.y) * 0.0025;
 const fmtKm = (k) => (k < 1 ? Math.round(k * 1000 / 10) * 10 + ' m' : k.toFixed(1) + ' km');
-const avatar = (p) => (p.img ? `<img src="${IMG + p.img}.jpg" alt="">` : `<span>${esc(p.initials || p.name.split(' ').map((w) => w[0]).join(''))}</span>`);
+const AV_COLORS = ['#E3336A', '#0E9FE0', '#13A04B', '#E0611A', '#9757E0', '#DE9B05', '#1D4FF2'];
+function avatar(p, px) {
+  const sz = px ? `width:${px}px;height:${px}px;` : '';
+  if (p.img) return `<img src="${IMG + p.img}.jpg" alt="" style="${sz}border-radius:50%;object-fit:cover">`;
+  const ini = esc(p.initials || p.name.split(' ').map((w) => w[0]).join('').slice(0, 2));
+  const c = AV_COLORS[[...p.name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % AV_COLORS.length];
+  return `<span class="av" style="background:${c};${sz}${px ? 'font-size:' + Math.round(px / 2.6) + 'px' : ''}">${ini}</span>`;
+}
+const allActs = () => ACTIVITIES.concat(S.hosted || []);
+const imgOf = (a) => a.photo || (IMG + a.img + '.jpg');
+function nearestRoad(list, v) { return list.reduce((b, r) => (Math.abs(r[0] - v) < Math.abs(b[0] - v) ? r : b)); }
+function addrOf(x, y) {
+  const v = nearestRoad(VROADS, x), h = nearestRoad(HROADS, y);
+  const dv = Math.abs(x - v[0]), dh = Math.abs(y - h[0]);
+  const road = dv < dh ? v[1] : h[1], cross = dv < dh ? h[1] : v[1];
+  const m = Math.round((Math.min(dv, dh) * 2.5) / 10) * 10;
+  return `${m < 25 ? 'On' : m + ' m off'} ${road}, near ${cross} · ${AREA}`;
+}
+function readPhoto(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => { const im = new Image(); im.onload = () => {
+      const k = Math.min(1, 720 / Math.max(im.width, im.height)); const c = document.createElement('canvas');
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', 0.72)); }; im.onerror = rej; im.src = r.result; };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
 
 const today = new Date(); today.setHours(0, 0, 0, 0);
 function dateAt(d, t) { const x = new Date(today); x.setDate(x.getDate() + d); const [h, m] = t.split(':'); x.setHours(+h, +m); return x; }
-const timeFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
-const wkFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
-const longFmt = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
+const timeFmt = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' });
+const wkFmt = new Intl.DateTimeFormat('en-IN', { weekday: 'short' });
+const longFmt = new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
 function dayLabel(d) { if (d === 0) return 'Today'; if (d === 1) return 'Tomorrow'; return wkFmt.format(dateAt(d, '12:00')); }
 function when(a) { return `${dayLabel(a.d)} · ${timeFmt.format(dateAt(a.d, a.t))}`; }
 
 /* ───────── state ───────── */
-const KEY = 'letsplay-demo-v1';
+const KEY = 'letsplay-demo-in-v2';
 const fresh = () => ({
   tier: 'lite', joined: ['a7'], cart: [], fav: [], filter: 'all', query: '',
-  pins: COMMUNITY_SPOTS.slice(), teams: JSON.parse(JSON.stringify(SAMPLE_TEAMS)),
+  pins: COMMUNITY_SPOTS.slice(), hosted: [], teams: JSON.parse(JSON.stringify(SAMPLE_TEAMS)),
   fixtures: SAMPLE_FIXTURES.slice(), invited: [], spotsTaken: {}, entTab: 'overview', lbSport: 'all', schedDay: 1,
   shopCat: 'all', ackAlert: false,
 });
 let S = fresh();
 try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && saved.tier) S = Object.assign(fresh(), saved); } catch (e) { /* storage unavailable */ }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Saved for this session only. Storage is full', 'info'); } }
 const can = { pin: () => S.tier !== 'lite', teams: () => S.tier !== 'lite', org: () => S.tier === 'enterprise' };
 let tab = 'explore';
 let selected = null;
@@ -138,8 +167,8 @@ const Map = (() => {
       else o += `<rect class="m-block" x="${x + 12}" y="${y + 12}" width="76" height="76" rx="6"/>`;
     }
     const parks = [
-      [600, 590, 200, 150, 'Riverside Park'], [820, 1040, 200, 130, 'Oval Green'], [640, 1140, 170, 110, 'Botanic Lawn'],
-      [280, 280, 230, 190, 'Hilltop Reserve'], [1000, 390, 200, 140, 'Northgate Common'], [1240, 1260, 200, 160, 'Marsh Meadows'],
+      [600, 590, 200, 150, 'Riverfront Maidan'], [820, 1040, 200, 130, 'Oval Ground'], [640, 1140, 170, 110, 'Botanical Garden'],
+      [280, 280, 230, 190, 'Hilltop Akhada'], [1000, 390, 200, 140, 'Northgate Park'], [1240, 1260, 200, 160, 'Lakeside Meadows'],
     ];
     parks.forEach(([x, y, w, h]) => { o += `<rect class="m-park" x="${x}" y="${y}" width="${w}" height="${h}" rx="22"/>`; });
     o += `<path class="m-river" stroke-width="54" d="M-60 500 C 240 560, 380 740, 520 830 S 760 880, 900 990 S 1150 1230, 1700 1170"/>`;
@@ -163,9 +192,9 @@ const Map = (() => {
     o += pitch(690, 665, 70, 44) + pitch(740, 625, 54, 34) + pitch(935, 630, 40, 26) + pitch(985, 1085, 40, 26) + pitch(1105, 1050, 40, 24);
     o += `<ellipse class="m-pitch" cx="880" cy="1120" rx="46" ry="34"/>`;
     parks.forEach(([x, y, w, h, n]) => { o += `<text class="m-park-label" x="${x + w / 2}" y="${y + 24}" text-anchor="middle">${n}</text>`; });
-    const labels = [[400, 300, 'Harbour Rd', 90], [1200, 220, 'Elm St', 90], [240, 392, 'King Ave', 0], [1340, 1192, 'Market St', 0], [1300, 392, 'King Ave', 0], [470, 1150, 'Station Blvd', -45], [1110, 790, 'Northgate Way', 0]];
+    const labels = [[400, 560, 'Station Road', 90], [800, 1340, 'MG Road', 90], [1200, 300, 'Lake Road', 90], [640, 392, 'Ring Road', 0], [1380, 792, 'Nehru Marg', 0], [1380, 1192, 'Market Road', 0], [470, 1150, 'Airport Road', -45]];
     labels.forEach(([x, y, n, r]) => { o += `<text class="m-label" x="${x}" y="${y}" text-anchor="middle" transform="rotate(${r} ${x} ${y})" dy="5">${n}</text>`; });
-    o += `<text class="m-label" x="300" y="700" text-anchor="middle" style="font-style:italic;fill:var(--map-park-ink)">River Lune</text>`;
+    o += `<text class="m-label" x="300" y="700" text-anchor="middle" style="font-style:italic;fill:var(--map-park-ink)">Riverfront</text>`;
     return o + '</svg>';
   }
   function init() {
@@ -230,7 +259,7 @@ const Map = (() => {
 /* ───────── EXPLORE ───────── */
 function visibleActs() {
   const q = S.query.trim().toLowerCase();
-  return ACTIVITIES.filter((a) => (S.filter === 'all' || a.sport === S.filter) &&
+  return allActs().filter((a) => (S.filter === 'all' || a.sport === S.filter) &&
     (!q || (a.title + ' ' + a.venue + ' ' + sp(a.sport).name).toLowerCase().includes(q)))
     .sort((a, b) => kmFrom(a.x, a.y) - kmFrom(b.x, b.y));
 }
@@ -259,7 +288,7 @@ function buildExplore() {
       <div class="nearby-list" id="nearbyList"></div>
     </div>
     <div class="drop-ui" id="dropUI" hidden>
-      <div class="drop-banner">${ic('map-pin-plus')}<span>Move the map to place the pin, then tap <b>Set location</b>.</span></div>
+      <div class="drop-banner">${ic('map-pin-plus')}<span id="dropText">Move the map to place the pin, then tap <b>Set location</b>.</span></div>
       <div class="crosshair">${ic('map-pin')}</div>
       <div class="drop-actions"><button class="btn btn-ghost" data-act="dropCancel">Cancel</button><button class="btn btn-primary" data-act="dropConfirm">${ic('check')}Set location</button></div>
     </div>`;
@@ -276,18 +305,18 @@ function renderExploreChrome() {
   $('#tierSlot').innerHTML = tierPill();
   const chips = [['all', null, 'All sports']].concat(Object.keys(SPORTS).map((k) => [k, SPORTS[k], SPORTS[k].name]));
   $('#sportChips').innerHTML = chips.map(([k, s, n]) => `<button class="chip ${s ? 'sport' : ''}" style="${s ? '--c:' + s.c : ''}" data-act="filter" data-id="${k}" aria-pressed="${S.filter === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('');
-  $('#fab').innerHTML = can.pin() ? `${ic('map-pin-plus')}Pin a spot` : `${ic('map-pin-plus')}Pin a spot<span class="lockmark">${ic('lock')}</span>`;
+  $('#fab').innerHTML = can.pin() ? `${ic('map-pin-plus')}Add place` : `${ic('map-pin-plus')}Add place<span class="lockmark">${ic('lock')}</span>`;
   renderPinsAndList();
 }
 function renderPinsAndList() {
   const acts = visibleActs();
   const pins = acts.map((a) => {
     const s = sp(a.sport), live = a.d === 0;
-    return `<button class="pin ${isJoined(a) ? 'joined' : ''} ${selected === a.id ? 'sel' : ''}" style="--c:${s.c}" data-x="${a.x}" data-y="${a.y}" data-act="pin" data-id="${a.id}" aria-label="${esc(a.title)}, ${when(a)}">
-      <span class="pin-body"><span class="glyph">${ic(s.icon)}</span><span class="pin-label num">${a.price ? money(a.price) : 'Free'}</span>${live ? '<span class="live-dot"></span>' : ''}</span></button>`;
+    return `<button class="pin ${isJoined(a) ? 'joined' : ''} ${a.hostedByMe ? 'mine' : ''} ${selected === a.id ? 'sel' : ''}" style="--c:${s.c}" data-x="${a.x}" data-y="${a.y}" data-act="pin" data-id="${a.id}" aria-label="${esc(a.title)}, ${when(a)}">
+      <span class="pin-body"><span class="glyph">${ic(s.icon)}</span><span class="pin-label num">${a.hostedByMe ? 'Hosting' : a.price ? money(a.price) : 'Free'}</span>${live ? '<span class="live-dot"></span>' : ''}</span></button>`;
   });
   const spots = (S.filter === 'all' && !S.query ? S.pins : S.pins.filter((p) => p.sport === S.filter)).map((p) =>
-    `<button class="pin spot" style="--c:${sp(p.sport).c}" data-x="${p.x}" data-y="${p.y}" data-act="spot" data-id="${p.id}" aria-label="Community spot: ${esc(p.name)}"><span class="pin-body"><span class="glyph">${ic(sp(p.sport).icon)}</span><span class="pin-label">Spot</span></span></button>`);
+    `<button class="pin spot" style="--c:${sp(p.sport).c}" data-x="${p.x}" data-y="${p.y}" data-act="spot" data-id="${p.id}" aria-label="Community spot: ${esc(p.name)}"><span class="pin-body">${p.photo ? `<span class="glyph photo" style="background-image:url(${p.photo})"></span>` : `<span class="glyph">${ic(sp(p.sport).icon)}</span>`}<span class="pin-label">Spot</span></span></button>`);
   const stores = S.filter === 'all' && !S.query ? STORES.map((st) => `<button class="pin store" data-x="${st.x}" data-y="${st.y}" data-act="store" data-id="${st.id}" aria-label="Sponsored: ${esc(st.name)}"><span class="pin-body"><span class="glyph">${ic('store')}</span><span class="pin-label">Deal</span></span></button>`) : [];
   $('#pins').innerHTML = `<div class="me-dot" data-x="${ME.x}" data-y="${ME.y}"></div>` + stores.join('') + spots.join('') + pins.join('');
   Map.apply();
@@ -299,7 +328,7 @@ function renderPinsAndList() {
 function actCard(a) {
   const s = sp(a.sport), left = spotsLeft(a), pct = Math.round(((a.total - left) / a.total) * 100);
   return `<div class="act" style="--c:${s.c}">
-    <button class="act-img" data-act="open" data-id="${a.id}" aria-label="Open ${esc(a.title)}"><img src="${IMG + a.img}.jpg" alt="" loading="lazy"><span class="glyph">${ic(s.icon)}</span></button>
+    <button class="act-img" data-act="open" data-id="${a.id}" aria-label="Open ${esc(a.title)}"><img src="${imgOf(a)}" alt="" loading="lazy"><span class="glyph">${ic(s.icon)}</span></button>
     <div class="act-main">
       <button class="act-title" style="text-align:left" data-act="open" data-id="${a.id}">${esc(a.title)}</button>
       <div class="act-meta"><span>${ic('clock')}${when(a)}</span><span>${ic('navigation')}${fmtKm(kmFrom(a.x, a.y))}</span></div>
@@ -338,10 +367,10 @@ const Sheet = (() => {
 })();
 
 function selectAct(id) {
-  selected = id; const a = ACTIVITIES.find((x) => x.id === id); const s = sp(a.sport);
+  selected = id; const a = allActs().find((x) => x.id === id); const s = sp(a.sport);
   renderPinsAndList(); Sheet.collapse();
   const pv = $('#preview'); pv.hidden = false;
-  pv.innerHTML = `<div class="preview-img"><img src="${IMG + a.img}.jpg" alt=""><div class="badges">${a.d === 0 ? '<span class="badge live">Today</span>' : ''}<span class="badge" style="background:${s.c};color:#fff">${ic(s.icon)}${s.name}</span></div>
+  pv.innerHTML = `<div class="preview-img"><img src="${imgOf(a)}" alt=""><div class="badges">${a.d === 0 ? '<span class="badge live">Today</span>' : ''}<span class="badge" style="background:${s.c};color:#fff">${ic(s.icon)}${s.name}</span></div>
       <button class="x" data-act="deselect" aria-label="Close preview">${ic('x')}</button></div>
     <div class="preview-body">
       <h3>${esc(a.title)}</h3>
@@ -354,44 +383,206 @@ function selectAct(id) {
 }
 function deselect() { if (!selected && $('#preview').hidden) return; selected = null; $('#preview').hidden = true; renderPinsAndList(); Sheet.updateFab(); }
 
-/* Pin-drop mode (Pro) */
+/* Pin-drop mode (Pro): mode 'spot' saves a new place, mode 'host' sets a hosted game's location */
 const Drop = {
-  active: false,
-  start() {
+  active: false, mode: 'spot',
+  start(mode = 'spot') {
     if (!can.pin()) return upsell('pin');
-    deselect(); this.active = true; $('#dropUI').hidden = false; $('#nearby').hidden = true; $('#fab').hidden = true;
+    deselect(); this.active = true; this.mode = mode; $('#dropUI').hidden = false; $('#nearby').hidden = true; $('#fab').hidden = true;
+    $('#dropText').innerHTML = mode === 'host' ? 'Move the map to where you will play, then tap <b>Set location</b>.' : 'Move the map to place the pin, then tap <b>Set location</b>.';
   },
   stop() { this.active = false; $('#dropUI').hidden = true; $('#nearby').hidden = false; $('#fab').hidden = false; Sheet.updateFab(); },
+  cancel() { const m = this.mode; this.stop(); if (m === 'host') openHost(); },
   confirm() {
     const p = Map.centerPoint();
-    openSheet(`${sheetHead('New spot', 'Share a place to play with the community')}
-      <form id="pinForm" class="sheet-body" style="gap:14px">
-        <div class="field"><label for="pinName">Name</label><input class="input" id="pinName" required placeholder="e.g. Canal-side basketball hoop" value=""></div>
-        <div class="field"><span class="lbl">Sport</span><div class="chips" id="pinSports" style="flex-wrap:wrap">${Object.keys(SPORTS).map((k, i) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="pickOne" data-group="pinSports" data-id="${k}" aria-pressed="${i === 0}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
-        <div class="field"><span class="lbl">Setting</span><div class="seg" id="pinSetting"><button type="button" data-act="pickOne" data-group="pinSetting" data-id="Outdoor" aria-pressed="true">Outdoor</button><button type="button" data-act="pickOne" data-group="pinSetting" data-id="Indoor" aria-pressed="false">Indoor</button></div></div>
-        <div class="field"><label for="pinNote">What should players know?</label><textarea class="input" id="pinNote" placeholder="Surface, lights, opening hours, accessibility"></textarea></div>
-        <div class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">${ic('info', 'ic-sm')}Pinned at ${fmtKm(kmFrom(p.x, p.y))} from you. Spots are reviewed by the community.</div>
-        <button class="btn btn-primary btn-block" type="submit">${ic('map-pin-plus')}Add to map</button>
-      </form>`, { onMount: (sh) => {
-      $('#pinForm', sh).addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = $('#pinName').value.trim() || 'Community spot';
-        const sport = $('#pinSports [aria-pressed="true"]').dataset.id;
-        S.pins.push({ id: 'c' + Date.now(), name, sport, x: p.x, y: p.y, by: 'You', setting: $('#pinSetting [aria-pressed="true"]').dataset.id, note: $('#pinNote').value.trim() });
-        save(); closeSheet(); Drop.stop(); renderPinsAndList(); toast('Spot added to the map', 'map-pin');
-      });
-    } });
+    if (this.mode === 'host') { this.stop(); Host.draft.loc = { x: p.x, y: p.y, name: 'Pinned location', address: addrOf(p.x, p.y) }; Host.draft.address = Host.draft.loc.address; openHost(); return; }
+    spotForm(p, null);
   },
 };
 
+/* New place form, shared by pin-drop and photo capture. Places are public: visible to everyone. */
+function spotForm(loc, photo, onSaved) {
+  let cur = photo;
+  const slot = () => cur
+    ? `<img src="${cur}" alt="Photo of the place"><label for="spotPhotoIn" class="retake">${ic('camera', 'ic-sm')}Retake</label>`
+    : `<label for="spotPhotoIn" class="photo-empty">${ic('camera', 'ic-lg')}<b>Take a photo of the place</b><span>Helps players recognise it</span></label>`;
+  openSheet(`${sheetHead('New place', 'Saved to the map for everyone')}
+    <form id="pinForm" class="sheet-body" style="gap:14px">
+      <div class="photo-slot" id="photoSlot">${slot()}</div>
+      <input type="file" id="spotPhotoIn" accept="image/*" capture="environment" hidden>
+      <div class="field"><label for="pinName">Name</label><input class="input" id="pinName" required placeholder="e.g. Colony park cricket pitch"></div>
+      <div class="field"><span class="lbl">Sport</span><div class="chips" id="pinSports" style="flex-wrap:wrap">${Object.keys(SPORTS).map((k, i) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="pickOne" data-group="pinSports" data-id="${k}" aria-pressed="${i === 0}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Setting</span><div class="seg" id="pinSetting"><button type="button" data-act="pickOne" data-group="pinSetting" data-id="Outdoor" aria-pressed="true">Outdoor</button><button type="button" data-act="pickOne" data-group="pinSetting" data-id="Indoor" aria-pressed="false">Indoor</button></div></div>
+      <div class="field"><label for="pinNote">What should players know?</label><textarea class="input" id="pinNote" placeholder="Surface, lights, timings, entry gate, accessibility"></textarea></div>
+      <div class="rows"><div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Location</b><small>${esc(addrOf(loc.x, loc.y))}</small></div></div>
+        <div class="row">${ic('globe', 'lead')}<div class="grow"><b>Visible to everyone</b><small>Anyone on LetsPlay can find, review and host games here</small></div><span class="badge free">Public</span></div></div>
+      <button class="btn btn-primary btn-block" type="submit">${ic('map-pin-plus')}Save place</button>
+    </form>`, { onMount: (sh) => {
+    $('#spotPhotoIn', sh).addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      try { cur = await readPhoto(f); $('#photoSlot', sh).innerHTML = slot(); } catch (err) { toast('Could not read that photo. Try another', 'info'); }
+    });
+    $('#pinForm', sh).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const pin = { id: 'c' + Date.now(), name: $('#pinName').value.trim() || 'Community place', sport: $('#pinSports [aria-pressed="true"]').dataset.id,
+        x: loc.x, y: loc.y, by: 'You', setting: $('#pinSetting [aria-pressed="true"]').dataset.id, note: $('#pinNote').value.trim(), photo: cur || null, visibility: 'Everyone' };
+      S.pins.push(pin); save(); closeSheet();
+      if (Drop.active) Drop.stop();
+      if (onSaved) onSaved(pin); else { if (tab === 'explore') { renderPinsAndList(); Map.center(pin.x, pin.y, true, 45); } toast('Place saved. Everyone can see it now', 'globe'); }
+    });
+  } });
+}
+function addPlaceSheet() {
+  if (!can.pin()) return upsell('pin');
+  openSheet(`${sheetHead('Add to the map')}
+    <div class="pick">
+      <label class="opt" for="quickPhotoIn"><span class="sport-ic" style="--c:var(--brand)">${ic('camera')}</span><div><b>Take a photo of this place</b><div class="faint" style="font-size:13px">Uses your current location. Saved for everyone.</div></div></label>
+      <button class="opt" data-act="dropPin"><span class="sport-ic" style="--c:var(--ok)">${ic('map-pin-plus')}</span><div><b>Drop a pin on the map</b><div class="faint" style="font-size:13px">Move the map to the exact spot</div></div></button>
+      <button class="opt" data-act="hostGame"><span class="sport-ic" style="--c:var(--hot)">${ic('megaphone')}</span><div><b>Host a game</b><div class="faint" style="font-size:13px">Set an address and invite players</div></div></button>
+    </div>
+    <input type="file" id="quickPhotoIn" accept="image/*" capture="environment" hidden>`, { onMount: (sh) => {
+    $('#quickPhotoIn', sh).addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      try { const ph = await readPhoto(f); spotForm({ x: ME.x + 6, y: ME.y - 6 }, ph); } catch (err) { toast('Could not read that photo. Try another', 'info'); }
+    });
+  } });
+}
+
+/* ───────── HOST A GAME ───────── */
+const Host = {
+  draft: null,
+  fresh(loc) {
+    return { title: '', sport: 'cricket', loc: loc || null, address: loc ? loc.address : '', landmark: '', d: '1', t: '18:00', mins: '90', spots: '12', price: '0',
+      level: 'All levels', vis: 'Everyone nearby', teams: S.teams.length ? [S.teams[0].id] : [], people: [], note: '' };
+  },
+};
+function placeLoc(name) {
+  const a = ACTIVITIES.find((x) => x.venue === name); if (a) return { x: a.x, y: a.y, name: a.venue, address: addrOf(a.x, a.y), setting: a.setting };
+  const p = S.pins.find((x) => x.name === name); if (p) return { x: p.x, y: p.y, name: p.name, address: addrOf(p.x, p.y), photo: p.photo, setting: p.setting };
+  return null;
+}
+function openHost(loc) {
+  if (!can.pin()) return upsell('pin');
+  if (!Host.draft) Host.draft = Host.fresh(loc);
+  else if (loc) { Host.draft.loc = loc; Host.draft.address = loc.address; }
+  closeSheet(true);
+  if (tab !== 'games' && tab !== 'explore') go('games');
+  popAll();
+  const v = push(''); v.id = 'hostView'; renderHost();
+  v.addEventListener('input', (e) => { const k = e.target.dataset.h; if (k) Host.draft[k] = e.target.value; });
+  v.addEventListener('change', async (e) => {
+    const k = e.target.dataset.h; if (k) Host.draft[k] = e.target.value;
+    if (e.target.id === 'hostPhotoIn') {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      try { const ph = await readPhoto(f);
+        spotForm({ x: ME.x + 6, y: ME.y - 6 }, ph, (pin) => { Host.draft.loc = { x: pin.x, y: pin.y, name: pin.name, address: addrOf(pin.x, pin.y), photo: pin.photo, setting: pin.setting }; Host.draft.address = Host.draft.loc.address; renderHost(); toast('Place saved for everyone and set as your venue', 'camera'); });
+      } catch (err) { toast('Could not read that photo. Try another', 'info'); }
+    }
+  });
+}
+function renderHost() {
+  const v = $('#hostView'); if (!v) return; const D = Host.draft; const top = v.scrollTop;
+  const L = D.loc;
+  const locBlock = L ? `
+    <div class="loc-card card">
+      <div class="mini-map" id="hostMap" style="border:0;border-radius:0">${L.photo ? `<img class="loc-photo" src="${L.photo}" alt="Photo of the venue">` : ''}</div>
+      <div style="padding:12px 14px;display:grid;gap:10px">
+        <div style="display:flex;gap:10px;align-items:flex-start">${ic('map-pin', 'lead')}<div style="flex:1;min-width:0"><b>${esc(L.name)}</b><div class="faint" style="font-size:13px">${esc(L.address)}</div></div><button class="link" data-act="hostLocClear">Change</button></div>
+        ${['Pinned location', 'Your current location'].includes(L.name) ? `<div class="field"><label for="hPlace">Name this place</label><input class="input" id="hPlace" data-h="placeName" value="${esc(D.placeName || '')}" placeholder="e.g. Colony park ground"></div>` : ''}
+        <div class="field"><label for="hAddr">Address shown to players</label><input class="input" id="hAddr" data-h="address" value="${esc(D.address)}"></div>
+        <div class="field"><label for="hLand">Landmark or directions</label><input class="input" id="hLand" data-h="landmark" value="${esc(D.landmark)}" placeholder="e.g. Gate 2, opposite the chai stall"></div>
+      </div>
+    </div>` : `
+    <div class="loc-opts">
+      <button class="loc-opt" data-act="hostPickMap">${ic('map-pin-plus')}<b>Point on map</b><span>Drop a pin exactly</span></button>
+      <button class="loc-opt" data-act="hostHere">${ic('locate-fixed')}<b>Current location</b><span>Where you are now</span></button>
+      <button class="loc-opt" data-act="hostSaved">${ic('search')}<b>Search address</b><span>Venues and saved places</span></button>
+      <label class="loc-opt" for="hostPhotoIn">${ic('camera')}<b>Snap new place</b><span>Photo saved for everyone</span></label>
+    </div>`;
+  const sel = (id, opts, val) => `<select class="input" id="${id}" data-h="${id === 'hMins' ? 'mins' : 'level'}">${opts.map(([v2, l]) => `<option value="${v2}" ${String(val) === String(v2) ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+  v.innerHTML = `<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>Host a game</h2></div>
+    <div class="view-body" style="padding-top:4px">
+      <div class="field"><label for="hTitle">Game title</label><input class="input" id="hTitle" data-h="title" value="${esc(D.title)}" placeholder="e.g. Sunday morning tennis-ball cricket"></div>
+      <div class="field"><span class="lbl">Sport</span><div class="chips" id="hSport">${Object.keys(SPORTS).map((k) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="pickOne" data-group="hSport" data-h="sport" data-id="${k}" aria-pressed="${D.sport === k}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Where</span>${locBlock}<input type="file" id="hostPhotoIn" accept="image/*" capture="environment" hidden></div>
+      <div class="field"><span class="lbl">When</span><div class="chips" id="hDay">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button type="button" class="chip" data-act="pickOne" data-group="hDay" data-h="d" data-id="${d}" aria-pressed="${String(D.d) === String(d)}">${dayLabel(d)}</button>`).join('')}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field"><label for="hTime">Start time</label><input class="input" type="time" id="hTime" data-h="t" value="${D.t}"></div>
+        <div class="field"><label for="hMins">Duration</label>${sel('hMins', [['60', '1 hour'], ['90', '1.5 hours'], ['120', '2 hours'], ['180', '3 hours']], D.mins)}</div>
+        <div class="field"><label for="hSpots">Players needed</label><input class="input" type="number" min="2" max="60" id="hSpots" data-h="spots" value="${D.spots}"></div>
+        <div class="field"><label for="hPrice">Fee per player (₹)</label><input class="input" type="number" min="0" step="10" id="hPrice" data-h="price" value="${D.price}"></div>
+      </div>
+      <div class="field"><label for="hLevel">Level</label>${sel('hLevel', [['All levels', 'All levels'], ['Beginner friendly', 'Beginner friendly'], ['Intermediate', 'Intermediate'], ['Competitive', 'Competitive']], D.level)}</div>
+      <div class="field"><span class="lbl">Who can see it</span><div class="seg" id="hVis"><button type="button" data-act="pickOne" data-group="hVis" data-h="vis" data-id="Everyone nearby" aria-pressed="${D.vis === 'Everyone nearby'}">${'Everyone nearby'}</button><button type="button" data-act="pickOne" data-group="hVis" data-h="vis" data-id="Invited only" aria-pressed="${D.vis === 'Invited only'}">Invited only</button></div></div>
+      <div class="field"><span class="lbl">Invite</span>
+        ${S.teams.length ? `<div class="chips">${S.teams.map((t) => `<button type="button" class="chip" data-act="hostToggle" data-kind="teams" data-id="${t.id}" aria-pressed="${D.teams.includes(t.id)}">${ic('users')}${esc(t.name)} · ${t.members.length}</button>`).join('')}</div>` : ''}
+        <div class="rows">${PEOPLE.map((p) => `<button class="row" data-act="hostToggle" data-kind="people" data-id="${p.id}" aria-pressed="${D.people.includes(p.id)}"><div class="avatars">${avatar(p)}</div><div class="grow"><b>${p.name}</b><small>${p.sport} · ${p.dist}</small></div><span class="tickbox">${ic('check')}</span></button>`).join('')}</div>
+      </div>
+      <div class="field"><label for="hNote">Note for players</label><textarea class="input" id="hNote" data-h="note" placeholder="What to bring, how teams are picked, parking">${esc(D.note)}</textarea></div>
+    </div>
+    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${hostInviteCount()} invited</span><b class="num">${money(+D.price || 0)}</b></div><button class="btn btn-primary" data-act="hostPublish">${ic('send')}Publish game</button></div>`;
+  v.scrollTop = top;
+  const hm = $('#hostMap', v);
+  if (hm && L && !L.photo) {
+    hm.insertAdjacentHTML('afterbegin', $('#maplayer').innerHTML);
+    const svg = hm.querySelector('svg'); const k = 0.9; svg.style.transformOrigin = '0 0';
+    svg.style.transform = `translate(${hm.clientWidth / 2 - L.x * k}px, ${65 - L.y * k}px) scale(${k})`;
+    hm.insertAdjacentHTML('beforeend', `<div class="pin" style="--c:${sp(D.sport).c};transform:translate(${hm.clientWidth / 2}px,65px)"><span class="pin-body"><span class="glyph">${ic(sp(D.sport).icon)}</span><span class="pin-label">Here</span></span></div>`);
+  }
+}
+function hostInviteCount() {
+  const D = Host.draft; const names = new Set();
+  D.teams.forEach((id) => { const t = S.teams.find((x) => x.id === id); if (t) t.members.forEach((m) => m.name !== ME_USER.name && names.add(m.name)); });
+  D.people.forEach((id) => names.add(PEOPLE.find((p) => p.id === id).name));
+  return names.size;
+}
+function hostSavedSheet() {
+  const places = ACTIVITIES.map((a) => a.venue).filter((v2, i, arr) => arr.indexOf(v2) === i).map((n) => ({ n, sub: 'Venue', p: placeLoc(n) }))
+    .concat(S.pins.map((p) => ({ n: p.name, sub: 'Community place' + (p.photo ? ' · photo' : ''), p: placeLoc(p.name) })));
+  const list = (q) => places.filter((x) => !q || (x.n + ' ' + x.p.address).toLowerCase().includes(q.toLowerCase()))
+    .map((x) => `<button class="row" data-act="hostPlace" data-name="${esc(x.n)}">${ic('map-pin', 'lead')}<div class="grow"><b>${esc(x.n)}</b><small>${x.sub} · ${fmtKm(kmFrom(x.p.x, x.p.y))} · ${esc(x.p.address)}</small></div></button>`).join('')
+    || `<div class="empty">${ic('search')}<b>No saved place matches</b><span>Use "Point on map" to set an exact address.</span></div>`;
+  openSheet(`${sheetHead('Search address')}
+    <div class="search" style="box-shadow:none">${ic('search')}<input id="placeQ" placeholder="Venue, landmark or road" autofocus aria-label="Search places"></div>
+    <div class="rows" id="placeList">${list('')}</div>
+    <button class="btn btn-soft btn-block" data-act="hostPickMap">${ic('map-pin-plus')}Point on the map instead</button>`, { onMount: (sh) => {
+    $('#placeQ', sh).addEventListener('input', (e) => { $('#placeList', sh).innerHTML = list(e.target.value); });
+  } });
+}
+function publishHost() {
+  const D = Host.draft;
+  if (!D.loc) { toast('Choose where the game will be played', 'map-pin'); return; }
+  const total = Math.max(2, Math.min(60, parseInt(D.spots, 10) || 12)); const s2 = sp(D.sport);
+  const a = {
+    id: 'h' + Date.now(), title: D.title.trim() || `${s2.name} game`, sport: D.sport, venue: (D.placeName || '').trim() || D.loc.name, address: (D.address || D.loc.address) + (D.landmark ? ' · ' + D.landmark : ''),
+    x: D.loc.x, y: D.loc.y, d: +D.d, t: D.t || '18:00', mins: +D.mins, level: D.level, ages: 'All ages', spots: total - 1, total, price: Math.max(0, parseInt(D.price, 10) || 0),
+    host: 'You', img: SPORT_IMG[D.sport], photo: D.loc.photo || null, setting: D.loc.setting || 'Outdoor', surface: 'Shared by the host',
+    equipment: D.note.trim() || 'Check the game chat for details.', access: 'Ask the host in the game chat.', cancel: 'If the host cancels, everyone is notified and refunded.',
+    hostedByMe: true, visibility: D.vis, invitedCount: hostInviteCount(),
+  };
+  S.hosted.push(a); S.joined.push(a.id); save();
+  const link = 'https://letsplay.app/g/' + a.id.slice(-6);
+  Host.draft = null; popAll();
+  openSheet(`<div class="success"><div class="burst">${ic('megaphone')}</div><h2>Game published</h2>
+    <div class="muted">${esc(a.title)} · ${when(a)}<br>${esc(a.venue)}</div></div>
+    <div class="rows">
+      <div class="row">${ic('send', 'lead')}<div class="grow"><b>Invites sent to ${a.invitedCount} player${a.invitedCount === 1 ? '' : 's'}</b><small>They get a notification with the address and a map pin</small></div></div>
+      <div class="row">${ic(a.visibility === 'Everyone nearby' ? 'globe' : 'lock-keyhole', 'lead')}<div class="grow"><b>${a.visibility === 'Everyone nearby' ? 'Visible to everyone nearby' : 'Only invited players can see it'}</b><small>${esc(a.address)}</small></div></div>
+    </div>
+    <div class="copybox"><code id="gameLink">${link}</code><button class="btn btn-primary btn-sm" data-act="copy" data-target="gameLink">${ic('copy', 'ic-sm')}Copy</button></div>
+    <button class="btn btn-primary btn-block" data-act="viewHosted" data-id="${a.id}">${ic('map')}See it on the map</button>
+    <button class="btn btn-ghost btn-block" data-act="closeSheet">Done</button>`);
+  if (tab === 'games') renderGames();
+}
+
 /* ───────── ACTIVITY DETAIL & JOIN ───────── */
 function openAct(id) {
-  const a = ACTIVITIES.find((x) => x.id === id), s = sp(a.sport), left = spotsLeft(a);
-  const atts = [PEOPLE[0], PEOPLE[1], PEOPLE[2], PEOPLE[3]];
+  const a = allActs().find((x) => x.id === id), s = sp(a.sport), left = spotsLeft(a);
+  const atts = a.hostedByMe ? [ME_USER] : [PEOPLE[0], PEOPLE[1], PEOPLE[2], PEOPLE[3]];
   push(`
-    <div class="view-hero"><img src="${IMG + a.img}.jpg" alt="">
+    <div class="view-hero"><img src="${imgOf(a)}" alt="">
       <div class="view-nav"><button data-act="back" aria-label="Back">${ic('arrow-left')}</button><button data-act="share" aria-label="Share">${ic('share-2')}</button></div>
-      <div class="hero-cap"><div style="display:flex;gap:6px;flex-wrap:wrap">${a.d === 0 ? '<span class="badge live">Today</span>' : ''}<span class="badge" style="background:${s.c};color:#fff">${ic(s.icon)}${s.name}</span><span class="badge">${a.setting}</span></div><h1>${esc(a.title)}</h1><div>${esc(a.venue)}</div></div>
+      <div class="hero-cap"><div style="display:flex;gap:6px;flex-wrap:wrap">${a.d === 0 ? '<span class="badge live">Today</span>' : ''}<span class="badge" style="background:${s.c};color:#fff">${ic(s.icon)}${s.name}</span><span class="badge">${a.setting}</span>${a.hostedByMe ? `<span class="badge volt">${a.visibility === 'Invited only' ? 'Invite only' : 'Hosting'}</span>` : ''}</div><h1>${esc(a.title)}</h1><div>${esc(a.venue)}</div></div>
     </div>
     <div class="view-body">
       <div class="facts">
@@ -401,12 +592,13 @@ function openAct(id) {
         <div class="fact">${ic('ticket')}<b>${money(a.price)}</b><span>${a.price ? 'per player, paid in app' : 'No payment needed'}</span></div>
       </div>
       <div class="card" style="padding:14px;display:grid;gap:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center"><b class="num">${left} of ${a.total} spots left</b><div class="avatars">${atts.map(avatar).join('')}<span>+${a.total - left - 4 > 0 ? a.total - left - 4 : 1}</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><b class="num">${left} of ${a.total} spots left</b><div class="avatars">${atts.map((x) => avatar(x)).join('')}${a.hostedByMe ? '' : `<span>+${a.total - left - 4 > 0 ? a.total - left - 4 : 1}</span>`}</div></div>
         <div class="bar" style="--c:${s.c}"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></div>
       </div>
       <div class="mini-map" id="miniMap"></div>
       <div class="rows">
-        <div class="row">${ic('shield-check', 'lead')}<div class="grow"><b>Hosted by ${esc(a.host)}</b><small>Verified organiser · replies in about 1 hour</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Message sent to ${esc(a.host)}" aria-label="Message host">${ic('message-circle')}</button></div>
+        ${a.address ? `<div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Address</b><small>${esc(a.address)}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Opening directions in Maps" data-icon="navigation" aria-label="Directions">${ic('navigation')}</button></div>` : ''}
+        <div class="row">${ic('shield-check', 'lead')}<div class="grow"><b>Hosted by ${a.hostedByMe ? 'you' : esc(a.host)}</b><small>${a.hostedByMe ? `${a.invitedCount || 0} invited · ${a.visibility === 'Invited only' ? 'invite only' : 'visible to everyone nearby'}` : 'Verified organiser · replies in about 1 hour'}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Message sent to ${esc(a.host)}" aria-label="Message host">${ic('message-circle')}</button></div>
         <div class="row">${ic('layers', 'lead')}<div class="grow"><b>Surface</b><small>${esc(a.surface)}</small></div></div>
         <div class="row">${ic('dumbbell', 'lead')}<div class="grow"><b>What to bring</b><small>${esc(a.equipment)}</small></div></div>
         <div class="row">${ic('accessibility', 'lead')}<div class="grow"><b>Accessibility</b><small>${esc(a.access)}</small></div></div>
@@ -414,7 +606,7 @@ function openAct(id) {
       </div>
     </div>
     <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">Price</span><b class="num">${money(a.price)}</b></div>
-      ${isJoined(a) ? `<button class="btn done">${ic('check')}You're in · added to My games</button>` : `<button class="btn btn-primary" data-act="join" data-id="${a.id}">${left ? 'Join game' : 'Join waitlist'}</button>`}</div>`);
+      ${a.hostedByMe ? `<button class="btn btn-primary" data-act="shareGame">${ic('share-2')}Share invite</button>` : isJoined(a) ? `<button class="btn done">${ic('check')}You're in · added to My games</button>` : `<button class="btn btn-primary" data-act="join" data-id="${a.id}">${left ? 'Join game' : 'Join waitlist'}</button>`}</div>`);
   const mm = $$('#stack .view').pop().querySelector('#miniMap');
   mm.innerHTML = $('#maplayer').innerHTML + `<div class="me-dot" style="transform:none"></div>`;
   const svg = mm.querySelector('svg'); const k = 0.9;
@@ -423,19 +615,20 @@ function openAct(id) {
 }
 
 function joinFlow(id) {
-  const a = ACTIVITIES.find((x) => x.id === id); const s = sp(a.sport);
+  const a = allActs().find((x) => x.id === id); const s = sp(a.sport);
   const kids = a.ages === '8–11';
-  const who = FAMILY.map((f, i) => `<button class="opt" data-act="pickMany" data-id="${f.id}" aria-pressed="${kids ? i === 1 : i === 0}">${f.img ? `<img src="${IMG + f.img}.jpg" alt="">` : `<span class="crest sm" style="--c:${['#E3336A', '#0E9FE0'][i - 1]};border-radius:50%;width:40px;height:40px">${f.initials}</span>`}<div><b>${f.name}</b><div class="faint" style="font-size:13px">${f.note}</div></div><span class="tick">${ic('check')}</span></button>`).join('');
+  const who = FAMILY.map((f, i) => `<button class="opt" data-act="pickMany" data-id="${f.id}" aria-pressed="${kids ? i === 1 : i === 0}">${avatar(f, 40)}<div><b>${f.name}</b><div class="faint" style="font-size:13px">${f.note}</div></div><span class="tick">${ic('check')}</span></button>`).join('');
   openSheet(`${sheetHead('Join game', `${esc(a.title)} · ${when(a)}`)}
     <div class="field"><span class="lbl">Who's playing?</span><div class="pick" id="joinWho">${who}</div></div>
-    ${a.price ? `<div class="rows"><div class="row">${ic('wallet', 'lead')}<div class="grow"><b>${PAY}</b><small>Default payment · change in Profile</small></div><b class="num" id="joinTotal">${money(a.price * (1))}</b></div></div>` : `<div class="rows"><div class="row">${ic('gift', 'lead')}<div class="grow"><b>Free game</b><small>No payment needed</small></div></div></div>`}
+    ${a.price ? `<div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="payApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="payApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
+    <div class="rows"><div class="row">${ic('indian-rupee', 'lead')}<div class="grow"><b>Total</b><small>Refunds go back to your UPI account</small></div><b class="num" id="joinTotal">${money(a.price)}</b></div></div>` : `<div class="rows"><div class="row">${ic('gift', 'lead')}<div class="grow"><b>Free game</b><small>No payment needed</small></div></div></div>`}
     <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px" class="muted"><input type="checkbox" id="consent" checked style="width:20px;height:20px;margin:0;accent-color:var(--brand)"> I agree to the host's code of conduct and the cancellation policy. Emergency contacts are shared with the host.</label>
-    <button class="btn btn-primary btn-block" data-act="confirmJoin" data-id="${a.id}" style="min-height:54px">${a.price ? `${ic('wallet')}Pay with ${PAY}` : `${ic('check')}Confirm`}</button>`,
+    <button class="btn btn-primary btn-block" data-act="confirmJoin" data-id="${a.id}" style="min-height:54px">${a.price ? `${ic('smartphone')}Pay via UPI` : `${ic('check')}Confirm`}</button>`,
   { onMount: () => updateJoinTotal(a) });
 }
 function updateJoinTotal(a) { const n = $$('#joinWho [aria-pressed="true"]').length; const t = $('#joinTotal'); if (t) t.textContent = money(a.price * Math.max(1, n)); }
 function confirmJoin(id) {
-  const a = ACTIVITIES.find((x) => x.id === id); const n = Math.max(1, $$('#joinWho [aria-pressed="true"]').length);
+  const a = allActs().find((x) => x.id === id); const n = Math.max(1, $$('#joinWho [aria-pressed="true"]').length);
   if (!$('#consent').checked) { toast('Please accept the code of conduct to join', 'info'); return; }
   if (!S.joined.includes(id)) S.joined.push(id); S.spotsTaken[id] = (S.spotsTaken[id] || 0) + n; save();
   openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>You're in!</h2>
@@ -450,16 +643,16 @@ function confirmJoin(id) {
 
 /* ───────── MY GAMES ───────── */
 function renderGames() {
-  const mine = ACTIVITIES.filter(isJoined).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t));
+  const mine = allActs().filter(isJoined).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t));
   const next = mine[0];
   let html = `<div class="page-head"><h1>My games</h1><button class="icon-btn" data-act="toastMsg" data-msg="Calendar synced with your phone" aria-label="Sync calendar">${ic('calendar')}</button></div>`;
   if (!S.ackAlert && mine.find((a) => a.id === 'a7')) {
-    html += `<div class="alert" role="status">${ic('info')}<div class="grow"><b>Riverside 5K: meeting point moved</b><span>Now starting at the Bridge Plaza fountain, 200 m east. Same time.</span><div style="display:flex;gap:8px"><button class="btn btn-sm btn-line" data-act="ackAlert">Got it</button><button class="btn btn-sm btn-ghost" data-act="open" data-id="a7">View game</button></div></div></div>`;
+    html += `<div class="alert" role="status">${ic('info')}<div class="grow"><b>Riverfront 5K: meeting point moved</b><span>Now starting at the promenade clock tower, 200 m east. Same time.</span><div style="display:flex;gap:8px"><button class="btn btn-sm btn-line" data-act="ackAlert">Got it</button><button class="btn btn-sm btn-ghost" data-act="open" data-id="a7">View game</button></div></div></div>`;
   }
   if (next) {
     const ms = dateAt(next.d, next.t) - Date.now(); const h = Math.max(0, Math.floor(ms / 3.6e6)); const m = Math.max(0, Math.floor((ms % 3.6e6) / 6e4));
     html += `<div class="section"><div class="eyebrow">Up next</div>
-      <div class="next-card"><img src="${IMG + next.img}.jpg" alt=""><div class="inner">
+      <div class="next-card"><img src="${imgOf(next)}" alt=""><div class="inner">
         <span class="badge" style="background:${sp(next.sport).c};color:#fff;justify-self:start">${ic(sp(next.sport).icon)}${sp(next.sport).name}</span>
         <h3>${esc(next.title)}</h3><div style="opacity:.9">${when(next)} · ${esc(next.venue)}</div>
         <div class="countdown num"><div><b>${Math.floor(h / 24)}</b><small>days</small></div><div><b>${h % 24}</b><small>hrs</small></div><div><b>${m}</b><small>min</small></div></div>
@@ -473,7 +666,7 @@ function renderGames() {
     html += `<div class="empty card">${ic('calendar-days')}<b>No games booked yet</b><span>Find something nearby on the map.</span><button class="btn btn-primary btn-sm" data-act="tab" data-id="explore">Explore the map</button></div>`;
   }
   if (S.tier !== 'lite') {
-    html += `<div class="section"><div class="section-head"><h2>Hosting</h2></div><button class="biz" style="background:var(--brand);color:#fff" data-act="hostGame">${ic('megaphone')}<div class="grow"><b>Host a game</b><small>Pick a spot, set spots and price, invite your teams.</small></div>${ic('chevron-right')}</button></div>`;
+    html += `<div class="section"><div class="section-head"><h2>Hosting</h2><span class="faint num">${(S.hosted || []).length} published</span></div><button class="biz" style="background:var(--brand);color:#fff" data-act="hostGame">${ic('megaphone')}<div class="grow"><b>Host a game</b><small>Point the address on the map or snap a photo of the place, then invite players.</small></div>${ic('chevron-right')}</button></div>`;
   }
   $('#scr-games').innerHTML = html;
 }
@@ -485,7 +678,7 @@ function renderTeams() {
     el.innerHTML = `<div class="page-head"><h1>Teams</h1>${tierPill()}</div>
       <div class="locked"><img src="${IMG}field.jpg" alt=""><div class="inner"><span class="tier t-pro" style="justify-self:start">${ic('zap')}Pro feature</span><h2>Build your squad</h2><span style="opacity:.9">Create teams, invite players and schedule matches.</span></div></div>
       <div class="perk-grid section">
-        ${[['users', 'Create teams', 'Rosters, roles and team colours.'], ['user-plus', 'Invite players', 'By link, code or from people nearby.'], ['map-pin-plus', 'Pin new spots', 'Add courts and pitches to the map.'], ['calendar-days', 'Schedule matches', 'Availability and reminders built in.']]
+        ${[['users', 'Create teams', 'Rosters, roles and team colours.'], ['user-plus', 'Invite players', 'By link, code or from people nearby.'], ['camera', 'Snap new places', 'Photograph a ground to add it for everyone.'], ['calendar-days', 'Schedule matches', 'Availability and reminders built in.']]
           .map(([i, t, d]) => `<div class="card perk">${ic(i)}<b>${t}</b><span>${d}</span></div>`).join('')}
       </div>
       <div class="section"><button class="btn btn-primary btn-block" data-act="setTier" data-id="pro" style="min-height:54px">${ic('zap')}Try Pro · ${PLANS.pro.price}${PLANS.pro.per}</button><div class="faint" style="text-align:center;font-size:13px">Example pricing for the prototype</div></div>`;
@@ -508,7 +701,7 @@ function teamCard(t) {
 }
 function personRow(p) {
   const inv = S.invited.includes(p.id);
-  return `<div class="row"><img src="${IMG + p.img}.jpg" alt="" style="width:42px;height:42px;border-radius:50%;object-fit:cover"><div class="grow"><b>${p.name}</b><small>${p.sport} · ${p.dist}</small></div>
+  return `<div class="row">${avatar(p, 42)}<div class="grow"><b>${p.name}</b><small>${p.sport} · ${p.dist}</small></div>
     <button class="btn btn-sm ${inv ? 'done' : 'btn-soft'}" data-act="invitePerson" data-id="${p.id}">${inv ? ic('check', 'ic-sm') + 'Invited' : ic('user-plus', 'ic-sm') + 'Invite'}</button></div>`;
 }
 function openTeam(id) {
@@ -550,15 +743,15 @@ function newTeamSheet() {
       e.preventDefault();
       const t = { id: 't' + Date.now(), name: $('#teamName').value.trim() || 'New team', sport: $('#teamSport [aria-pressed="true"]').dataset.id,
         color: $('#teamColor [aria-pressed="true"]').dataset.id, privacy: $('#teamPrivacy [aria-pressed="true"]').dataset.id,
-        members: [{ name: 'Alex Rivera', img: 'av1', role: 'Captain', status: 'yes' }], next: null };
+        members: [{ name: ME_USER.name, img: ME_USER.img, role: 'Captain', status: 'yes' }], next: null };
       S.teams.unshift(t); save(); renderTeams(); inviteSheet(t.id); toast('Team created. Now invite your players', 'users');
     });
   } });
 }
 function scheduleSheet(teamId) {
-  const venues = ACTIVITIES.map((a) => a.venue).filter((v, i, arr) => arr.indexOf(v) === i).concat(S.pins.map((p) => p.name + ' (community spot)'));
+  const venues = allActs().map((a) => a.venue).filter((v, i, arr) => arr.indexOf(v) === i).concat(S.pins.map((p) => p.name + ' (community spot)'));
   openSheet(`${sheetHead('Schedule match')}
-    <div class="field"><label for="vsName">Opponent or session</label><input class="input" id="vsName" placeholder="e.g. Harbour United" value="Training session"></div>
+    <div class="field"><label for="vsName">Opponent or session</label><input class="input" id="vsName" placeholder="e.g. Oval Strikers CC" value="Training session"></div>
     <div class="field"><span class="lbl">Day</span><div class="chips" id="schDay">${[1, 2, 3, 4, 5, 6, 7].map((d, i) => `<button type="button" class="chip" data-act="pickOne" data-group="schDay" data-id="${d}" aria-pressed="${i === 1}">${dayLabel(d)}</button>`).join('')}</div></div>
     <div class="field"><label for="schTime">Kick-off</label><input class="input" type="time" id="schTime" value="19:00"></div>
     <div class="field"><label for="schVenue">Venue</label><select class="input" id="schVenue">${venues.map((v) => `<option>${esc(v)}</option>`).join('')}</select></div>
@@ -574,7 +767,7 @@ function renderLeague(el) {
   if (S.entTab === 'overview') {
     const st = standings();
     body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-enterprise" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
-        <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · 6 sports</div>
+        <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · cricket, football, kabaddi and more</div>
         <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="leaderboard">${ic('trophy', 'ic-sm')}Standings</button></div></div>
       <div class="stats section" style="margin-top:12px">
         <div class="card stat"><span>Active players</span><b class="num">248</b><span class="delta">${ic('trending-up', 'ic-sm')}+18 this month</span></div>
@@ -594,7 +787,7 @@ function renderLeague(el) {
       ${list.length ? list.map(fixtureCard).join('') : `<div class="empty card">${ic('calendar')}<b>No fixtures this day</b><button class="btn btn-soft btn-sm" data-act="addFixture">Schedule one</button></div>`}</div>`;
   } else if (S.entTab === 'leaderboard') {
     const st = standings();
-    const sports = ['all', 'football', 'basketball', 'badminton', 'volleyball', 'cricket'];
+    const sports = ['all', 'cricket', 'football', 'badminton', 'kabaddi', 'volleyball'];
     body = `<div class="chips">${sports.map((k) => `<button class="chip ${k !== 'all' ? 'sport' : ''}" style="${k !== 'all' ? '--c:' + SPORTS[k].c : ''}" data-act="lbSport" data-id="${k}" aria-pressed="${S.lbSport === k}">${k === 'all' ? ic('trophy') + 'Overall' : ic(SPORTS[k].icon) + SPORTS[k].name}</button>`).join('')}</div>
       <div class="podium section">${[st[1], st[0], st[2]].map((t, i) => `<div class="p${[2, 1, 3][i]}"><span class="crest" style="--c:${t.c}">${t.ab}</span><span class="nm">${t.name}</span><span class="pts num">${t.pts} pts</span><div class="step">${[2, 1, 3][i]}</div></div>`).join('')}</div>
       <div class="card table-wrap section" style="padding:4px 8px"><table class="lb"><thead><tr><th>#</th><th style="text-align:left">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th>Form</th></tr></thead>
@@ -619,11 +812,11 @@ function fixtureCard(f) {
 function addFixtureSheet() {
   const opts = ORG.teams.map((t) => `<option value="${t.id}">${t.name}</option>`).join('');
   openSheet(`${sheetHead('Add fixture', ORG.league)}
-    <div class="field"><span class="lbl">Sport</span><div class="chips" id="fxSport" style="flex-wrap:wrap">${['football', 'basketball', 'badminton', 'volleyball', 'cricket', 'running'].map((k, i) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="pickOne" data-group="fxSport" data-id="${k}" aria-pressed="${i === 0}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Sport</span><div class="chips" id="fxSport" style="flex-wrap:wrap">${['cricket', 'football', 'badminton', 'kabaddi', 'volleyball', 'basketball'].map((k, i) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="pickOne" data-group="fxSport" data-id="${k}" aria-pressed="${i === 0}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="fxA">Home</label><select class="input" id="fxA">${opts}</select></div><div class="field"><label for="fxB">Away</label><select class="input" id="fxB">${opts.replace('value="e2"', 'value="e2" selected')}</select></div></div>
     <div class="field"><span class="lbl">Day</span><div class="chips" id="fxDay">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button type="button" class="chip" data-act="pickOne" data-group="fxDay" data-id="${d}" aria-pressed="${d === S.schedDay}">${dayLabel(d)}</button>`).join('')}</div></div>
     <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:10px"><div class="field"><label for="fxTime">Time</label><input class="input" type="time" id="fxTime" value="12:30"></div>
-    <div class="field"><label for="fxVenue">Venue</label><select class="input" id="fxVenue">${['Riverside Park · Pitch 2', 'Northgate Courts', 'Harbour Sports Hall', 'Lakeside Sand Courts', 'Oval Green'].map((v) => `<option>${v}</option>`).join('')}</select></div></div>
+    <div class="field"><label for="fxVenue">Venue</label><select class="input" id="fxVenue">${VENUES_ENT.map((v) => `<option>${v}</option>`).join('')}</select></div></div>
     <div class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">${ic('bell', 'ic-sm')}Both squads get a notification and a calendar invite.</div>
     <button class="btn btn-primary btn-block" data-act="saveFixture">${ic('calendar-days')}Add to schedule</button>`);
 }
@@ -637,9 +830,9 @@ function renderShop() {
   $('#scr-shop').innerHTML = `
     <div class="page-head"><h1>Shop</h1><div style="display:flex;gap:8px"><button class="icon-btn" data-act="toastMsg" data-msg="Search coming soon in the prototype" data-icon="search" aria-label="Search shop">${ic('search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
     <div class="promos">
-      <button class="promo" data-act="shopCat" data-id="apparel"><img src="${IMG}gym.jpg" alt=""><span class="badge volt" style="align-self:flex-start">Up to 30% off</span><h3>Winter kit drop</h3><p>Thermal layers and training outfits.</p></button>
-      <button class="promo" data-act="toastMsg" data-msg="Registration form opened" data-icon="trophy"><img src="${IMG}football.jpg" alt=""><span class="sponsor">Sponsored</span><span class="badge" style="align-self:flex-start;background:#fff;color:#0D1530">City Futsal League</span><h3>Team entries open</h3><p>8-week winter season. Register by Friday.</p></button>
-      <button class="promo brandy" data-act="plans"><span class="tier t-pro" style="align-self:flex-start;background:rgba(255,255,255,.2)">${ic('zap')}Members</span><h3>Pro saves 10%</h3><p>On every order, plus free delivery over ${CUR}50.</p></button>
+      <button class="promo" data-act="shopCat" data-id="apparel"><img src="${IMG}gym.jpg" alt=""><span class="badge volt" style="align-self:flex-start">Up to 30% off</span><h3>Monsoon kit drop</h3><p>Quick-dry jerseys and training outfits.</p></button>
+      <button class="promo" data-act="toastMsg" data-msg="Registration form opened" data-icon="trophy"><img src="${IMG}football.jpg" alt=""><span class="sponsor">Sponsored</span><span class="badge" style="align-self:flex-start;background:#fff;color:#0D1530">City Futsal League</span><h3>Team entries open</h3><p>8-week monsoon season. Register by Friday.</p></button>
+      <button class="promo brandy" data-act="plans"><span class="tier t-pro" style="align-self:flex-start;background:rgba(255,255,255,.2)">${ic('zap')}Members</span><h3>Pro saves 10%</h3><p>On every order, plus free delivery over ${inr(FREE_DELIVERY)}.</p></button>
     </div>
     <div class="chips" style="margin-top:16px">${cats.map(([k, n, i]) => `<button class="chip" data-act="shopCat" data-id="${k}" aria-pressed="${S.shopCat === k}">${ic(i)}${n}</button>`).join('')}</div>
     <div class="section"><div class="section-head"><h2>${S.shopCat === 'all' ? 'Trending near you' : cats.find((c) => c[0] === S.shopCat)[1]}</h2><span class="faint num">${list.length} items</span></div>
@@ -653,7 +846,7 @@ function prodCard(p, memberOff) {
     <div class="badges">${p.was ? `<span class="badge volt">-${Math.round((1 - p.price / p.was) * 100)}%</span>` : ''}${memberOff ? '<span class="badge brand">-10% Pro</span>' : ''}</div>
     <button class="fav ${fav ? 'on' : ''}" data-act="fav" data-id="${p.id}" aria-label="${fav ? 'Remove from' : 'Save to'} favourites" aria-pressed="${fav}">${ic('heart', 'ic-sm')}</button></div>
     <button data-act="product" data-id="${p.id}" style="text-align:left;display:grid;gap:4px"><span class="faint" style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase">${p.brand}</span><span class="prod-name">${esc(p.name)}</span>
-    <span class="prod-price"><b class="num">${CUR}${p.price}</b>${p.was ? `<s class="num">${CUR}${p.was}</s>` : ''}</span><span class="rating">${ic('star')}<span class="num">${p.rating} (${p.reviews})</span></span></button></div>`;
+    <span class="prod-price"><b class="num">${inr(p.price)}</b>${p.was ? `<s class="num">${inr(p.was)}</s>` : ''}</span><span class="rating">${ic('star')}<span class="num">${p.rating} (${p.reviews})</span></span></button></div>`;
 }
 function openProduct(id) {
   const p = PRODUCTS.find((x) => x.id === id);
@@ -661,29 +854,29 @@ function openProduct(id) {
       <div class="view-nav"><button data-act="back" aria-label="Back">${ic('arrow-left')}</button><button data-act="cart" aria-label="Cart">${ic('shopping-bag')}</button></div></div>
     <div class="view-body">
       <div style="display:grid;gap:6px"><span class="eyebrow">${p.brand}</span><h1 style="font-size:32px;font-style:italic;text-transform:uppercase;font-weight:800;line-height:1">${esc(p.name)}</h1>
-        <div style="display:flex;gap:10px;align-items:center"><span class="rating">${ic('star')}<span class="num">${p.rating} · ${p.reviews} reviews</span></span>${p.was ? `<span class="badge volt">Save ${CUR}${p.was - p.price}</span>` : ''}</div></div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="rating">${ic('star')}<span class="num">${p.rating} · ${p.reviews} reviews</span></span>${p.was ? `<span class="badge volt">Save ${inr(p.was - p.price)}</span>` : ''}</div></div>
       ${p.sizes ? `<div class="field"><span class="lbl">Size</span><div class="sizes" id="pSize">${p.sizes.map((z, i) => `<button data-act="pickOne" data-group="pSize" data-id="${z}" aria-pressed="${i === Math.floor(p.sizes.length / 2)}">${z}</button>`).join('')}</div></div>` : ''}
       <div class="rows">
         <div class="row">${ic('store', 'lead')}<div class="grow"><b>Sold by ${esc(p.seller)}</b><small>Local seller · 1.2 km away · click & collect today</small></div></div>
-        <div class="row">${ic('truck', 'lead')}<div class="grow"><b>Delivery in 2–3 days</b><small>Free over ${CUR}50 for Pro members</small></div></div>
+        <div class="row">${ic('truck', 'lead')}<div class="grow"><b>Delivery in 2–3 days</b><small>Free over ${inr(FREE_DELIVERY)} for Pro members</small></div></div>
         <div class="row">${ic('rotate-ccw', 'lead')}<div class="grow"><b>30-day returns</b><small>Free returns to any partner store</small></div></div>
       </div>
-      ${S.tier === 'lite' ? `<button class="card" style="padding:14px;display:flex;gap:12px;align-items:center;text-align:left" data-act="plans"><span class="tier t-pro">${ic('zap')}Pro</span><span class="grow" style="font-size:14px">Pro members pay <b class="num">${CUR}${(p.price * 0.9).toFixed(2)}</b> for this item.</span>${ic('chevron-right')}</button>` : ''}
+      ${S.tier === 'lite' ? `<button class="card" style="padding:14px;display:flex;gap:12px;align-items:center;text-align:left" data-act="plans"><span class="tier t-pro">${ic('zap')}Pro</span><span class="grow" style="font-size:14px">Pro members pay <b class="num">${inr((p.price * 0.9).toFixed(2))}</b> for this item.</span>${ic('chevron-right')}</button>` : ''}
     </div>
-    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${S.tier !== 'lite' ? 'Member price' : 'Price'}</span><b class="num">${CUR}${S.tier !== 'lite' ? (p.price * 0.9).toFixed(2) : p.price}</b></div><button class="btn btn-primary" data-act="addCart" data-id="${p.id}">${ic('shopping-bag')}Add to bag</button></div>`);
+    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${S.tier !== 'lite' ? 'Member price' : 'Price'}</span><b class="num">${inr(S.tier !== 'lite' ? (p.price * 0.9).toFixed(2) : p.price)}</b></div><button class="btn btn-primary" data-act="addCart" data-id="${p.id}">${ic('shopping-bag')}Add to bag</button></div>`);
 }
 const unitPrice = (p) => (S.tier !== 'lite' ? p.price * 0.9 : p.price);
 function cartSheet() {
   if (!S.cart.length) { openSheet(`${sheetHead('Your bag')}<div class="empty">${ic('shopping-bag')}<b>Your bag is empty</b><span>Gear up for your next game.</span></div><button class="btn btn-primary btn-block" data-act="closeSheet">Browse the shop</button>`); return; }
   const sub = S.cart.reduce((n, c) => n + unitPrice(PRODUCTS.find((p) => p.id === c.id)) * c.qty, 0);
-  const ship = sub >= 50 && S.tier !== 'lite' ? 0 : 4.99;
+  const ship = sub >= FREE_DELIVERY && S.tier !== 'lite' ? 0 : DELIVERY_FEE;
   openSheet(`${sheetHead('Your bag', S.cart.reduce((n, c) => n + c.qty, 0) + ' items')}
-    <div style="display:grid;gap:12px">${S.cart.map((c, i) => { const p = PRODUCTS.find((x) => x.id === c.id); return `<div class="cart-item"><img src="${IMG + p.img}.jpg" alt=""><div style="min-width:0"><b style="font-size:14.5px">${esc(p.name)}</b><div class="faint" style="font-size:13px">${c.size ? 'Size ' + c.size + ' · ' : ''}${CUR}${unitPrice(p).toFixed(2)}</div></div><div class="stepper"><button data-act="qty" data-i="${i}" data-d="-1" aria-label="Decrease">${ic('minus', 'ic-sm')}</button><b class="num">${c.qty}</b><button data-act="qty" data-i="${i}" data-d="1" aria-label="Increase">${ic('plus', 'ic-sm')}</button></div></div>`; }).join('')}</div>
-    <div class="sum num"><div><span class="muted">Subtotal</span><span>${CUR}${sub.toFixed(2)}</span></div><div><span class="muted">Delivery</span><span>${ship ? CUR + ship : 'Free'}</span></div>${S.tier !== 'lite' ? `<div><span class="muted">Pro discount applied</span><span style="color:var(--ok)">10%</span></div>` : ''}<div class="total"><span>Total</span><span>${CUR}${(sub + ship).toFixed(2)}</span></div></div>
-    <button class="btn btn-primary btn-block" data-act="checkout" style="min-height:54px">${ic('wallet')}Pay with ${PAY}</button>`);
+    <div style="display:grid;gap:12px">${S.cart.map((c, i) => { const p = PRODUCTS.find((x) => x.id === c.id); return `<div class="cart-item"><img src="${IMG + p.img}.jpg" alt=""><div style="min-width:0"><b style="font-size:14.5px">${esc(p.name)}</b><div class="faint" style="font-size:13px">${c.size ? 'Size ' + c.size + ' · ' : ''}${inr(unitPrice(p).toFixed(2))}</div></div><div class="stepper"><button data-act="qty" data-i="${i}" data-d="-1" aria-label="Decrease">${ic('minus', 'ic-sm')}</button><b class="num">${c.qty}</b><button data-act="qty" data-i="${i}" data-d="1" aria-label="Increase">${ic('plus', 'ic-sm')}</button></div></div>`; }).join('')}</div>
+    <div class="sum num"><div><span class="muted">Subtotal</span><span>${inr(sub.toFixed(2))}</span></div><div><span class="muted">Delivery</span><span>${ship ? inr(ship) : 'Free'}</span></div>${S.tier !== 'lite' ? `<div><span class="muted">Pro discount applied</span><span style="color:var(--ok)">10%</span></div>` : ''}<div class="total"><span>Total</span><span>${inr((sub + ship).toFixed(2))}</span></div></div>
+    <button class="btn btn-primary btn-block" data-act="checkout" style="min-height:54px">${ic('smartphone')}Pay via UPI</button>`);
 }
 function promoteSheet() {
-  const pk = [['map-pin', 'Featured map pin', 'Your store or venue highlighted on the Explore map within 5 km.', CUR + '49/week'], ['megaphone', 'Shop banner', 'A banner slot in the marketplace carousel.', CUR + '99/week'], ['trophy', 'Event sponsorship', 'Brand a league, tournament or run club.', 'Custom']];
+  const pk = [['map-pin', 'Featured map pin', 'Your store or venue highlighted on the Explore map within 5 km.', '₹2,999/week'], ['megaphone', 'Shop banner', 'A banner slot in the marketplace carousel.', '₹5,999/week'], ['trophy', 'Event sponsorship', 'Brand a league, tournament or run club.', 'Custom']];
   openSheet(`${sheetHead('Promote your business', 'Reach active players near you')}
     <div class="pick">${pk.map(([i, t, d, p], n) => `<button class="opt" data-act="pickMany" aria-pressed="${n === 0}"><span class="sport-ic" style="--c:var(--ink)">${ic(i)}</span><div style="min-width:0"><b>${t}</b><div class="faint" style="font-size:13px">${d}</div><div style="font-weight:700;margin-top:2px" class="num">${p}</div></div><span class="tick">${ic('check')}</span></button>`).join('')}</div>
     <div class="faint" style="font-size:12.5px">Example packages and pricing for the prototype.</div>
@@ -694,14 +887,14 @@ function promoteSheet() {
 function renderMe() {
   const P = PLANS[S.tier];
   $('#scr-me').innerHTML = `
-    <div class="me-head"><img src="${IMG}av1.jpg" alt=""><div style="flex:1;min-width:0"><h1>Alex Rivera</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}Riverside · plays football, tennis</div></div><button class="icon-btn" data-act="toastMsg" data-msg="Settings are not part of the prototype yet" data-icon="settings" aria-label="Settings">${ic('settings')}</button></div>
+    <div class="me-head"><img src="${IMG}av3.jpg" alt=""><div style="flex:1;min-width:0"><h1>Arjun Mehta</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}Riverfront · plays cricket, football</div></div><button class="icon-btn" data-act="toastMsg" data-msg="Settings are not part of the prototype yet" data-icon="settings" aria-label="Settings">${ic('settings')}</button></div>
     <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">24</b><span>Games played</span></div><div class="card"><b class="num">31h</b><span>Active this year</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
     <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.75)">Your plan</div><h2>${P.name}</h2><div style="opacity:.9;max-width:30ch;position:relative;z-index:1">${P.blurb}</div><button class="btn btn-sm" data-act="plans">${S.tier === 'enterprise' ? 'Manage plan' : 'Compare plans'}</button></div>
     <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="toastMsg" data-msg="Add a family member form opens here">Add</button></div>
-      <div class="rows">${FAMILY.map((f, i) => `<div class="row"><div class="avatars">${f.img ? `<img src="${IMG + f.img}.jpg" alt="">` : `<span style="background:${['', '#E3336A', '#0E9FE0'][i]};color:#fff">${f.initials}</span>`}</div><div class="grow"><b>${f.name}</b><small>${f.note}</small></div>${ic('chevron-right')}</div>`).join('')}</div></div>
+      <div class="rows">${FAMILY.map((f, i) => `<div class="row"><div class="avatars">${avatar(f)}</div><div class="grow"><b>${f.name}</b><small>${f.note}</small></div>${ic('chevron-right')}</div>`).join('')}</div></div>
     <div class="section"><div class="section-head"><h2>Settings</h2></div>
       <div class="rows">
-        ${[['bell', 'Notifications', 'Cancellations and venue changes always on'], ['wallet', 'Payment methods', PAY + ' · Visa •• 4242'], ['accessibility', 'Accessibility', 'Text size, reduced motion, venue needs'], ['globe', 'Language & region', 'English · km'], ['shield-check', 'Privacy & safety', 'Who can invite you and see your games']]
+        ${[['bell', 'Notifications', 'Cancellations and venue changes always on'], ['wallet', 'Payment methods', 'UPI · arjun.m@upi · RuPay •• 4242'], ['accessibility', 'Accessibility', 'Text size, reduced motion, venue needs'], ['globe', 'Language & region', 'English, हिन्दी · India · km'], ['shield-check', 'Privacy & safety', 'Who can invite you and see your games']]
           .map(([i, t, d]) => `<button class="row" data-act="toastMsg" data-msg="${t} settings open here">${ic(i, 'lead')}<div class="grow"><b>${t}</b><small>${d}</small></div>${ic('chevron-right')}</button>`).join('')}
         <button class="row" data-act="reset">${ic('rotate-ccw', 'lead')}<div class="grow"><b>Reset demo data</b><small>Start the prototype over</small></div></button>
       </div></div>
@@ -715,7 +908,7 @@ function plansSheet() {
       <ul class="feat-list">${P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}${P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('')}</ul></button>`; }).join('')}</div>`);
 }
 function upsell(kind) {
-  const m = { pin: ['Pin new spots with Pro', 'Add courts, pitches and parks to the map so others can find them.', 'map-pin-plus'], teams: ['Teams are a Pro feature', 'Create teams, invite players and schedule matches.', 'users'] }[kind];
+  const m = { pin: ['Add places and host games with Pro', 'Pin or photograph grounds and courts for everyone, and host games at any address.', 'map-pin-plus'], teams: ['Teams are a Pro feature', 'Create teams, invite players and schedule matches.', 'users'] }[kind];
   openSheet(`<div class="success" style="padding-top:4px"><div class="burst" style="background:var(--brand);color:#fff">${ic(m[2])}</div><h2>${m[0]}</h2><div class="muted" style="max-width:32ch">${m[1]}</div></div>
     <ul class="feat-list card" style="padding:14px">${PLANS.pro.feats.slice(1).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
     <button class="btn btn-primary btn-block" data-act="setTier" data-id="pro" style="min-height:54px">${ic('zap')}Upgrade to Pro · ${PLANS.pro.price}${PLANS.pro.per}</button>
@@ -727,7 +920,7 @@ function renderPanel() {
   const P = PLANS[S.tier];
   $('#panelTier').innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" data-quiet="1" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
-  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Pin a spot to see the Pro upsell'], pro: ['Tap Pin a spot and drop a new place', 'Teams → open a team → Invite', 'Teams → New team'], enterprise: ['League → Schedule → Add fixture', 'League → Leaderboard', 'Shop → bulk team kits'] }[S.tier];
+  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Add place to see the Pro upsell'], pro: ['Add place → take a photo to save a new place', 'My games → Host a game → point the address', 'Teams → open a team → Invite'], enterprise: ['League → Schedule → Add fixture', 'League → Leaderboard', 'Shop → bulk team kits'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
 }
 
@@ -739,9 +932,10 @@ const A = {
   clearFilters: () => { S.filter = 'all'; S.query = ''; $('#q').value = ''; save(); renderExploreChrome(); },
   pin: (el) => selectAct(el.dataset.id),
   deselect: () => deselect(),
+  hostAtSpot: (el) => { const l = placeLoc(el.dataset.name); Host.draft = null; openHost(l); },
   spot: (el) => { const p = S.pins.find((x) => x.id === el.dataset.id); const s = sp(p.sport);
-    openSheet(`${sheetHead(esc(p.name), `Community spot · pinned by ${esc(p.by)}`)}<div class="rows"><div class="row"><span class="sport-ic" style="--c:${s.c}">${ic(s.icon)}</span><div class="grow"><b>${s.name} · ${p.setting}</b><small>${esc(p.note || 'No details yet.')}</small></div></div><div class="row">${ic('navigation', 'lead')}<div class="grow"><b>${fmtKm(kmFrom(p.x, p.y))} away</b><small>Free to use</small></div></div></div>
-      ${can.pin() ? `<button class="btn btn-primary btn-block" data-act="hostGame">${ic('megaphone')}Host a game here</button>` : `<button class="btn btn-soft btn-block" data-act="plans">${ic('lock')}Upgrade to host games here</button>`}`); },
+    openSheet(`${sheetHead(esc(p.name), `Community place · added by ${esc(p.by)}`)}${p.photo ? `<img class="spot-photo" src="${p.photo}" alt="Photo of ${esc(p.name)}">` : ''}<div class="rows"><div class="row">${ic('globe', 'lead')}<div class="grow"><b>Visible to everyone</b><small>${esc(addrOf(p.x, p.y))}</small></div><span class="badge free">Public</span></div><div class="row"><span class="sport-ic" style="--c:${s.c}">${ic(s.icon)}</span><div class="grow"><b>${s.name} · ${p.setting}</b><small>${esc(p.note || 'No details yet.')}</small></div></div><div class="row">${ic('navigation', 'lead')}<div class="grow"><b>${fmtKm(kmFrom(p.x, p.y))} away</b><small>Free to use</small></div></div></div>
+      ${can.pin() ? `<button class="btn btn-primary btn-block" data-act="hostAtSpot" data-name="${esc(p.name)}">${ic('megaphone')}Host a game here</button>` : `<button class="btn btn-soft btn-block" data-act="plans">${ic('lock')}Upgrade to host games here</button>`}`); },
   store: () => { const st = STORES[0];
     openSheet(`<div class="promo" style="height:150px;border-radius:18px"><img src="${IMG}p-futsal.jpg" alt=""><span class="sponsor">Sponsored</span><h3>${esc(st.name)}</h3><p>${esc(st.promo)}</p></div>
       <div class="rows"><div class="row">${ic('navigation', 'lead')}<div class="grow"><b>${fmtKm(kmFrom(st.x, st.y))} away</b><small>Open until 8 pm</small></div></div></div>
@@ -749,8 +943,8 @@ const A = {
   gotoShop: () => { S.shopCat = 'all'; go('shop'); },
   open: (el) => { closeSheet(true); openAct(el.dataset.id); },
   join: (el) => joinFlow(el.dataset.id),
-  pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); const id = $('.sheet [data-act="confirmJoin"]'); if (id) updateJoinTotal(ACTIVITIES.find((a) => a.id === id.dataset.id)); },
-  pickOne,
+  pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); const id = $('.sheet [data-act="confirmJoin"]'); if (id) updateJoinTotal(allActs().find((a) => a.id === id.dataset.id)); },
+  pickOne: (el) => { pickOne(el); if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
   confirmJoin: (el) => confirmJoin(el.dataset.id),
   gotoGames: () => go('games'),
   back: () => pop(),
@@ -759,17 +953,22 @@ const A = {
   sheetToggle: () => Sheet.toggle(),
   locate: () => { deselect(); Map.center(ME.x, ME.y, true, 45); },
   zoomIn: () => Map.zoom(1.25), zoomOut: () => Map.zoom(0.8),
-  dropStart: () => Drop.start(), dropCancel: () => Drop.stop(), dropConfirm: () => Drop.confirm(),
+  dropStart: () => addPlaceSheet(), dropPin: () => { closeSheet(true); Drop.start('spot'); }, dropCancel: () => Drop.cancel(), dropConfirm: () => Drop.confirm(),
+  hostPickMap: () => { closeSheet(true); popAll(); go('explore'); Drop.start('host'); },
+  hostHere: () => { Host.draft.loc = { x: ME.x, y: ME.y, name: 'Your current location', address: addrOf(ME.x, ME.y) }; Host.draft.address = Host.draft.loc.address; renderHost(); },
+  hostSaved: () => hostSavedSheet(),
+  hostPlace: (el) => { const l = placeLoc(el.dataset.name); Host.draft.loc = l; Host.draft.address = l.address; closeSheet(); renderHost(); },
+  hostLocClear: () => { Host.draft.loc = null; Host.draft.placeName = ''; renderHost(); },
+  hostToggle: (el) => { const arr = Host.draft[el.dataset.kind]; const i = arr.indexOf(el.dataset.id); if (i >= 0) arr.splice(i, 1); else arr.push(el.dataset.id); el.setAttribute('aria-pressed', i < 0); $('#hostView .view-cta .faint').textContent = hostInviteCount() + ' invited'; },
+  hostPublish: () => publishHost(),
+  viewHosted: (el) => { closeSheet(true); go('explore'); setTimeout(() => selectAct(el.dataset.id), 60); },
+  shareGame: () => toast('Invite link copied. Share it on WhatsApp or anywhere', 'share-2'),
   plans: () => plansSheet(),
   setTier: (el) => { const t = el.dataset.id; closeSheet(true); setTier(t); if (!el.dataset.quiet) toast(`You're on ${PLANS[t].name}`, PLANS[t].icon); },
   toastMsg: (el) => toast(el.dataset.msg, el.dataset.icon || 'circle-check'),
   toastClose: (el) => { closeSheet(); toast(el.dataset.msg, el.dataset.icon || 'circle-check'); },
   ackAlert: () => { S.ackAlert = true; save(); renderGames(); toast('Thanks. We will remind you on the day', 'bell'); },
-  hostGame: () => { closeSheet(true); if (!can.pin()) return upsell('pin');
-    openSheet(`${sheetHead('Host a game')}<div class="field"><label for="hgTitle">Title</label><input class="input" id="hgTitle" value="Thursday 7-a-side"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="hgSpots">Spots</label><input class="input" id="hgSpots" type="number" value="14" min="2"></div><div class="field"><label for="hgPrice">Price (${CUR})</label><input class="input" id="hgPrice" type="number" value="5" min="0"></div></div>
-      <div class="field"><span class="lbl">Invite</span><div class="chips" id="hgInv">${S.teams.map((t, i) => `<button type="button" class="chip" data-act="pickMany" aria-pressed="${i === 0}">${ic('users')}${esc(t.name)}</button>`).join('')}<button type="button" class="chip" data-act="pickMany" aria-pressed="true">${ic('globe')}Anyone nearby</button></div></div>
-      <button class="btn btn-primary btn-block" data-act="toastClose" data-msg="Game published to the map" data-icon="megaphone">${ic('megaphone')}Publish game</button>`); },
+  hostGame: () => { closeSheet(true); openHost(); },
   newTeam: () => (can.teams() ? newTeamSheet() : upsell('teams')),
   openTeam: (el) => openTeam(el.dataset.id),
   invite: (el) => inviteSheet(el.dataset.id),
@@ -813,7 +1012,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('.
 
 /* boot */
 $('#sbIcons').innerHTML = ic('signal') + ic('wifi') + ic('battery-full');
-$('#clock').textContent = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', hour12: false }).format(new Date());
+$('#clock').textContent = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', hour12: false }).format(new Date());
 $('#logoMark').innerHTML = ic('map-pin', 'ic-lg');
 renderPanel();
 go('explore');
