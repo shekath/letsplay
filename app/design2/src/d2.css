@@ -2,7 +2,8 @@
    Design read: the same community-sports app, tuned for engagement: gestures, quick wins and visible progress.
    Dials: ENERGY 3 / RHYTHM 2 / MOTION 3 (map follows the game you pick, story progress, a short celebration on joining;
    every animation answers an action and none loops forever; reduced-motion turns them off).
-   Type: Kanit bold italic (athletic, forward-leaning, scoreboard-like) for names and numbers, Manrope for reading.
+   Type: Saira extra-bold italic (athletic, squared, forward-leaning, with open spacing so heavy letters never touch)
+   for names and numbers, Manrope for reading.
    Colour: a quiet neutral base; each game card takes its sport colour as its ground (data, not decoration);
    ink pills for actions; violet is the single accent and only means "your progress" (XP, goals, levels).
    Layout: map stays on screen at all times; a card deck floats over it; floating pill tab bar. */
@@ -24,7 +25,7 @@
   --scrim: rgba(10, 11, 14, .5);
   --shadow: 0 18px 40px rgba(15, 16, 20, .18), 0 4px 10px rgba(15, 16, 20, .08);
   --map-land: #E6E7E1; --map-block: #DCDDD6; --map-road: #FFFFFF; --map-park: #CFE3C2; --map-water: #C3D9EE; --map-label: #6A6D76;
-  --f-display: "Kanit", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-display: "Saira", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
   --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --r: 22px;
   --r-lg: 30px;
@@ -54,7 +55,7 @@ input { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--you); outline-offset: 2px; border-radius: 12px; }
 .ic { width: 20px; height: 20px; flex: none; display: block; }
 .num { font-variant-numeric: tabular-nums; }
-h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: 0; line-height: 1.05; text-wrap: balance; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: .005em; line-height: 1.05; text-wrap: balance; }
 /* Every display-face element leans forward: names, scores, counts and badges read like a scoreboard. */
 .app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
 /* The tab bar stays upright and plain so navigation reads calmly. */
@@ -581,7 +582,7 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .photo-drop.has img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
 .loccard { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
 #scr-play.picking .lsheet, #scr-play.picking .play-top { display: none; }
-.pick-ui { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+.pick-ui { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
 .crosshair { position: absolute; transform: translate(-50%, -100%); color: var(--live); filter: drop-shadow(0 3px 4px rgba(0,0,0,.35)); }
 .crosshair .ic { width: 44px; height: 44px; stroke-width: 2.4; fill: var(--surface); }
 .pickbar { pointer-events: auto; position: absolute; left: 14px; right: 14px; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; padding: 14px; border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); }
@@ -713,6 +714,22 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .tr.lg { grid-template-columns: 22px minmax(0, 1fr) 24px 30px 76px; }
 .regcta { display: grid; gap: 12px; padding: 16px; border-radius: var(--r); background: var(--corp-soft); }
 .regcta b { display: block; } .regcta small { display: block; font-size: 13px; color: var(--ink-2); font-weight: 600; margin-top: 2px; }
+
+/* ── Address search ── */
+.addrbox { display: grid; gap: 6px; }
+.addr-res:empty { display: none; }
+.addr-res { display: grid; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 8px 22px rgba(15,16,20,.1); }
+.ar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; text-align: left; width: 100%; }
+.ar + .ar { border-top: 1px solid var(--line); }
+.ar:active, .ar:focus-visible { background: var(--surface-2); }
+.ar .ltile { width: 34px; height: 34px; border-radius: 10px; }
+.ar .ltile .ic { width: 17px; height: 17px; }
+.ar-head { padding: 8px 12px 2px; font-size: 12px; font-weight: 800; color: var(--ink-3); }
+.ar-none { padding: 12px; font-size: 13.5px; color: var(--ink-2); }
+.pick-search { position: absolute; left: 14px; right: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); pointer-events: auto; z-index: 2; }
+.app.framed .pick-search { top: 52px; }
+.pick-search .search { box-shadow: 0 6px 20px rgba(15,16,20,.16); border: 0; }
+.pick-search .addr-res { max-height: 300px; overflow-y: auto; }
 
 /* ── Custom sports ── */
 .chip.addsport { border-style: dashed; color: var(--ink-2); }

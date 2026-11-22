@@ -14,12 +14,13 @@ const placeById = (id) => COMMUNITY_SPOTS.concat(S.places).find((p) => p.id === 
 
 /* ── Point on the map: drag the map under a fixed crosshair, then confirm ── */
 let PICK = null;
-function startPick(purpose) {
+function startPick(purpose, at) {
   PICK = { purpose }; closeSheet(); if (tab !== 'play') go('play');
   $('#scr-play').classList.add('picking');
+  if (at && at.x) { const [cx, cy] = mapCentre(); setMap(cx - at.x * mz, cy - at.y * mz, false); }
   const m = $('#map'); const o = document.createElement('div'); o.id = 'pickUI'; o.className = 'pick-ui';
-  o.innerHTML = `<span class="crosshair" aria-hidden="true">${ic('map-pin')}</span><div class="pickbar"><div><b>Drag the map to the spot</b><small id="pickAddr">${esc(addrOf(...pickXY()))}</small></div><div style="display:flex;gap:8px"><button class="pill sm soft" data-act="pickCancel">Cancel</button><button class="pill sm" data-act="pickUse">Use this spot</button></div></div>`;
-  m.appendChild(o); positionCrosshair();
+  o.innerHTML = `<div class="pick-search">${addrBox('pick', 'Search an address, then fine-tune')}</div><span class="crosshair" aria-hidden="true">${ic('map-pin')}</span><div class="pickbar"><div><b>Drag the map to the spot</b><small id="pickAddr">${esc(addrOf(...pickXY()))}</small></div><div style="display:flex;gap:8px"><button class="pill sm soft" data-act="pickCancel">Cancel</button><button class="pill sm" data-act="pickUse">Use this spot</button></div></div>`;
+  $('#scr-play').appendChild(o); m.scrollLeft = m.scrollTop = 0; positionCrosshair();
   PICK.timer = setInterval(() => { const a = $('#pickAddr'); if (a) a.textContent = addrOf(...pickXY()); }, 400);
 }
 function pickXY() { const [cx, cy] = mapCentre(); return [Math.round((cx - mapPos.x) / mz), Math.round((cy - mapPos.y) / mz)]; }
@@ -35,7 +36,8 @@ function addPlaceSheet() {
     <label class="fld"><span>Name</span><input id="npName" value="${esc(NP.name)}" placeholder="For example Colony park court"></label>
     <div class="fgrp"><b>Good for</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="npSport" data-id="${k}" aria-pressed="${NP.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('place')}</div></div>
     <div class="seg" role="group" aria-label="Setting">${['Outdoor', 'Indoor'].map((s) => `<button data-act="npSet" data-id="${s}" aria-pressed="${NP.setting === s}">${s}</button>`).join('')}</div>
-    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Set the location', sub: NP.x ? 'Tap to move the pin' : 'Point to it on the map' })}
+    <div class="fgrp"><b>Location</b>${addrBox('place')}
+    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Or point to it on the map', sub: NP.x ? 'Tap to fine-tune the pin on the map' : 'Drag the map under a pin' })}</div>
     <label class="fld"><span>Note for players (optional)</span><input id="npNote" value="${esc(NP.note)}" placeholder="Lights until 10 pm, bring your own net"></label>
     <div class="errbox" id="npErr" hidden>${ic('info')}<div></div></div>
     <button class="pill block" style="min-height:56px" data-act="npSave">${ic('map-pin-plus')}Save place for everyone</button>`);
@@ -58,8 +60,9 @@ function hostSheet() {
   const venues = VENUES_BOOK.map((v) => ({ id: v.id, name: v.name, x: v.x, y: v.y, photo: null })).concat(S.places.map((p) => ({ id: p.id, name: p.name, x: p.x, y: p.y, photo: p.photo })));
   sheetUpdate(`${head('Host a game', 'Publish it to people nearby or just your invitees')}
     <div class="fgrp"><b>Where</b>
+      ${addrBox('host')}
       ${H.loc ? `<div class="card loccard"><span class="ltile">${ic('map-pin')}</span><div style="flex:1;min-width:0;display:grid;gap:8px"><label class="fld"><span>Address players will see</span><input id="hAddr" value="${esc(H.loc.address)}"></label><label class="fld"><span>Landmark (optional)</span><input id="hLand" value="${esc(H.landmark)}" placeholder="Gate 2, opposite the chai stall"></label></div></div>` : ''}
-      <div class="chips wrap"><button class="chip neutral" data-act="hostPick">${ic('map-pin')}Point on the map</button><button class="chip neutral" data-act="hostMe">${ic('locate-fixed')}My location</button><button class="chip neutral" data-act="placeNew" data-id="host">${ic('camera')}Snap a new place</button></div>
+      <div class="chips wrap"><button class="chip neutral" data-act="hostPick">${ic('map-pin')}${H.loc ? 'Adjust pin on the map' : 'Point on the map'}</button><button class="chip neutral" data-act="hostMe">${ic('locate-fixed')}My location</button><button class="chip neutral" data-act="placeNew" data-id="host">${ic('camera')}Snap a new place</button></div>
       <div class="chips">${venues.map((v) => `<button class="chip neutral" data-act="hostVenue" data-id="${v.id}" aria-pressed="${!!(H.loc && H.loc.id === v.id)}">${esc(v.name)}</button>`).join('')}</div></div>
     <label class="fld"><span>Title</span><input id="hTitle" value="${esc(H.title)}" placeholder="For example Friday night 5-a-side"></label>
     <div class="fgrp"><b>Sport</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="hostSport" data-id="${k}" aria-pressed="${H.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('host')}</div></div>
@@ -200,7 +203,7 @@ Object.assign(A, {
   placeNew: (el) => { if (!can.pin()) { upsell('pin'); return; } NP = { photo: null, name: '', sport: 'football', setting: 'Outdoor', note: '', x: 0, y: 0, ret: el.dataset.id || null }; addPlaceSheet(); },
   npSport: (el) => { NP.sport = el.dataset.id; addPlaceSheet(); },
   npSet: (el) => { NP.setting = el.dataset.id; addPlaceSheet(); },
-  npPick: () => startPick('place'),
+  npPick: () => startPick('place', NP.x ? { x: NP.x, y: NP.y } : null),
   npSave: () => { const err = $('#npErr'), bad = !NP.name.trim() ? 'Give the place a name.' : !NP.x ? 'Set the location on the map.' : '';
     if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; return; }
     const p = { id: 'c' + Date.now(), name: NP.name.trim(), sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photo, by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
@@ -208,11 +211,11 @@ Object.assign(A, {
     if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
     closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); badgeCheck(); },
   pickUse: () => { const [x, y] = pickXY(), p = endPick();
-    if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else hostStart({ id: null, x, y, address: addrOf(x, y) }); },
+    if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else { const keep = HOST && HOST.loc && Math.hypot(HOST.loc.x - x, HOST.loc.y - y) < 30; hostStart(keep ? Object.assign({}, HOST.loc, { x, y }) : { id: null, x, y, address: addrOf(x, y) }); } },
   pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
   hostStart: () => hostStart(),
   hostHere: (el) => { const p = placeById(el.dataset.id); hostStart({ id: p.id, x: p.x, y: p.y, address: `${p.name}, ${addrOf(p.x, p.y)}`, photo: p.photo }); },
-  hostPick: () => startPick('host'),
+  hostPick: () => startPick('host', HOST.loc),
   hostMe: () => { HOST.loc = { id: 'me', x: ME.x + 6, y: ME.y + 6, address: addrOf(ME.x, ME.y) }; hostSheet(); },
   hostVenue: (el) => { const v = VENUES_BOOK.find((x) => x.id === el.dataset.id) || placeById(el.dataset.id); HOST.loc = { id: el.dataset.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}`, photo: v.photo || null }; if (v.sports) HOST.sport = v.sports[0]; hostSheet(); },
   hostSport: (el) => { HOST.sport = el.dataset.id; hostSheet(); },

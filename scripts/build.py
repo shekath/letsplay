@@ -50,7 +50,7 @@ def bundle_design2() -> str:
         html = html.replace(f"/*@@{marker}@@*/", path.read_text())
     # Plan features run inside d2.js's scope: the shared tournament engine, then Design 2's own modules.
     html = html.replace("/*@@TOUR_ENGINE@@*/", (SRC / "tour-engine.js").read_text())
-    for name in ("d2-plans.js", "d2-lite.js", "d2-pro.js", "d2-corp.js", "d2-badges.js", "d2-custom.js"):
+    for name in ("d2-plans.js", "d2-lite.js", "d2-pro.js", "d2-address.js", "d2-corp.js", "d2-badges.js", "d2-custom.js"):
         html = html.replace(f"/*@@{name}@@*/", (SRC2 / name).read_text())
     return html
 

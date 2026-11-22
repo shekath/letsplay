@@ -189,9 +189,11 @@ function focusMap(anim, a) {
 function placeMapControls() { const c = $('#mapctl'), t = $('#playTop'); if (c && t) c.style.top = t.offsetHeight + 8 + 'px'; }
 function bindMapDrag() {
   const m = $('#map'); const pts = new Map(); let start = null, pinch = 0;
+  /* The map moves only by transform; never let focus or scrollIntoView scroll its clipped box. */
+  m.addEventListener('scroll', () => { if (m.scrollLeft || m.scrollTop) { m.scrollLeft = 0; m.scrollTop = 0; } });
   const rel = (e) => { const r = m.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   m.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('.pin, #mapctl, .pickbar')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
+    if (e.target.closest('.pin, #mapctl, .pickbar, .pick-search')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
     if (pts.size === 1) start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y };
     if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); start = null; }
   });
@@ -357,6 +359,7 @@ const A = {
 /*@@d2-plans.js@@*/
 /*@@d2-lite.js@@*/
 /*@@d2-pro.js@@*/
+/*@@d2-address.js@@*/
 /*@@d2-corp.js@@*/
 /*@@d2-badges.js@@*/
 /*@@d2-custom.js@@*/

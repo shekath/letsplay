@@ -2,13 +2,14 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,600;0,700;1,600;1,700;1,800&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,600;0,700;0,800;1,600;1,700;1,800&family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
 /* LetsPlay Design 2: "Playground".
    Design read: the same community-sports app, tuned for engagement: gestures, quick wins and visible progress.
    Dials: ENERGY 3 / RHYTHM 2 / MOTION 3 (map follows the game you pick, story progress, a short celebration on joining;
    every animation answers an action and none loops forever; reduced-motion turns them off).
-   Type: Kanit bold italic (athletic, forward-leaning, scoreboard-like) for names and numbers, Manrope for reading.
+   Type: Saira extra-bold italic (athletic, squared, forward-leaning, with open spacing so heavy letters never touch)
+   for names and numbers, Manrope for reading.
    Colour: a quiet neutral base; each game card takes its sport colour as its ground (data, not decoration);
    ink pills for actions; violet is the single accent and only means "your progress" (XP, goals, levels).
    Layout: map stays on screen at all times; a card deck floats over it; floating pill tab bar. */
@@ -30,7 +31,7 @@
   --scrim: rgba(10, 11, 14, .5);
   --shadow: 0 18px 40px rgba(15, 16, 20, .18), 0 4px 10px rgba(15, 16, 20, .08);
   --map-land: #E6E7E1; --map-block: #DCDDD6; --map-road: #FFFFFF; --map-park: #CFE3C2; --map-water: #C3D9EE; --map-label: #6A6D76;
-  --f-display: "Kanit", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-display: "Saira", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
   --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --r: 22px;
   --r-lg: 30px;
@@ -60,7 +61,7 @@ input { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--you); outline-offset: 2px; border-radius: 12px; }
 .ic { width: 20px; height: 20px; flex: none; display: block; }
 .num { font-variant-numeric: tabular-nums; }
-h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: 0; line-height: 1.05; text-wrap: balance; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: .005em; line-height: 1.05; text-wrap: balance; }
 /* Every display-face element leans forward: names, scores, counts and badges read like a scoreboard. */
 .app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
 /* The tab bar stays upright and plain so navigation reads calmly. */
@@ -587,7 +588,7 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .photo-drop.has img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
 .loccard { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
 #scr-play.picking .lsheet, #scr-play.picking .play-top { display: none; }
-.pick-ui { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+.pick-ui { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
 .crosshair { position: absolute; transform: translate(-50%, -100%); color: var(--live); filter: drop-shadow(0 3px 4px rgba(0,0,0,.35)); }
 .crosshair .ic { width: 44px; height: 44px; stroke-width: 2.4; fill: var(--surface); }
 .pickbar { pointer-events: auto; position: absolute; left: 14px; right: 14px; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; padding: 14px; border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); }
@@ -719,6 +720,22 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .tr.lg { grid-template-columns: 22px minmax(0, 1fr) 24px 30px 76px; }
 .regcta { display: grid; gap: 12px; padding: 16px; border-radius: var(--r); background: var(--corp-soft); }
 .regcta b { display: block; } .regcta small { display: block; font-size: 13px; color: var(--ink-2); font-weight: 600; margin-top: 2px; }
+
+/* ── Address search ── */
+.addrbox { display: grid; gap: 6px; }
+.addr-res:empty { display: none; }
+.addr-res { display: grid; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 8px 22px rgba(15,16,20,.1); }
+.ar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; text-align: left; width: 100%; }
+.ar + .ar { border-top: 1px solid var(--line); }
+.ar:active, .ar:focus-visible { background: var(--surface-2); }
+.ar .ltile { width: 34px; height: 34px; border-radius: 10px; }
+.ar .ltile .ic { width: 17px; height: 17px; }
+.ar-head { padding: 8px 12px 2px; font-size: 12px; font-weight: 800; color: var(--ink-3); }
+.ar-none { padding: 12px; font-size: 13.5px; color: var(--ink-2); }
+.pick-search { position: absolute; left: 14px; right: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); pointer-events: auto; z-index: 2; }
+.app.framed .pick-search { top: 52px; }
+.pick-search .search { box-shadow: 0 6px 20px rgba(15,16,20,.16); border: 0; }
+.pick-search .addr-res { max-height: 300px; overflow-y: auto; }
 
 /* ── Custom sports ── */
 .chip.addsport { border-style: dashed; color: var(--ink-2); }
@@ -1213,9 +1230,11 @@ function focusMap(anim, a) {
 function placeMapControls() { const c = $('#mapctl'), t = $('#playTop'); if (c && t) c.style.top = t.offsetHeight + 8 + 'px'; }
 function bindMapDrag() {
   const m = $('#map'); const pts = new Map(); let start = null, pinch = 0;
+  /* The map moves only by transform; never let focus or scrollIntoView scroll its clipped box. */
+  m.addEventListener('scroll', () => { if (m.scrollLeft || m.scrollTop) { m.scrollLeft = 0; m.scrollTop = 0; } });
   const rel = (e) => { const r = m.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   m.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('.pin, #mapctl, .pickbar')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
+    if (e.target.closest('.pin, #mapctl, .pickbar, .pick-search')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
     if (pts.size === 1) start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y };
     if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); start = null; }
   });
@@ -2063,12 +2082,13 @@ const placeById = (id) => COMMUNITY_SPOTS.concat(S.places).find((p) => p.id === 
 
 /* ── Point on the map: drag the map under a fixed crosshair, then confirm ── */
 let PICK = null;
-function startPick(purpose) {
+function startPick(purpose, at) {
   PICK = { purpose }; closeSheet(); if (tab !== 'play') go('play');
   $('#scr-play').classList.add('picking');
+  if (at && at.x) { const [cx, cy] = mapCentre(); setMap(cx - at.x * mz, cy - at.y * mz, false); }
   const m = $('#map'); const o = document.createElement('div'); o.id = 'pickUI'; o.className = 'pick-ui';
-  o.innerHTML = `<span class="crosshair" aria-hidden="true">${ic('map-pin')}</span><div class="pickbar"><div><b>Drag the map to the spot</b><small id="pickAddr">${esc(addrOf(...pickXY()))}</small></div><div style="display:flex;gap:8px"><button class="pill sm soft" data-act="pickCancel">Cancel</button><button class="pill sm" data-act="pickUse">Use this spot</button></div></div>`;
-  m.appendChild(o); positionCrosshair();
+  o.innerHTML = `<div class="pick-search">${addrBox('pick', 'Search an address, then fine-tune')}</div><span class="crosshair" aria-hidden="true">${ic('map-pin')}</span><div class="pickbar"><div><b>Drag the map to the spot</b><small id="pickAddr">${esc(addrOf(...pickXY()))}</small></div><div style="display:flex;gap:8px"><button class="pill sm soft" data-act="pickCancel">Cancel</button><button class="pill sm" data-act="pickUse">Use this spot</button></div></div>`;
+  $('#scr-play').appendChild(o); m.scrollLeft = m.scrollTop = 0; positionCrosshair();
   PICK.timer = setInterval(() => { const a = $('#pickAddr'); if (a) a.textContent = addrOf(...pickXY()); }, 400);
 }
 function pickXY() { const [cx, cy] = mapCentre(); return [Math.round((cx - mapPos.x) / mz), Math.round((cy - mapPos.y) / mz)]; }
@@ -2084,7 +2104,8 @@ function addPlaceSheet() {
     <label class="fld"><span>Name</span><input id="npName" value="${esc(NP.name)}" placeholder="For example Colony park court"></label>
     <div class="fgrp"><b>Good for</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="npSport" data-id="${k}" aria-pressed="${NP.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('place')}</div></div>
     <div class="seg" role="group" aria-label="Setting">${['Outdoor', 'Indoor'].map((s) => `<button data-act="npSet" data-id="${s}" aria-pressed="${NP.setting === s}">${s}</button>`).join('')}</div>
-    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Set the location', sub: NP.x ? 'Tap to move the pin' : 'Point to it on the map' })}
+    <div class="fgrp"><b>Location</b>${addrBox('place')}
+    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Or point to it on the map', sub: NP.x ? 'Tap to fine-tune the pin on the map' : 'Drag the map under a pin' })}</div>
     <label class="fld"><span>Note for players (optional)</span><input id="npNote" value="${esc(NP.note)}" placeholder="Lights until 10 pm, bring your own net"></label>
     <div class="errbox" id="npErr" hidden>${ic('info')}<div></div></div>
     <button class="pill block" style="min-height:56px" data-act="npSave">${ic('map-pin-plus')}Save place for everyone</button>`);
@@ -2107,8 +2128,9 @@ function hostSheet() {
   const venues = VENUES_BOOK.map((v) => ({ id: v.id, name: v.name, x: v.x, y: v.y, photo: null })).concat(S.places.map((p) => ({ id: p.id, name: p.name, x: p.x, y: p.y, photo: p.photo })));
   sheetUpdate(`${head('Host a game', 'Publish it to people nearby or just your invitees')}
     <div class="fgrp"><b>Where</b>
+      ${addrBox('host')}
       ${H.loc ? `<div class="card loccard"><span class="ltile">${ic('map-pin')}</span><div style="flex:1;min-width:0;display:grid;gap:8px"><label class="fld"><span>Address players will see</span><input id="hAddr" value="${esc(H.loc.address)}"></label><label class="fld"><span>Landmark (optional)</span><input id="hLand" value="${esc(H.landmark)}" placeholder="Gate 2, opposite the chai stall"></label></div></div>` : ''}
-      <div class="chips wrap"><button class="chip neutral" data-act="hostPick">${ic('map-pin')}Point on the map</button><button class="chip neutral" data-act="hostMe">${ic('locate-fixed')}My location</button><button class="chip neutral" data-act="placeNew" data-id="host">${ic('camera')}Snap a new place</button></div>
+      <div class="chips wrap"><button class="chip neutral" data-act="hostPick">${ic('map-pin')}${H.loc ? 'Adjust pin on the map' : 'Point on the map'}</button><button class="chip neutral" data-act="hostMe">${ic('locate-fixed')}My location</button><button class="chip neutral" data-act="placeNew" data-id="host">${ic('camera')}Snap a new place</button></div>
       <div class="chips">${venues.map((v) => `<button class="chip neutral" data-act="hostVenue" data-id="${v.id}" aria-pressed="${!!(H.loc && H.loc.id === v.id)}">${esc(v.name)}</button>`).join('')}</div></div>
     <label class="fld"><span>Title</span><input id="hTitle" value="${esc(H.title)}" placeholder="For example Friday night 5-a-side"></label>
     <div class="fgrp"><b>Sport</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="hostSport" data-id="${k}" aria-pressed="${H.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('host')}</div></div>
@@ -2249,7 +2271,7 @@ Object.assign(A, {
   placeNew: (el) => { if (!can.pin()) { upsell('pin'); return; } NP = { photo: null, name: '', sport: 'football', setting: 'Outdoor', note: '', x: 0, y: 0, ret: el.dataset.id || null }; addPlaceSheet(); },
   npSport: (el) => { NP.sport = el.dataset.id; addPlaceSheet(); },
   npSet: (el) => { NP.setting = el.dataset.id; addPlaceSheet(); },
-  npPick: () => startPick('place'),
+  npPick: () => startPick('place', NP.x ? { x: NP.x, y: NP.y } : null),
   npSave: () => { const err = $('#npErr'), bad = !NP.name.trim() ? 'Give the place a name.' : !NP.x ? 'Set the location on the map.' : '';
     if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; return; }
     const p = { id: 'c' + Date.now(), name: NP.name.trim(), sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photo, by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
@@ -2257,11 +2279,11 @@ Object.assign(A, {
     if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
     closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); badgeCheck(); },
   pickUse: () => { const [x, y] = pickXY(), p = endPick();
-    if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else hostStart({ id: null, x, y, address: addrOf(x, y) }); },
+    if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else { const keep = HOST && HOST.loc && Math.hypot(HOST.loc.x - x, HOST.loc.y - y) < 30; hostStart(keep ? Object.assign({}, HOST.loc, { x, y }) : { id: null, x, y, address: addrOf(x, y) }); } },
   pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
   hostStart: () => hostStart(),
   hostHere: (el) => { const p = placeById(el.dataset.id); hostStart({ id: p.id, x: p.x, y: p.y, address: `${p.name}, ${addrOf(p.x, p.y)}`, photo: p.photo }); },
-  hostPick: () => startPick('host'),
+  hostPick: () => startPick('host', HOST.loc),
   hostMe: () => { HOST.loc = { id: 'me', x: ME.x + 6, y: ME.y + 6, address: addrOf(ME.x, ME.y) }; hostSheet(); },
   hostVenue: (el) => { const v = VENUES_BOOK.find((x) => x.id === el.dataset.id) || placeById(el.dataset.id); HOST.loc = { id: el.dataset.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}`, photo: v.photo || null }; if (v.sports) HOST.sport = v.sports[0]; hostSheet(); },
   hostSport: (el) => { HOST.sport = el.dataset.id; hostSheet(); },
@@ -2308,6 +2330,80 @@ Object.assign(A, {
   apAdd: () => { const t = teamOf(AP.tid), add = PLAYERS.filter((p) => AP.sel.includes(p.id)); add.forEach((p) => t.members.push({ name: p.name, role: 'Player', status: 'invited', pid: p.id }));
     const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); badgeCheck(); },
   shareTeam: (el) => { const t = teamOf(el.dataset.id); shareAny(`Join ${t.name} on LetsPlay`, `Join my ${sp(t.sport).name.toLowerCase()} team ${t.name} on LetsPlay. Team code ${teamCode(t)}.`, teamLink(t)); },
+});
+
+/* ═════ ADDRESS SEARCH (Pro, Corporate) ═════
+   One search box for every place a venue or location is chosen: hosting, adding a place, the map picker,
+   company fixtures and tournaments. It finds bookable venues, game venues, saved places, landmarks,
+   street addresses ("24 MG Road") and junctions ("MG Road and Ring Road") on the demo city map.
+   In production this would call a geocoding service (Google Places or Mapbox) with the same result shape. */
+const LANDMARKS = [['Promenade Clock Tower', 1010, 520], ['Riverfront Metro Station', 760, 860], ['City Centre Mall', 880, 760], ['Lake Park', 1190, 1080], ['Central Bus Stand', 420, 820], ['Riverfront Railway Station', 400, 1200], ['Nehru Stadium', 1300, 640], ['Hilltop Temple', 300, 300]];
+const GENERIC_W = /^(road|rd|marg|street|st|lane|nagar|and|near|the)$/;
+const ROADS = VROADS.map(([x, n]) => ({ n, x })).concat(HROADS.map(([y, n]) => ({ n, y })));
+/* Company venues are names only; give each one a spot on the map from a game held there, or a stable fallback. */
+S.extraVenues = S.extraVenues || [];
+S.extraVenues.forEach((v) => { if (!VENUES_ENT.includes(v.name)) VENUES_ENT.push(v.name); });
+function venueXY(name) {
+  const base = name.split(' · ')[0].toLowerCase(), ex = S.extraVenues.find((v) => v.name === name);
+  if (ex) return [ex.x, ex.y];
+  const a = ACTIVITIES.find((x) => x.venue.toLowerCase().startsWith(base)) || VENUES_BOOK.find((x) => x.name.toLowerCase().startsWith(base.split(' ')[0]));
+  if (a) return [a.x, a.y];
+  const h = [...base].reduce((n, c) => (n * 31 + c.charCodeAt(0)) % 100000, 7); return [200 + (h % 1200), 200 + (Math.floor(h / 7) % 1200)];
+}
+function gazetteer() {
+  const out = [], seen = new Set(), add = (o) => { const k = o.name.toLowerCase(); if (seen.has(k)) return; seen.add(k); out.push(o); };
+  VENUES_BOOK.forEach((v) => add({ kind: 'Bookable venue', icon: 'calendar-days', id: v.id, name: v.name, x: v.x, y: v.y }));
+  S.places.concat(COMMUNITY_SPOTS).forEach((p) => add({ kind: 'Place', icon: p.photo ? 'camera' : 'map-pin', id: p.id, name: p.name, x: p.x, y: p.y, photo: p.photo || null }));
+  ACTIVITIES.forEach((a) => add({ kind: 'Game venue', icon: sp(a.sport).icon, name: a.venue.split(' · ')[0], x: a.x, y: a.y }));
+  VENUES_ENT.forEach((n) => { const [x, y] = venueXY(n); add({ kind: 'Company venue', icon: 'building-2', name: n.split(' · ')[0], x, y }); });
+  LANDMARKS.forEach(([n, x, y]) => add({ kind: 'Landmark', icon: 'flag', name: n, x, y }));
+  return out;
+}
+function searchAddr(q) {
+  q = q.trim().toLowerCase();
+  const near = (list) => list.sort((a, b) => km(a.x, a.y) - km(b.x, b.y));
+  if (!q) return near(gazetteer().filter((g) => g.kind !== 'Landmark')).slice(0, 5);
+  const words = q.split(/[\s,]+/).filter(Boolean), res = [];
+  /* Street address: an optional house number and a road name. */
+  const num = (q.match(/^\d{1,4}/) || [])[0], roadQ = q.replace(/^\d{1,4}\s*,?\s*/, '');
+  const roads = ROADS.filter((r) => roadQ.length >= 2 && (r.n.toLowerCase().includes(roadQ) || roadQ.includes(r.n.toLowerCase().split(' ')[0])));
+  roads.forEach((r) => { const n = +(num || 1), along = 120 + ((n * 37) % 1360);
+    res.push({ kind: 'Street address', icon: 'map-pin', name: `${num ? num + ' ' : ''}${r.n}`, address: `${num ? num + ' ' : ''}${r.n}, ${AREA}`, x: r.x != null ? r.x + 18 : along, y: r.y != null ? r.y + 18 : along }); });
+  /* Junctions: "MG Road and Ring Road" */
+  const hit = ROADS.filter((r) => words.some((w) => w.length > 1 && !GENERIC_W.test(w) && r.n.toLowerCase().startsWith(w)));
+  const vs = hit.filter((r) => r.x != null), hs = hit.filter((r) => r.y != null);
+  vs.forEach((v) => hs.forEach((h) => res.push({ kind: 'Junction', icon: 'crosshair', name: `${v.n} and ${h.n}`, address: `${v.n} and ${h.n} junction, ${AREA}`, x: v.x + 14, y: h.y + 14 })));
+  /* Common words (road, court, ground…) don't count on their own, so "ring road" finds Ring Road, not every road. */
+  const GENERIC = /^(road|rd|marg|street|st|lane|nagar|court|courts|ground|club|centre|center|the|and|near)$/;
+  const key = words.filter((w) => w.length > 1 && !GENERIC.test(w)), sig = key.length ? key : words;
+  const score = (g) => { const n = g.name.toLowerCase(); return n.startsWith(q) ? 3 : sig.every((w) => n.includes(w)) ? 2 : sig.some((w) => w.length > 2 && n.includes(w)) ? 1 : 0; };
+  const named = gazetteer().map((g) => [score(g), g]).filter(([s]) => s).sort((a, b) => b[0] - a[0] || km(a[1].x, a[1].y) - km(b[1].x, b[1].y));
+  const streets = res.filter((r) => sig.some((w) => r.name.toLowerCase().includes(w))).sort((a, b) => (/ and |&/.test(q) ? (b.kind === 'Junction') - (a.kind === 'Junction') : 0));
+  return named.filter(([s]) => s >= 2).map(([, g]) => g).concat(streets, named.filter(([s]) => s < 2).map(([, g]) => g)).slice(0, 7);
+}
+const ADDR = {};
+const addrBox = (ctx, ph) => (can.pin() ? `<div class="addrbox"><label class="search">${ic('search')}<input class="addrQ" data-ctx="${ctx}" type="search" autocomplete="off" placeholder="${ph || 'Search a venue, street or landmark'}" aria-label="Search for an address" aria-controls="addrRes-${ctx}"></label><div class="addr-res" id="addrRes-${ctx}" role="listbox"></div></div>` : '');
+function renderAddr(ctx, q) {
+  const box = $('#addrRes-' + ctx); if (!box) return;
+  const list = ADDR[ctx] = searchAddr(q);
+  box.innerHTML = list.length ? `${q.trim() ? '' : '<div class="ar-head">Nearby</div>'}${list.map((r, i) => `<button class="ar" role="option" data-act="addrPick" data-ctx="${ctx}" data-i="${i}"><span class="ltile">${ic(r.icon)}</span><span class="ltext"><b>${esc(r.name)}</b><small>${r.kind} · ${esc(r.address || addrOf(r.x, r.y))}</small></span><span class="faint num" style="font-size:12px">${fmtKm(km(r.x, r.y))}</span></button>`).join('')}`
+    : `<div class="ar-none">No match. Try a street name like “MG Road”, or point on the map.</div>`;
+}
+document.addEventListener('input', (e) => { const el = e.target.closest('.addrQ'); if (el) renderAddr(el.dataset.ctx, el.value); });
+document.addEventListener('focusin', (e) => { const el = e.target.closest('.addrQ'); if (el && !el.value) renderAddr(el.dataset.ctx, ''); });
+const locFrom = (r) => ({ id: r.id || null, x: r.x, y: r.y, address: r.address || `${r.name}, ${addrOf(r.x, r.y)}`, photo: r.photo || null });
+function addCompanyVenue(r) {
+  const name = r.name; if (!VENUES_ENT.includes(name)) { VENUES_ENT.push(name); S.extraVenues.push({ name, x: r.x, y: r.y }); save(); }
+  return name;
+}
+
+Object.assign(A, {
+  addrPick: (el) => { const ctx = el.dataset.ctx, r = (ADDR[ctx] || [])[+el.dataset.i]; if (!r) return;
+    if (ctx === 'host') { HOST.loc = locFrom(r); if (r.id && VENUES_BOOK.find((v) => v.id === r.id)) HOST.sport = VB(r.id).sports[0]; hostSheet(); toast('Location set. Adjust it on the map if needed', 'map-pin'); }
+    else if (ctx === 'place') { NP.x = r.x; NP.y = r.y; addPlaceSheet(); }
+    else if (ctx === 'pick') { const [cx, cy] = mapCentre(); setMap(cx - r.x * mz, cy - r.y * mz, true); const q = $('#pickUI .addrQ'); if (q) { q.value = ''; q.blur(); } $('#addrRes-pick').innerHTML = ''; setTimeout(() => { const a = $('#pickAddr'); if (a) a.textContent = addrOf(...pickXY()); }, 600); }
+    else if (ctx === 'fx') { FX.venue = addCompanyVenue(r); FX.clash = ''; fixtureSheet(); }
+    else if (ctx === 'tour') { const n = addCompanyVenue(r); if (!TD.venues.includes(n)) TD.venues.push(n); genSheet(); } },
 });
 
 /* ═════ CORPORATE: a company sports workspace with two roles ═════
@@ -2651,7 +2747,7 @@ function fixtureSheet() {
     <div class="fgrp"><b>Sport</b><div class="chips wrap">${TOUR_SPORTS.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="fxSport" data-id="${k}" aria-pressed="${FX.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('fx')}</div></div>
     <div class="fgrp"><b>Day and time</b><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="fxDay" data-id="${d}" aria-pressed="${FX.d === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
       <div class="chips">${['07:00', '13:00', '17:30', '18:30', '19:30'].map((t) => `<button class="chip neutral" data-act="fxTime" data-id="${t}" aria-pressed="${FX.t === t}">${tf.format(dateAt(0, t))}</button>`).join('')}</div></div>
-    <div class="fgrp"><b>Venue</b><div class="chips wrap">${VENUES_ENT.map((v) => `<button class="chip neutral" data-act="fxVenue" data-id="${esc(v)}" aria-pressed="${FX.venue === v}">${esc(v.split(' · ')[0])}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Venue</b><div class="chips wrap">${VENUES_ENT.map((v) => `<button class="chip neutral" data-act="fxVenue" data-id="${esc(v)}" aria-pressed="${FX.venue === v}">${esc(v.split(' · ')[0])}</button>`).join('')}</div>${addrBox('fx', 'Find another venue by name or address')}</div>
     ${FX.clash ? `<div class="errbox">${ic('info')}<div>${esc(FX.clash)}</div></div>` : ''}
     <button class="pill block" data-act="fxSave" ${FX.a && FX.b ? '' : 'disabled'}>${ic('calendar-days')}Add and notify both teams</button>`);
 }
@@ -2673,7 +2769,7 @@ function genSheet() {
     <div class="fgrp"><b>First match, length and matches a day</b><div class="chips">${['07:00', '13:00', '17:30', '18:00', '19:00'].map((t) => `<button class="chip neutral" data-act="tdSet" data-k="time" data-id="${t}" aria-pressed="${TD.time === t}">${tf.format(dateAt(0, t))}</button>`).join('')}</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="seg" style="flex:1;min-width:180px" role="group" aria-label="Match length">${[45, 60, 90, 120].map((m) => `<button data-act="tdSet" data-k="mins" data-id="${m}" aria-pressed="${TD.mins === m}">${m} min</button>`).join('')}</div>
       <div class="stepper"><button data-act="tdPer" data-d="-1" aria-label="Fewer slots a day">${ic('minus')}</button><b class="num">${TD.perDay}/day</b><button data-act="tdPer" data-d="1" aria-label="More slots a day">${ic('plus')}</button></div></div></div>
-    <div class="fgrp"><b>Venues <span class="faint">matches run in parallel</span></b><div class="chips wrap">${VENUES_ENT.map((v) => `<button class="chip neutral" data-act="tdVenue" data-id="${esc(v)}" aria-pressed="${TD.venues.includes(v)}">${esc(v.split(' · ')[0])}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Venues <span class="faint">matches run in parallel</span></b><div class="chips wrap">${VENUES_ENT.map((v) => `<button class="chip neutral" data-act="tdVenue" data-id="${esc(v)}" aria-pressed="${TD.venues.includes(v)}">${esc(v.split(' · ')[0])}</button>`).join('')}</div>${addrBox('tour', 'Add another venue by name or address')}</div>
     ${rowHTML({ act: 'tdThird', pressed: TD.thirdPlace, icon: 'medal', title: 'Third-place match', sub: 'Losing semifinalists play for bronze', end: `<span class="tickbox">${ic('check')}</span>` })}
     ${err ? `<div class="errbox">${ic('info')}<div>${err}</div></div>` : `<div class="okbox">${ic('calendar-days')}<div><b>Plan ready</b><br>${summary}</div></div>`}
     <button class="pill block" style="min-height:56px" data-act="tdGen" ${err ? 'disabled' : ''}>${ic('sparkles')}Generate the plan</button>`);
