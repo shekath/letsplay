@@ -4,6 +4,10 @@ LetsPlay is a working, clickable prototype of a mobile app for discovering, join
 
 The prototype covers the participation loop from the UX strategy (**Discover → Join → Schedule → Participate**), the three product tiers, and the marketplace.
 
+## Live demo
+
+GitHub Pages: **https://shekath.github.io/letsplay/** (Splayer). The original LetsPlay design is at `/letsplay.html`. Every push to the working branch rebuilds the site (`.github/workflows/pages.yml` runs `python3 scripts/build.py --site` and publishes `site/`). It installs to the home screen and works offline after the first visit; location needs the https site.
+
 ## Run it
 
 ```bash
@@ -22,7 +26,12 @@ A second, engagement-first direction, branded **Splayer**, at `http://localhost:
 - **Intro:** a text-only motion piece. "ONE APP FOR" FOOTBALL → CRICKET → TENNIS → BADMINTON → MANY MORE on diagonal colour wipes. Then SPORTS drops in, P-O-R-T-S tumble away, the green S stays, and "player" hops in to spell Splayer, with a lime underline and "FIND YOUR GAME". It has a Skip button, respects reduced motion, and returning players see a short (about 2.5 s) wordmark splash instead.
 - **Onboarding:** three swipeable slides (PLAY, HOST, STREAK) with Skip, dots and Get started.
 - **Sign up / Log in:** Continue with Google (simulated account chooser, or "Use another account"), Continue with phone number (+91, a 6-digit code, a simulated text message you can tap to fill, paste support, wrong-code shake, resend after 30 s), or email and password with inline errors and Forgot password. Demo account: `arjun@splayer.app` / `play1234`, phone `98765 43210`.
-- **New players** set their name, area, sports and level before entering the app. Their name then shows on the Me banner.
+- **Terms & Conditions:** signing up (with Google, phone or email) needs the "I agree to the Terms & Conditions and Privacy Policy" box ticked; both open as readable summaries. New accounts reached from Log in are asked on the profile step.
+- **New players** set their name, sports and level, then their **location**:
+  - *Use my current location* asks the browser for permission (real GPS) and names the area through OpenStreetMap, with an offline fallback. Denied, timed-out or unavailable location each get a clear message.
+  - Or type an address: live suggestions from OpenStreetMap (India), keyboard friendly, or keep any free-text address. An optional flat or landmark line.
+  - *Live location* (on by default with GPS) keeps the position updated while the app is open and renames the area after you move about 400 m.
+  - The area shows at the top of Play (with a live dot) and in Me → Location, and either one reopens the picker. Players who log in without a saved location are asked once.
 - **Me → Account** shows how you signed in and has Sign out. The desktop side panel has *Replay intro* and *Start as new player*.
 - Everything is stored on the device only. Nothing is sent anywhere.
 

@@ -1029,6 +1029,56 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
   .g-word span, .g-copy { opacity: 1 !important; transform: none !important; }
 }
 
+/* terms checkbox */
+.g-terms { display: grid; gap: 6px; margin-bottom: 14px; }
+.g-check { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14); color: #DCEFE3; font-size: 14px; line-height: 1.45; cursor: pointer; }
+.g-check input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: #D4FF3A; cursor: pointer; }
+.g-check.sm { margin-top: 10px; font-size: 13.5px; }
+.g-check b { color: #F4FFF7; }
+.g-terms.bad .g-check { border-color: #FF9C8C; animation: g-shake .36s; }
+.g-terms .g-err { padding-left: 4px; }
+.g-doc h4 { margin: 16px 0 4px; font: 700 15px var(--f-body); color: #1F1F1F; }
+.g-doc p:not(.g-ch-sub) { margin: 0; font-size: 14px; line-height: 1.55; color: #3C4043; }
+.g-doc .g-btn { margin-top: 20px; }
+
+/* location step */
+.g-gps { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px; border-radius: 16px; text-align: left; background: linear-gradient(135deg, rgba(212,255,58,.16), rgba(62,224,122,.1)); border: 1px solid rgba(212,255,58,.45); color: #F4FFF7; }
+.g-gps > .ic { width: 20px; height: 20px; color: #D4FF3A; margin-left: auto; flex: none; }
+.g-gps b { display: block; font-size: 16px; }
+.g-gps small { display: block; margin-top: 2px; font-size: 13px; color: #C9E6D3; }
+.g-gps-ic { position: relative; flex: none; width: 46px; height: 46px; border-radius: 999px; display: grid; place-items: center; background: #D4FF3A; color: #06140D; }
+.g-gps-ic .ic { width: 22px; height: 22px; }
+.g-gps-ic::after { content: ""; position: absolute; inset: -5px; border-radius: 999px; border: 2px solid rgba(212,255,58,.5); animation: g-ping 1.8s ease-out infinite; }
+@keyframes g-ping { from { transform: scale(.85); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
+.g-locstate:empty { display: none; }
+.g-locstate { margin-top: 12px; display: grid; gap: 0; }
+.g-locmsg { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.06); color: #DCEFE3; font-size: 14px; line-height: 1.45; }
+.g-locmsg.warn { background: rgba(255,156,140,.1); color: #FFD3CB; }
+.g-spin { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 999px; border: 2px solid rgba(212,255,58,.3); border-top-color: #D4FF3A; animation: g-rot .8s linear infinite; }
+@keyframes g-rot { to { transform: rotate(360deg); } }
+.g-picked { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 14px; border-radius: 16px; background: rgba(212,255,58,.1); border: 1px solid rgba(212,255,58,.4); }
+.g-picked > .ic { width: 22px; height: 22px; flex: none; color: #D4FF3A; }
+.g-picked div { flex: 1; min-width: 0; }
+.g-picked b { display: block; font-size: 15.5px; color: #F4FFF7; }
+.g-picked small { display: block; margin-top: 2px; font-size: 12.5px; color: #C9E6D3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.g-combo { position: relative; }
+.g-opt { font-weight: 600; color: #9CC2AB; margin-left: 4px; }
+.g-sugg { list-style: none; margin: 4px 0 0; padding: 6px; border-radius: 14px; background: #0E2419; border: 1px solid rgba(255,255,255,.16); display: grid; gap: 2px; max-height: 260px; overflow-y: auto; }
+.g-sugg button { display: flex; gap: 10px; align-items: flex-start; width: 100%; padding: 10px; border-radius: 10px; text-align: left; color: #F4FFF7; }
+.g-sugg button .ic { width: 18px; height: 18px; flex: none; margin-top: 1px; color: #D4FF3A; }
+.g-sugg [aria-selected="true"] button, .g-sugg button:hover { background: rgba(212,255,58,.12); }
+.g-sugg b { display: block; font-size: 14.5px; }
+.g-sugg small { display: block; font-size: 12.5px; color: #A9CDB7; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.g-sugg button span { min-width: 0; flex: 1; }
+.g-sugg-note { display: flex; gap: 8px; padding: 10px; font-size: 13px; color: #A9CDB7; }
+/* location chip in the Play header */
+.locchip { display: inline-flex; align-items: center; gap: 4px; max-width: 62%; padding: 0; color: var(--ink); font-weight: 700; vertical-align: bottom; }
+.locchip .ic { width: 14px; height: 14px; flex: none; color: #C9362C; }
+.locchip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.locchip .live { flex: none; width: 7px; height: 7px; border-radius: 99px; background: #18A957; box-shadow: 0 0 0 3px rgba(24,169,87,.2); animation: g-livep 2s ease-in-out infinite; }
+@keyframes g-livep { 50% { box-shadow: 0 0 0 5px rgba(24,169,87,0); } }
+@media (prefers-reduced-motion: reduce) { .locchip .live, .g-gps-ic::after { animation: none; } }
+
 </style>
 <div class="stage">
   <aside class="note" aria-label="About this design">
@@ -1407,7 +1457,7 @@ function renderPlay() {
   }
   const moods = [['all', 'Anything', null]].concat(customIds().filter((k) => allActs().some((a) => a.sport === k && a.d >= 0)).concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga']).map((k) => [k, sp(k).name, sp(k)]));
   const nf = advCount();
-  $('#playTop').innerHTML = `<div class="hello"><h1><small>Good to see you, Arjun · <button class="tierword t-${S.tier}" data-act="plans">${PLANS[S.tier].name}</button></small>What do you feel like playing?</h1>${bellHTML()}${goalRing()}</div>
+  $('#playTop').innerHTML = `<div class="hello"><h1><small>${locChipHTML() || `Good to see you, ${esc(firstName('f0'))}`} · <button class="tierword t-${S.tier}" data-act="plans">${PLANS[S.tier].name}</button></small>What do you feel like playing${S.auth ? ', ' + esc(firstName('f0')) : ''}?</h1>${bellHTML()}${goalRing()}</div>
     <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${imgOf(a)}" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
     <div class="chips"><button class="chip neutral" data-act="advOpen" aria-pressed="${nf > 0}" aria-label="Filters${nf ? ', ' + nf + ' on' : ''}">${ic('sliders-horizontal')}Filters${nf ? ` <b class="num">${nf}</b>` : ''}</button>${moods.map(([k, n, s]) => `<button class="chip ${s ? '' : 'neutral'}" style="${s ? '--c:' + s.c : ''}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('')}</div>`;
   const list = games();
@@ -3940,7 +3990,7 @@ function toStep(step) {
   if (AU.step === 'otp' && step !== 'otp') clearInterval(OTP_TIMER);
   if (step !== 'intro' && step !== 'splash') stopIntro();
   AU.step = step;
-  ({ intro: () => showIntro(0), splash: () => showIntro('splash'), onboard: renderOnboard, auth: renderAuth, phone: renderPhone, otp: renderOtp, profile: renderProfile })[step]();
+  ({ intro: () => showIntro(0), splash: () => showIntro('splash'), onboard: renderOnboard, auth: renderAuth, phone: renderPhone, otp: renderOtp, profile: renderProfile, location: renderLocation })[step]();
 }
 const pane = (html, cls = '') => { gateEl().innerHTML = `<div class="g-pane ${cls}">${html}</div>`; };
 const focusFirst = (sel) => { if (framed() || !matchMedia('(pointer: coarse)').matches) { const e = $(sel, gateEl()); if (e) e.focus({ preventScroll: true }); } };
@@ -4006,6 +4056,7 @@ function renderAuth() {
     <h2 class="g-h">${up ? 'Create your account' : 'Welcome back'}</h2>
     <p class="g-sub">${up ? 'Join games, teams and leagues near you.' : 'Log in to pick up where you left off.'}</p>
     <div class="g-seg" role="group" aria-label="Account"><button data-act="auMode" data-id="signup" aria-pressed="${up}">Sign up</button><button data-act="auMode" data-id="login" aria-pressed="${!up}">Log in</button></div>
+    ${up ? termsHTML() : ''}
     <button class="g-btn g-google" data-act="auGoogle">${G_LOGO}Continue with Google</button>
     <button class="g-btn g-phone" data-act="auPhone">${ic('smartphone')}Continue with phone number</button>
     <div class="g-or"><span>or with email</span></div>
@@ -4018,9 +4069,45 @@ function renderAuth() {
       <button class="g-btn g-cta" type="submit">${up ? 'Create account' : 'Log in'}</button>
     </form>
     ${up ? '' : `<p class="g-demo">Demo account: ${DEMO_ACCT.email} · ${DEMO_ACCT.pass}</p>`}
-    <p class="g-fine">By continuing you agree to Splayer’s Terms of Service and Privacy Policy.</p>
+    ${up ? '' : '<p class="g-fine">By logging in you agree to Splayer’s Terms &amp; Conditions and Privacy Policy.</p>'}
   </div>`, 'dark');
 }
+const termsHTML = () => `<div class="g-terms"><label class="g-check"><input type="checkbox" name="terms" data-terms ${AU.terms ? 'checked' : ''}>
+    <span>I agree to Splayer’s <button type="button" class="g-inline" data-act="auTerms" data-id="terms">Terms &amp; Conditions</button> and <button type="button" class="g-inline" data-act="auTerms" data-id="privacy">Privacy Policy</button>, and I’m 13 or older.</span></label>
+  <p class="g-err g-terr" role="alert"></p></div>`;
+/* Every way of creating an account needs the box ticked first. */
+function needTerms() {
+  if (AU.terms) return false;
+  const box = $('[data-terms]', gateEl()), wrap = $('.g-terms', gateEl());
+  if (!box) return false;
+  $('.g-terr', wrap).textContent = 'Please agree to the Terms & Conditions to create your account.';
+  wrap.classList.remove('bad'); void wrap.offsetWidth; wrap.classList.add('bad'); box.focus(); buzz(20);
+  return true;
+}
+const TERMS = {
+  terms: ['Terms & Conditions', [
+    ['Using Splayer', 'Splayer helps you find, join and host community sport. You must be 13 or older; players under 18 need a parent or guardian to manage bookings.'],
+    ['Games and bookings', 'Hosts set the price, time and rules for their games. Payments you make through Splayer go to the host or venue. Refunds follow each game’s cancellation policy.'],
+    ['Playing safely', 'Sport carries a risk of injury. Play within your ability and follow venue rules. Hosts must not post misleading games.'],
+    ['Your account', 'Keep your login private. We may suspend accounts that harass other players, no-show repeatedly or misuse payments.']]],
+  privacy: ['Privacy Policy', [
+    ['What we collect', 'Your name, contact (email or phone), sports, level and the location you choose, so we can show games near you.'],
+    ['Location', 'We only use your location with your permission. You can enter an address instead, and switch live location off any time in Me → Location.'],
+    ['Who sees what', 'Other players see your first name, sports and level. Your phone number and email are never shown publicly.'],
+    ['In this prototype', 'Everything is stored on this device only. Area names are looked up with OpenStreetMap when you use location or address search.']]]
+};
+function termsSheet(k) {
+  const [title, parts] = TERMS[k], g = gateEl(); $$('.g-scrim, .g-chooser', g).forEach((e) => e.remove());
+  g.insertAdjacentHTML('beforeend', `<div class="g-scrim" data-act="auGClose"></div>
+    <div class="g-chooser g-doc" role="dialog" aria-modal="true" aria-label="${title}">
+      <div class="g-ch-top"><span>Splayer</span><button class="g-x" data-act="auGClose" aria-label="Close">${ic('x')}</button></div>
+      <h3>${title}</h3><p class="g-ch-sub">Summary for the prototype · last updated ${new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date())}</p>
+      ${parts.map(([h, t]) => `<h4>${h}</h4><p>${t}</p>`).join('')}
+      ${$('[data-terms]', g) ? '<button class="g-btn g-blue" data-act="auAgree">I agree</button>' : '<button class="g-btn g-blue" data-act="auGClose">Close</button>'}
+    </div>`);
+  focusFirst('.g-chooser button');
+}
+
 function formErr(form, msg, field) {
   $$('[aria-invalid]', form).forEach((e) => e.removeAttribute('aria-invalid'));
   const p = $('.g-err', form); p.innerHTML = msg || '';
@@ -4036,6 +4123,7 @@ function submitEmail(form) {
   if (!EMAIL_RE.test(email)) return formErr(form, 'Enter a valid email address, like you@example.com.', 'email');
   if (up && pass.length < 8) return formErr(form, 'Use at least 8 characters for your password.', 'pass');
   const acct = findAcct({ email });
+  if (up && !acct && needTerms()) return;
   if (up) {
     if (acct) return formErr(form, `${esc(email)} already has an account. <button type="button" data-act="auMode" data-id="login">Log in instead</button>`, 'email');
     AU.pending = { name: v('name'), email, pass, method: 'email' }; return toStep('profile');
@@ -4141,34 +4229,37 @@ function checkOtp() {
 function renderProfile() {
   const P = AU.pending || {}; P.sports = P.sports || []; P.level = P.level || 'Casual'; AU.pending = P;
   pane(`<div class="g-scroll">
-    <div class="g-top"><button class="g-back" data-act="auBack" aria-label="Back">${ic('arrow-left')}</button><span class="g-step">Last step</span></div>
+    <div class="g-top"><button class="g-back" data-act="auBack" aria-label="Back">${ic('arrow-left')}</button><span class="g-step">Step 1 of 2</span></div>
     <h2 class="g-h">Set up your profile</h2><p class="g-sub">So we can suggest the right games${P.method === 'google' ? `. Signed in as ${esc(P.email)}` : P.method === 'phone' ? `. Verified +91 ${fmtPhone(P.phone)}` : ''}.</p>
     <form class="g-form" data-form="profile" novalidate>
       <label class="g-field"><span>Your name</span><input name="name" autocomplete="name" placeholder="First and last name" value="${esc(P.name || '')}"></label>
-      <label class="g-field"><span>Your area</span><input name="area" autocomplete="address-level2" placeholder="Neighbourhood, city" value="${esc(P.area || 'Indiranagar, Bengaluru')}"></label>
       <fieldset class="g-fs"><legend>Sports you play <small>Pick at least one</small></legend>
         <div class="g-chips">${PROFILE_SPORTS.map((k) => `<button type="button" class="g-chip" data-act="auSport" data-id="${k}" aria-pressed="${P.sports.includes(k)}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></fieldset>
       <fieldset class="g-fs"><legend>Your level</legend>
         <div class="g-seg">${LEVELS.map((l) => `<button type="button" data-act="auLevel" data-id="${l}" aria-pressed="${P.level === l}">${l}</button>`).join('')}</div></fieldset>
+      ${AU.terms ? '' : termsHTML()}
       <p class="g-err" role="alert"></p>
-      <button class="g-btn g-cta" type="submit">Let’s play${ic('arrow-right')}</button>
+      <button class="g-btn g-cta" type="submit">Continue${ic('arrow-right')}</button>
     </form></div>`, 'dark');
 }
 function submitProfile(form) {
-  const P = AU.pending; P.name = form.elements.name.value.trim(); P.area = form.elements.area.value.trim();
+  const P = AU.pending; P.name = form.elements.name.value.trim();
   if (P.name.length < 2) return formErr(form, 'Enter your name.', 'name');
   if (!P.sports.length) return formErr(form, 'Pick at least one sport.');
-  const acct = { name: P.name, email: P.email || '', phone: P.phone || '', pass: P.pass || '', method: P.method };
-  accounts().push(acct); S.profile = { area: P.area || 'Bengaluru', sports: P.sports.slice(), level: P.level };
+  if (needTerms()) return;
+  const acct = { name: P.name, email: P.email || '', phone: P.phone || '', pass: P.pass || '', method: P.method, termsAt: Date.now() };
+  accounts().push(acct); S.profile = { sports: P.sports.slice(), level: P.level };
   finishAuth(acct, true);
 }
 
 /* ── Signed in ── */
 function applyIdentity() { if (S.auth && S.auth.name) FAMILY[0].name = S.auth.name; }
 function finishAuth(acct, isNew) {
-  S.auth = { name: acct.name, email: acct.email, phone: acct.phone, method: AU.via || acct.method, since: Date.now() };
+  if (!S.location) { AU.after = () => finishAuth(acct, isNew); AU.editLoc = false; AU.newcomer = isNew; return toStep('location'); }
+  AU.after = null;
+  S.auth = { name: acct.name, email: acct.email, phone: acct.phone, method: AU.via || acct.method, since: Date.now(), termsAt: acct.termsAt || Date.now() };
   S.onboarded = true; AU.pending = null; save(); applyIdentity();
-  closeGate(); go('play'); renderNote();
+  closeGate(); go('play'); renderNote(); startLive();
   const first = acct.name.split(' ')[0];
   toast(isNew ? `Welcome to Splayer, ${first}` : `Welcome back, ${first}`, isNew ? 'sparkles' : 'circle-check');
   if (isNew) { confetti('#3EE07A'); buzz(30); }
@@ -4177,6 +4268,7 @@ function accountHTML() {
   const a = S.auth; if (!a) return '';
   return `<div class="section"><h2>Account</h2><div class="lrows">
     ${rowHTML({ act: 'acctSheet', icon: a.method === 'phone' ? 'smartphone' : a.method === 'google' ? 'user' : 'mail', title: esc(a.name), sub: esc(`${METHOD[a.method] || 'Email'} · ${a.email || '+91 ' + fmtPhone(a.phone)}`) })}
+    ${rowHTML({ act: 'locEdit', icon: 'map-pin', title: 'Location', sub: S.location ? esc(S.location.label) + (S.location.live ? ' · live' : S.location.source === 'gps' ? ' · from GPS' : ' · entered manually') : 'Not set' })}
     ${rowHTML({ act: 'signOut', icon: 'log-out', title: 'Sign out', sub: 'Your games and streak stay on this device' })}</div></div>`;
 }
 
@@ -4185,16 +4277,18 @@ Object.assign(A, {
   auSkipOb: () => obGo(SLIDES.length),
   auNext: () => obGo(AU.slide + 1),
   auMode: (el) => { AU.mode = el.dataset.id; renderAuth(); },
+  auTerms: (el) => termsSheet(el.dataset.id),
+  auAgree: () => { AU.terms = true; A.auGClose(); const b = $('[data-terms]', gateEl()); if (b) { b.checked = true; const w = $('.g-terms', gateEl()); $('.g-terr', w).textContent = ''; w.classList.remove('bad'); } },
   auEye: (el) => { const i = el.previousElementSibling, show = i.type === 'password'; i.type = show ? 'text' : 'password'; el.setAttribute('aria-pressed', show); el.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); el.innerHTML = ic(show ? 'eye-off' : 'eye'); },
   auForgot: () => { const f = $('[data-form="email"]', gateEl()), e = f.elements.email.value.trim();
     if (!EMAIL_RE.test(e)) return formErr(f, 'Enter your email first and we’ll send a reset link.', 'email');
     formErr(f, ''); toast(`Reset link sent to ${e}`, 'mail'); },
-  auGoogle: () => { AU.via = 'google'; googleSheet(false); },
+  auGoogle: () => { if (AU.mode === 'signup' && needTerms()) return; AU.via = 'google'; googleSheet(false); },
   auGOther: () => googleSheet(true),
   auGClose: () => $$('.g-scrim, .g-chooser', gateEl()).forEach((e) => e.remove()),
   auGPick: (el) => googlePick(GOOGLE_PEOPLE[+el.dataset.id]),
-  auPhone: () => { AU.via = 'phone'; toStep('phone'); },
-  auBack: () => toStep(AU.step === 'otp' ? 'phone' : 'auth'),
+  auPhone: () => { if (AU.step === 'auth' && AU.mode === 'signup' && needTerms()) return; AU.via = 'phone'; toStep('phone'); },
+  auBack: () => toStep(AU.step === 'otp' ? 'phone' : AU.step === 'location' && AU.newcomer ? 'profile' : 'auth'),
   auResend: () => { sendCode(); renderOtp(); toast('New code sent', 'message-square'); },
   auFill: () => { fillOtp(AU.code); },
   auSport: (el) => { const P = AU.pending, k = el.dataset.id, i = P.sports.indexOf(k); if (i >= 0) P.sports.splice(i, 1); else P.sports.push(k); el.setAttribute('aria-pressed', i < 0); buzz(6); },
@@ -4207,27 +4301,186 @@ Object.assign(A, {
       <button class="pill block soft" data-act="signOut">${ic('log-out')}Sign out</button>`); },
   signOut: () => sheet(`${head('Sign out of Splayer?', 'Your games, teams and streak stay saved on this device.')}
       <button class="pill block" data-act="signOutGo">${ic('log-out')}Sign out</button><button class="pill block soft" data-act="close">Cancel</button>`),
-  signOutGo: () => { const e = S.auth && S.auth.email; S.auth = null; save(); FAMILY[0].name = DEMO_ACCT.name; AU = { mode: 'login', step: 'auth', slide: 0, pending: null, lastEmail: e }; openGate('auth'); renderNote(); },
+  signOutGo: () => { const e = S.auth && S.auth.email; S.auth = null; stopLive(); save(); FAMILY[0].name = DEMO_ACCT.name; AU = { mode: 'login', step: 'auth', slide: 0, pending: null, lastEmail: e }; openGate('auth'); renderNote(); },
   replayIntro: () => { AU.slide = 0; openGate('intro'); },
-  replayOnboarding: () => { S.auth = null; S.onboarded = false; save(); FAMILY[0].name = DEMO_ACCT.name; AU = { mode: 'signup', step: 'intro', slide: 0, pending: null }; openGate('intro'); renderNote(); }
+  replayOnboarding: () => { S.auth = null; S.onboarded = false; S.location = null; AU.terms = false; stopLive(); save(); FAMILY[0].name = DEMO_ACCT.name; AU = { mode: 'signup', step: 'intro', slide: 0, pending: null }; openGate('intro'); renderNote(); }
 });
 const _reset = A.reset;
-A.reset = () => { _reset(); FAMILY[0].name = DEMO_ACCT.name; AU = { mode: 'signup', step: 'intro', slide: 0, pending: null }; openGate('intro'); };
+A.reset = () => { stopLive(); _reset(); FAMILY[0].name = DEMO_ACCT.name; AU = { mode: 'signup', step: 'intro', slide: 0, pending: null }; openGate('intro'); };
 
 document.addEventListener('submit', (e) => {
   const f = e.target.closest('#gate form[data-form]'); if (!f) return; e.preventDefault();
   ({ email: submitEmail, phone: submitPhone, otp: () => checkOtp(), profile: submitProfile,
-    google: (form) => { const n = form.elements.name.value.trim(), m = form.elements.email.value.trim().toLowerCase();
+    loc: submitLoc, google: (form) => { const n = form.elements.name.value.trim(), m = form.elements.email.value.trim().toLowerCase();
       if (n.length < 2) return formErr(form, 'Enter your name.', 'name');
       if (!EMAIL_RE.test(m)) return formErr(form, 'Enter a valid email address.', 'email');
       googlePick({ name: n, email: m }); } })[f.dataset.form](f);
 });
+document.addEventListener('change', (e) => { if (e.target.matches && e.target.matches('#gate [data-terms]')) { AU.terms = e.target.checked; if (AU.terms) { const w = e.target.closest('.g-terms'); $('.g-terr', w).textContent = ''; w.classList.remove('bad'); } } });
 /* Typing in a field clears its error. */
 document.addEventListener('input', (e) => { const f = e.target.closest && e.target.closest('#gate form'); if (!f || e.target.matches('[data-otp]')) return; e.target.removeAttribute('aria-invalid'); const p = $('.g-err', f); if (p) p.innerHTML = ''; });
 /* Phone number: group as 98765 43210 while typing. */
 document.addEventListener('input', (e) => { const t = e.target; if (!t.matches || !t.matches('#gate input[name=phone]')) return; const d = t.value.replace(/\D/g, '').slice(0, 10); t.value = d.length > 5 ? d.slice(0, 5) + ' ' + d.slice(5) : d; });
 
-function startWelcome() { applyIdentity(); openGate(S.auth ? 'splash' : 'intro'); }
+function startWelcome() { applyIdentity(); openGate(S.auth ? 'splash' : 'intro'); if (S.auth) startLive(); }
+
+/* ── 5. Location: ask permission for GPS, or type an address. Used for "near you" and live updates. ── */
+/* Fallback places when the address lookup service can't be reached (offline, or blocked by the host page). */
+const IN_AREAS = [
+  ['Indiranagar', 'Bengaluru, Karnataka', 12.9719, 77.6412], ['Koramangala', 'Bengaluru, Karnataka', 12.9352, 77.6245], ['HSR Layout', 'Bengaluru, Karnataka', 12.9116, 77.6474],
+  ['Whitefield', 'Bengaluru, Karnataka', 12.9698, 77.7500], ['Jayanagar', 'Bengaluru, Karnataka', 12.9308, 77.5838], ['Malleshwaram', 'Bengaluru, Karnataka', 13.0031, 77.5643],
+  ['Bandra West', 'Mumbai, Maharashtra', 19.0596, 72.8295], ['Andheri West', 'Mumbai, Maharashtra', 19.1364, 72.8296], ['Powai', 'Mumbai, Maharashtra', 19.1176, 72.9060],
+  ['Hauz Khas', 'New Delhi, Delhi', 28.5494, 77.2001], ['Connaught Place', 'New Delhi, Delhi', 28.6315, 77.2167], ['Dwarka', 'New Delhi, Delhi', 28.5921, 77.0460],
+  ['Gachibowli', 'Hyderabad, Telangana', 17.4401, 78.3489], ['Banjara Hills', 'Hyderabad, Telangana', 17.4126, 78.4482], ['Anna Nagar', 'Chennai, Tamil Nadu', 13.0850, 80.2101],
+  ['T Nagar', 'Chennai, Tamil Nadu', 13.0418, 80.2341], ['Salt Lake', 'Kolkata, West Bengal', 22.5867, 88.4171], ['Kothrud', 'Pune, Maharashtra', 18.5074, 73.8077],
+  ['Viman Nagar', 'Pune, Maharashtra', 18.5679, 73.9143], ['Navrangpura', 'Ahmedabad, Gujarat', 23.0365, 72.5611], ['Kakkanad', 'Kochi, Kerala', 10.0159, 76.3419]
+].map(([label, sub, lat, lng]) => ({ label, sub, lat, lng }));
+const OSM = 'https://nominatim.openstreetmap.org';
+async function osm(path) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 6000);
+  try { const r = await fetch(OSM + path, { signal: ctl.signal, headers: { 'Accept-Language': 'en' } }); if (!r.ok) throw new Error('lookup ' + r.status); return await r.json(); }
+  finally { clearTimeout(timer); }
+}
+const placeName = (a = {}) => {
+  const area = a.suburb || a.neighbourhood || a.quarter || a.city_district || a.road || a.village || a.town;
+  const city = a.city || a.town || a.state_district || a.county;
+  return { label: [area, area !== city ? city : null].filter(Boolean).join(', ') || city || a.state || 'Your location', sub: [a.state, a.postcode].filter(Boolean).join(' ') };
+};
+async function reverseGeo(lat, lng) {
+  try { const j = await osm(`/reverse?format=jsonv2&zoom=16&addressdetails=1&lat=${lat}&lon=${lng}`); const n = placeName(j.address); return { label: n.label, sub: n.sub || j.display_name }; }
+  catch (e) {
+    const near = IN_AREAS.map((p) => ({ p, d: Math.hypot(p.lat - lat, (p.lng - lng) * Math.cos(lat * Math.PI / 180)) })).sort((a, b) => a.d - b.d)[0];
+    return near && near.d < .06 ? { label: `${near.p.label}, ${near.p.sub.split(',')[0]}`, sub: 'Approximate area' } : { label: `Near ${lat.toFixed(3)}, ${lng.toFixed(3)}`, sub: 'Area name unavailable right now' };
+  }
+}
+async function searchPlaces(q) {
+  try {
+    const j = await osm(`/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=in&q=${encodeURIComponent(q)}`);
+    return j.map((r) => { const n = placeName(r.address); return { label: r.name && r.name !== n.label.split(',')[0] ? `${r.name}, ${n.label}` : n.label, sub: r.display_name, lat: +r.lat, lng: +r.lon }; });
+  } catch (e) {
+    const t = q.toLowerCase(); return IN_AREAS.filter((p) => (p.label + ' ' + p.sub).toLowerCase().includes(t)).slice(0, 6).map((p) => ({ ...p, label: `${p.label}, ${p.sub.split(',')[0]}`, offline: true }));
+  }
+}
+const kmBetween = (a, b) => { const R = 6371, r = Math.PI / 180, dl = (b.lat - a.lat) * r, dg = (b.lng - a.lng) * r;
+  const h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dg / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+
+function renderLocation() {
+  AU.loc = AU.loc || (AU.editLoc && S.location ? { ...S.location } : null);
+  if (AU.live == null) AU.live = true;
+  pane(`<div class="g-scroll">
+    <div class="g-top"><button class="g-back" data-act="${AU.editLoc ? 'locCancel' : 'auBack'}" aria-label="${AU.editLoc ? 'Close' : 'Back'}">${ic(AU.editLoc ? 'x' : 'arrow-left')}</button><span class="g-step">${AU.editLoc ? 'Your location' : AU.newcomer ? 'Step 2 of 2' : 'One more thing'}</span></div>
+    <h2 class="g-h">Where do you play?</h2>
+    <p class="g-sub">Splayer uses your location to show games, turfs and players near you in real time.</p>
+    <button class="g-gps" data-act="locGps"><span class="g-gps-ic">${ic('locate-fixed')}</span><span><b>Use my current location</b><small>Most accurate. Your browser will ask for permission.</small></span>${ic('chevron-right')}</button>
+    <div class="g-locstate" aria-live="polite"></div>
+    <div class="g-or"><span>or enter your address</span></div>
+    <form class="g-form" data-form="loc" novalidate autocomplete="off">
+      <div class="g-field g-combo"><label for="gAddr">Area, street or landmark</label>
+        <input id="gAddr" name="q" type="text" placeholder="e.g. 100 Feet Road, Indiranagar" role="combobox" aria-expanded="false" aria-controls="gSugg" aria-autocomplete="list" enterkeyhint="search">
+        <ul id="gSugg" class="g-sugg" role="listbox" aria-label="Matching places" hidden></ul></div>
+      <label class="g-field"><span>Flat, building or nearby landmark <small class="g-opt">Optional</small></span><input name="extra" autocomplete="address-line2" placeholder="e.g. Tower B, near the metro" value="${esc((AU.loc && AU.loc.extra) || '')}"></label>
+      <p class="g-err" role="alert"></p>
+      <button class="g-btn g-cta" type="submit">${AU.editLoc ? 'Save location' : 'Let’s play'}${ic('arrow-right')}</button>
+    </form>
+    <p class="g-fine">Your location stays on this device. Area names are looked up with OpenStreetMap. Change it any time in Me → Location.</p></div>`, 'dark');
+  locState();
+  if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name: 'geolocation' }).then((st) => { AU.perm = st.state; if (!AU.locBusy) locState(); }).catch(() => {});
+}
+function locState(msg, tone = '') {
+  const box = $('.g-locstate', gateEl()); if (!box) return;
+  const L = AU.loc;
+  if (!msg && AU.perm === 'denied' && !(L && L.source === 'gps')) { msg = 'Location is blocked for this site. Allow it in your browser’s site settings and try again, or enter your address below.'; tone = 'warn'; }
+  box.innerHTML = `${msg ? `<p class="g-locmsg ${tone}">${tone === 'busy' ? '<span class="g-spin" aria-hidden="true"></span>' : ''}${msg}</p>` : ''}
+    ${L ? `<div class="g-picked">${ic(L.source === 'gps' ? 'locate-fixed' : 'map-pin')}<div><b>${esc(L.label)}</b><small>${esc(L.sub || (L.source === 'gps' ? 'From GPS' : 'Entered manually'))}${L.acc ? ` · accurate to ${Math.round(L.acc)} m` : ''}</small></div><button type="button" class="g-inline" data-act="locClear">Change</button></div>
+      ${L.source === 'gps' ? `<label class="g-check sm"><input type="checkbox" data-live ${AU.live ? 'checked' : ''}><span><b>Live location</b> · keep games and distances updated while I use Splayer</span></label>` : ''}` : ''}`;
+}
+function locGps() {
+  if (!('geolocation' in navigator)) return locState('This browser can’t share your location. Enter your address below.', 'warn');
+  if (!window.isSecureContext) return locState('Location needs a secure (https) connection. Enter your address below.', 'warn');
+  AU.locBusy = true; locState('Waiting for permission. Choose “Allow” when your browser asks.', 'busy');
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude: lat, longitude: lng, accuracy: acc } = pos.coords;
+    AU.perm = 'granted'; locState(`Found you, accurate to ${Math.round(acc)} m. Looking up your area…`, 'busy');
+    const n = await reverseGeo(lat, lng);
+    AU.locBusy = false; AU.loc = { label: n.label, sub: n.sub, lat, lng, acc, source: 'gps' };
+    const f = $('[data-form="loc"]', gateEl()); if (f) { f.elements.q.value = ''; hideSugg(); }
+    locState(); buzz(15);
+  }, (err) => {
+    AU.locBusy = false;
+    if (err.code === 1) { AU.perm = 'denied'; locState('You chose not to share your location. That’s fine: enter your address below. You can allow it later in your browser’s site settings.', 'warn'); }
+    else locState(err.code === 3 ? 'Couldn’t get a fix in time. Try again, or enter your address below.' : 'Your location isn’t available right now. Enter your address below.', 'warn');
+  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+}
+/* Address search with suggestions (debounced; keyboard friendly). */
+let SUGG = [], SUGG_T = 0, SUGG_I = -1, SUGG_Q = '';
+const suggBox = () => $('#gSugg', gateEl());
+function hideSugg() { const u = suggBox(); if (!u) return; u.hidden = true; u.innerHTML = ''; SUGG = []; SUGG_I = -1; const i = $('#gAddr', gateEl()); if (i) { i.setAttribute('aria-expanded', 'false'); i.removeAttribute('aria-activedescendant'); } }
+function showSugg(list, q) {
+  const u = suggBox(), inp = $('#gAddr', gateEl()); if (!u || inp.value.trim() !== q) return;
+  SUGG = list; SUGG_I = -1;
+  u.innerHTML = list.length ? list.map((r, i) => `<li role="option" id="gOpt${i}" aria-selected="false"><button type="button" data-act="locPick" data-i="${i}" tabindex="-1">${ic('map-pin')}<span><b>${esc(r.label)}</b><small>${esc(r.sub || '')}</small></span></button></li>`).join('')
+    + (list[0] && list[0].offline ? '<li class="g-sugg-note">Showing saved areas: live address search is unavailable right now.</li>' : '')
+    : `<li class="g-sugg-note">No matches. You can still use “${esc(q)}” as your address.</li>`;
+  u.hidden = false; inp.setAttribute('aria-expanded', 'true');
+}
+document.addEventListener('input', (e) => {
+  const t = e.target; if (!t.matches || !t.matches('#gAddr')) return;
+  const q = t.value.trim(); clearTimeout(SUGG_T);
+  if (q.length < 3) return hideSugg();
+  const u = suggBox(); u.hidden = false; u.innerHTML = '<li class="g-sugg-note"><span class="g-spin" aria-hidden="true"></span>Searching…</li>'; t.setAttribute('aria-expanded', 'true');
+  SUGG_T = setTimeout(async () => { SUGG_Q = q; const r = await searchPlaces(q); if (SUGG_Q === q) showSugg(r, q); }, 380);
+});
+document.addEventListener('keydown', (e) => {
+  if (!e.target.matches || !e.target.matches('#gAddr') || !SUGG.length) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); SUGG_I = (SUGG_I + (e.key === 'ArrowDown' ? 1 : -1) + SUGG.length) % SUGG.length;
+    $$('#gSugg [role=option]', gateEl()).forEach((o, i) => o.setAttribute('aria-selected', i === SUGG_I));
+    e.target.setAttribute('aria-activedescendant', 'gOpt' + SUGG_I);
+  } else if (e.key === 'Enter' && SUGG_I >= 0) { e.preventDefault(); pickPlace(SUGG[SUGG_I]); }
+  else if (e.key === 'Escape') { e.stopPropagation(); hideSugg(); }
+});
+document.addEventListener('change', (e) => { if (e.target.matches && e.target.matches('#gate [data-live]')) AU.live = e.target.checked; });
+function pickPlace(r) {
+  AU.loc = { label: r.label, sub: r.sub, lat: r.lat, lng: r.lng, source: 'manual' };
+  const i = $('#gAddr', gateEl()); if (i) i.value = r.label;
+  hideSugg(); locState(); buzz(10);
+  const f = $('[data-form="loc"]', gateEl()); if (f) formErr(f, '');
+}
+function submitLoc(form) {
+  const q = form.elements.q.value.trim(), extra = form.elements.extra.value.trim();
+  if ((!AU.loc || (q && AU.loc.label !== q && AU.loc.source === 'manual')) && q) {
+    if (SUGG.length) pickPlace(SUGG[0]); else AU.loc = { label: q, sub: 'Entered manually', source: 'manual' };
+  }
+  if (!AU.loc) return formErr(form, 'Use your current location or enter an address to continue.', 'q');
+  S.location = { ...AU.loc, extra, live: AU.loc.source === 'gps' && !!AU.live, at: Date.now() };
+  save(); AU.loc = null;
+  const after = AU.after; AU.after = null;
+  if (after) after(); else { closeGate(); startLive(); if (tab === 'play') renderPlay(); else go(tab); toast(`Location set to ${S.location.label}`, 'map-pin'); }
+}
+/* Live location: follow the device while the app is open; re-name the area after moving ~400 m. */
+let LIVE_ID = null, LIVE_NAMED = 0;
+function startLive() {
+  stopLive();
+  if (!S.location || !S.location.live || !('geolocation' in navigator)) return;
+  LIVE_ID = navigator.geolocation.watchPosition(async (pos) => {
+    const L = S.location; if (!L || !L.live) return stopLive();
+    const now = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    const moved = L.lat != null ? kmBetween(L, now) : 1;
+    Object.assign(L, now, { acc: pos.coords.accuracy, at: Date.now() });
+    if (moved > .4 && Date.now() - LIVE_NAMED > 60000) { LIVE_NAMED = Date.now(); const n = await reverseGeo(now.lat, now.lng); L.label = n.label; L.sub = n.sub; }
+    save(); const chip = $('#locChip span'); if (chip) chip.textContent = L.label;
+  }, () => { /* permission revoked or unavailable: keep the last known place */ }, { enableHighAccuracy: false, maximumAge: 30000, timeout: 30000 });
+}
+function stopLive() { if (LIVE_ID != null) { try { navigator.geolocation.clearWatch(LIVE_ID); } catch (e) { /* ignore */ } LIVE_ID = null; } }
+const locChipHTML = () => S.location ? `<button class="locchip" id="locChip" data-act="locEdit" aria-label="Location: ${esc(S.location.label)}${S.location.live ? ', live' : ''}. Change">${ic('map-pin')}<span>${esc(S.location.label)}</span>${S.location.live ? '<i class="live" aria-hidden="true"></i>' : ''}</button>` : '';
+
+Object.assign(A, {
+  locGps: () => locGps(),
+  locPick: (el) => pickPlace(SUGG[+el.dataset.i]),
+  locClear: () => { AU.loc = null; locState(); const i = $('#gAddr', gateEl()); if (i) { i.value = ''; i.focus(); } },
+  locEdit: () => { closeSheet(); AU.editLoc = true; AU.after = null; AU.loc = null; AU.live = S.location ? S.location.live !== false : true; openGate('location'); },
+  locCancel: () => { AU.loc = null; closeGate(); }
+});
 
 
 document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
