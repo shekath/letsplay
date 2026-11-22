@@ -1,0 +1,48 @@
+<title>LetsPlay</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/*@@CSS@@*/
+</style>
+<div class="stage">
+  <aside class="panel" aria-label="About this prototype">
+    <div class="brandmark"><span class="logo" id="logoMark"></span><span class="wordmark">Lets<b>Play</b></span></div>
+    <h1>Find your game.<br>Build your team.</h1>
+    <p>An interactive prototype of the LetsPlay community sports app. The live map opens first so nearby games are always one tap away. Switch plans to see what each tier unlocks.</p>
+    <div class="panel-card">
+      <div class="eyebrow">Preview plan</div>
+      <div class="seg" id="panelTier" role="group" aria-label="Preview plan"></div>
+      <ul class="feat-list" id="panelFeats"></ul>
+    </div>
+    <div class="panel-card">
+      <div class="eyebrow">Try this</div>
+      <ul class="feat-list" id="panelTry"></ul>
+    </div>
+    <p style="font-size:13px">Built mobile-first for iOS and Android: open it on a phone for the full-screen app. All people, clubs, prices and company data are sample content.</p>
+  </aside>
+  <div class="device">
+    <div class="app" id="app">
+      <div class="statusbar" aria-hidden="true"><span class="num" id="clock">9:41</span><span class="island"></span><span id="sbIcons" style="display:flex;gap:5px;align-items:center"></span></div>
+      <main class="screens">
+        <section class="screen" id="scr-explore" aria-label="Explore"></section>
+        <section class="screen pad" id="scr-games" aria-label="My games" hidden></section>
+        <section class="screen pad" id="scr-teams" aria-label="Teams" hidden></section>
+        <section class="screen pad" id="scr-shop" aria-label="Shop" hidden></section>
+        <section class="screen pad" id="scr-me" aria-label="Profile" hidden></section>
+        <div class="stack" id="stack"></div>
+      </main>
+      <nav class="tabbar" id="tabbar" aria-label="Main"></nav>
+    </div>
+  </div>
+</div>
+<script>
+/*@@ICONS@@*/
+</script>
+<script>
+/*@@DATA@@*/
+</script>
+<script>
+/*@@APP@@*/
+</script>
