@@ -106,23 +106,22 @@ function renderPlay() {
   if (!list.find((a) => a.id === focused)) focused = list[0] ? list[0].id : null;
   $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>` + ACTIVITIES.map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
   $('#lhead').innerHTML = `<div><h2>${list.length} game${list.length === 1 ? '' : 's'} near you</h2><div class="faint" style="font-size:13px;font-weight:600">Tap a game to see it on the map</div></div><button class="pill sm soft" data-act="sheetToggle" aria-label="Expand or collapse the list">${ic('layers')}${sheetIdx ? 'Map' : 'List'}</button>`;
-  $('#llist').innerHTML = list.length ? list.map(itemHTML).join('') : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
+  $('#llist').innerHTML = list.length ? `<div class="grows">${list.map(itemHTML).join('')}</div>` :`<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
   focusMap(true, list.find((a) => a.id === focused) || null);
 }
-/* "7:30" large with a small "pm", so the start time reads at a glance. */
-function timeParts(a) { const s = tf.format(dateAt(a.d, a.t)); const m = s.match(/^([\d:.]+)\s*(.*)$/); return m ? `${m[1]}<small>${esc(m[2])}</small>` : esc(s); }
+/* One row per game: name, then day · time and a distance chip, then price, spots and venue.
+   The venue goes last so a long name is what gets cut, never the price or spots. */
 function itemHTML(a) {
   const s = sp(a.sport), joined = S.joined.includes(a.id), left = Math.max(0, a.spots - (joined ? 1 : 0));
   return `<article class="gitem ${focused === a.id ? 'on' : ''}" id="item-${a.id}" style="--c:${s.c}">
     <button class="gi-main" data-act="focus" data-id="${a.id}" aria-label="${esc(a.title)}: show on map and see details">
-      <span class="gi-photo"><img src="${IMG + a.img}.jpg" alt="" loading="lazy"><span class="gi-day ${a.d === 0 ? 'today' : ''}">${a.d === 1 ? 'Tmrw' : dayLabel(a.d)}</span><span class="gi-sport">${ic(s.icon)}</span></span>
+      <img class="gi-photo" src="${IMG + a.img}.jpg" alt="" loading="lazy">
       <span class="gi-text">
-        <span class="gi-when"><b class="gi-time num">${timeParts(a)}</b><span class="gi-dist num">${ic('navigation')}${fmtKm(km(a.x, a.y))}</span></span>
         <b class="gi-title">${esc(a.title)}</b>
-        <span class="gi-meta">${esc(a.venue.split(' · ')[0])} · ${money(a.price)}</span>
-        <span class="gi-spots"><span class="spots-bar"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></span><span class="num">${left} left</span></span></span>
+        <span class="gi-when"><span class="${a.d === 0 ? 'today' : ''}">${a.d === 1 ? 'Tmrw' : dayLabel(a.d)}</span><i class="dot" aria-hidden="true"></i><span>${tf.format(dateAt(a.d, a.t))}</span><span class="gi-dist">${ic('map-pin')}${fmtKm(km(a.x, a.y))}</span></span>
+        <span class="gi-meta">${money(a.price)} · ${left ? left + ' left' : 'Full'} · ${esc(a.venue.split(' · ')[0])}</span></span>
     </button>
-    ${joined ? `<span class="gi-in">${ic('check')}In</span>` : left === 0 ? '<span class="gi-in gi-full">Full</span>' : `<button class="gi-join" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
+    ${joined ? `<span class="gi-act in" role="img" aria-label="You're in">${ic('check')}</span>` : left === 0 ? '<span class="gi-act full">Full</span>' : `<button class="gi-act" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
   </article>`;
 }
 /* The list is a bottom sheet with two heights: peek (map first) and expanded (browse). */

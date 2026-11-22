@@ -78,7 +78,7 @@ input { font: inherit; color: inherit; }
 .num { font-variant-numeric: tabular-nums; }
 h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: 0; line-height: 1.05; text-wrap: balance; }
 /* Every display-face element leans forward: names, scores, counts and badges read like a scoreboard. */
-.app :is(.gi-title, .gi-time, .gi-dist, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
+.app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
 /* The tab bar stays upright and plain so navigation reads calmly. */
 .tab, .tab .lbl { font-style: normal; }
 .muted { color: var(--ink-2); }
@@ -201,37 +201,30 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .lgrab::before { content: ""; width: 44px; height: 5px; border-radius: 3px; background: var(--line); }
 .lhead { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 18px 10px; touch-action: none; }
 .lhead h2 { font-size: 18px; }
-.llist { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 10px; align-content: start; padding: 2px 14px calc(96px + env(safe-area-inset-bottom, 0px)); }
+.llist { flex: 1; overflow-y: auto; overscroll-behavior: contain; align-content: start; padding: 4px 14px calc(96px + env(safe-area-inset-bottom, 0px)); }
 .app.framed .llist { padding-bottom: 108px; }
-.gitem { position: relative; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 22px; background: var(--surface); border: 1.5px solid var(--line); transition: border-color .2s ease, box-shadow .2s ease, transform .12s ease; }
-.gitem:active { transform: scale(.99); }
-.gitem.on { border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent); }
-.gi-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; text-align: left; }
-.gi-photo { position: relative; width: 84px; height: 84px; border-radius: 16px; overflow: hidden; flex: none; background: var(--surface-2); }
-.gi-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gi-sport { position: absolute; left: 6px; bottom: 6px; width: 28px; height: 28px; border-radius: 9px; background: var(--c); color: #fff; display: grid; place-items: center; }
-.gi-sport .ic { width: 16px; height: 16px; }
-.gi-text { min-width: 0; display: grid; gap: 4px; }
-/* When and how far lead the card: big start time, the day, and a bold distance badge. */
-.gi-when { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.gi-time { font: 800 24px var(--f-display); line-height: 1; letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
-.gi-time small { font-size: 14px; font-weight: 700; margin-left: 2px; }
-/* The day rides on the photo, so the header line has room for time and distance. */
-.gi-day { position: absolute; left: 6px; top: 6px; font-size: 12px; font-weight: 800; color: #fff; background: rgba(10, 11, 14, .72); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
-.gi-day.today { background: #C9362C; }
-.gi-dist { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; height: 28px; padding: 0 10px; border-radius: 999px; font: 800 15px var(--f-display); color: var(--ink); background: color-mix(in srgb, var(--c) 14%, var(--surface)); white-space: nowrap; }
-.gi-dist .ic { width: 14px; height: 14px; color: var(--c); }
-.gi-title { font: 700 16px var(--f-display); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gi-meta { font-size: 13px; color: var(--ink-2); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gi-spots { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
-.gi-spots .spots-bar { flex: 1; max-width: 120px; background: var(--surface-2); }
-.gi-spots .spots-bar i { background: var(--c); }
-.gi-join { width: 48px; height: 48px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--cta); color: var(--cta-ink); transition: transform .12s ease; }
-.gi-join:active { transform: scale(.92); }
-.gi-join .ic { width: 22px; height: 22px; }
-.gi-in { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px; border-radius: 999px; flex: none; font-size: 13px; font-weight: 800; color: color-mix(in srgb, var(--ok) 72%, var(--ink)); background: color-mix(in srgb, var(--ok) 14%, var(--surface)); }
-.gi-in .ic { width: 15px; height: 15px; }
-.gi-full { color: var(--ink-2); background: var(--surface-2); }
+/* Games sit as rows on one panel, split by hairlines: photo, text and action on the same three columns. */
+.grows { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
+.gitem { display: grid; grid-template-columns: 1fr 38px; align-items: center; column-gap: 10px; padding: 12px 12px 12px 14px; transition: background-color .2s ease; }
+.gitem + .gitem { border-top: 1px solid var(--line); }
+.gitem.on { background: color-mix(in srgb, var(--c) 8%, var(--surface)); }
+.gi-main { min-width: 0; display: grid; grid-template-columns: 60px minmax(0, 1fr); align-items: center; column-gap: 12px; text-align: left; }
+.gi-main:active .gi-photo { transform: scale(.96); }
+.gi-photo { width: 60px; height: 60px; border-radius: 14px; object-fit: cover; display: block; background: var(--surface-2); transition: transform .12s ease; }
+.gi-text { min-width: 0; display: grid; gap: 3px; }
+.gi-title { font: 800 18px var(--f-display); line-height: 1.15; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Day · time in bold, distance as a chip with a pin. */
+.gi-when { display: flex; align-items: center; gap: 6px; min-width: 0; font: 800 15px var(--f-body); letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+.gi-when .today { color: #C9362C; }
+.gi-when .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3); flex: none; }
+.gi-dist { display: inline-flex; align-items: center; gap: 4px; flex: none; margin-left: 2px; padding: 2px 8px 2px 6px; border-radius: 999px; font-size: 13px; background: var(--surface-2); }
+.gi-dist .ic { width: 13px; height: 13px; color: #C9362C; }
+.gi-meta { font-size: 13px; font-weight: 600; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gi-act { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line); color: var(--ink); background: var(--surface); transition: transform .12s ease; }
+button.gi-act:active { transform: scale(.92); }
+.gi-act .ic { width: 20px; height: 20px; }
+.gi-act.in { border-color: transparent; background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: color-mix(in srgb, var(--ok) 72%, var(--ink)); }
+.gi-act.full { border: 0; background: none; width: auto; font-size: 12px; font-weight: 700; color: var(--ink-3); }
 .pin { border: 0; background: none; padding: 0; cursor: pointer; }
 .pin.joined span { box-shadow: 0 0 0 3px var(--ok), 0 3px 10px rgba(0,0,0,.25); }
 @media (max-height: 760px) { .story .ring { width: 50px; height: 50px; } }
@@ -726,23 +719,22 @@ function renderPlay() {
   if (!list.find((a) => a.id === focused)) focused = list[0] ? list[0].id : null;
   $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>` + ACTIVITIES.map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
   $('#lhead').innerHTML = `<div><h2>${list.length} game${list.length === 1 ? '' : 's'} near you</h2><div class="faint" style="font-size:13px;font-weight:600">Tap a game to see it on the map</div></div><button class="pill sm soft" data-act="sheetToggle" aria-label="Expand or collapse the list">${ic('layers')}${sheetIdx ? 'Map' : 'List'}</button>`;
-  $('#llist').innerHTML = list.length ? list.map(itemHTML).join('') : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
+  $('#llist').innerHTML = list.length ? `<div class="grows">${list.map(itemHTML).join('')}</div>` :`<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
   focusMap(true, list.find((a) => a.id === focused) || null);
 }
-/* "7:30" large with a small "pm", so the start time reads at a glance. */
-function timeParts(a) { const s = tf.format(dateAt(a.d, a.t)); const m = s.match(/^([\d:.]+)\s*(.*)$/); return m ? `${m[1]}<small>${esc(m[2])}</small>` : esc(s); }
+/* One row per game: name, then day · time and a distance chip, then price, spots and venue.
+   The venue goes last so a long name is what gets cut, never the price or spots. */
 function itemHTML(a) {
   const s = sp(a.sport), joined = S.joined.includes(a.id), left = Math.max(0, a.spots - (joined ? 1 : 0));
   return `<article class="gitem ${focused === a.id ? 'on' : ''}" id="item-${a.id}" style="--c:${s.c}">
     <button class="gi-main" data-act="focus" data-id="${a.id}" aria-label="${esc(a.title)}: show on map and see details">
-      <span class="gi-photo"><img src="${IMG + a.img}.jpg" alt="" loading="lazy"><span class="gi-day ${a.d === 0 ? 'today' : ''}">${a.d === 1 ? 'Tmrw' : dayLabel(a.d)}</span><span class="gi-sport">${ic(s.icon)}</span></span>
+      <img class="gi-photo" src="${IMG + a.img}.jpg" alt="" loading="lazy">
       <span class="gi-text">
-        <span class="gi-when"><b class="gi-time num">${timeParts(a)}</b><span class="gi-dist num">${ic('navigation')}${fmtKm(km(a.x, a.y))}</span></span>
         <b class="gi-title">${esc(a.title)}</b>
-        <span class="gi-meta">${esc(a.venue.split(' · ')[0])} · ${money(a.price)}</span>
-        <span class="gi-spots"><span class="spots-bar"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></span><span class="num">${left} left</span></span></span>
+        <span class="gi-when"><span class="${a.d === 0 ? 'today' : ''}">${a.d === 1 ? 'Tmrw' : dayLabel(a.d)}</span><i class="dot" aria-hidden="true"></i><span>${tf.format(dateAt(a.d, a.t))}</span><span class="gi-dist">${ic('map-pin')}${fmtKm(km(a.x, a.y))}</span></span>
+        <span class="gi-meta">${money(a.price)} · ${left ? left + ' left' : 'Full'} · ${esc(a.venue.split(' · ')[0])}</span></span>
     </button>
-    ${joined ? `<span class="gi-in">${ic('check')}In</span>` : left === 0 ? '<span class="gi-in gi-full">Full</span>' : `<button class="gi-join" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
+    ${joined ? `<span class="gi-act in" role="img" aria-label="You're in">${ic('check')}</span>` : left === 0 ? '<span class="gi-act full">Full</span>' : `<button class="gi-act" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
   </article>`;
 }
 /* The list is a bottom sheet with two heights: peek (map first) and expanded (browse). */
