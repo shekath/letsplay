@@ -12,6 +12,21 @@ python3 -m http.server 8080 --directory app
 
 Then open `http://localhost:8080` on a desktop browser (it shows a device frame and a plan switcher) or on a phone on the same network. On a phone you get the full-screen app. Use **Add to Home Screen** (iOS Safari) or **Install app** (Android Chrome) to run it like a native app.
 
+**Dark version:** Profile → Appearance (Light, Dark or Match my phone), or the Appearance switch on the desktop panel.
+
+## Design 2: Playground
+
+A second, engagement-first direction at `http://localhost:8080/design2.html`, built on the same data:
+
+- **Play:** game cards float over the live map. Swipe right to join, left to pass, up (or tap) for details, or use the buttons and arrow keys. The map follows the top card and highlights its pin.
+- **Starting soon:** story rings for games today and tomorrow; a full-screen viewer that advances every 5 seconds (hold to pause, tap the sides to move; manual when reduced motion is on).
+- **Progress:** joining earns XP with a short celebration, levels with titles, a weekly goal ring you can adjust, a streak chart and earnable badges.
+- **Book:** pick a court from a photo carousel and drag a time window along the day. Booked hours are striped, peak hours tinted, clashes turn the window red. A slider splits the cost live.
+- **Squad:** pick a player and tap a fielding position on a cricket field, vote in the availability poll, send quick chat messages.
+- **Look:** Unbounded and Manrope type, a neutral base where each card takes its sport colour, violet only for your progress, a floating pill tab bar, and light and dark themes.
+
+Source: `app/design2/src` (shell, `d2.css`, `d2.js`); `scripts/build.py` bundles it with the shared `data.js` and `icons.js`.
+
 ## Plans (tiers)
 
 | Capability | Lite | Pro | Enterprise |

@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15161A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LetsPlay">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>LetsPlay Design 2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* LetsPlay Design 2: "Playground".
+   Design read: the same community-sports app, tuned for engagement: gestures, quick wins and visible progress.
+   Dials: ENERGY 3 / RHYTHM 2 / MOTION 3 (swipe physics, story progress, a short celebration on joining;
+   every animation answers an action and none loops forever; reduced-motion turns them off).
+   Type: Unbounded (wide geometric display) for names and numbers, Manrope for reading.
+   Colour: a quiet neutral base; each game card takes its sport colour as its ground (data, not decoration);
+   ink pills for actions; violet is the single accent and only means "your progress" (XP, goals, levels).
+   Layout: map stays on screen at all times; a card deck floats over it; floating pill tab bar. */
+:root {
+  --bg: #F2F3EF;
+  --surface: #FFFFFF;
+  --surface-2: #E9EAE5;
+  --ink: #15161A;
+  --ink-2: #464953;
+  --ink-3: #61646F;           /* 5.6:1 on white */
+  --line: #DFE0DA;
+  --cta: #15161A;             /* action pills */
+  --cta-ink: #FFFFFF;
+  --you: #5B3FE6;             /* the single accent: your progress */
+  --you-soft: #ECE8FF;
+  --you-text: #4A30D0;
+  --live: #C9362C;            /* starting soon */
+  --ok: #0C8353;
+  --scrim: rgba(10, 11, 14, .5);
+  --shadow: 0 18px 40px rgba(15, 16, 20, .18), 0 4px 10px rgba(15, 16, 20, .08);
+  --map-land: #E6E7E1; --map-block: #DCDDD6; --map-road: #FFFFFF; --map-park: #CFE3C2; --map-water: #C3D9EE; --map-label: #6A6D76;
+  --f-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 22px;
+  --r-lg: 30px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E0F12; --surface: #1A1B20; --surface-2: #24262C; --ink: #F2F3F5; --ink-2: #BFC2CB; --ink-3: #989CA8; --line: #2B2D34;
+    --cta: #F2F3F5; --cta-ink: #15161A; --you: #7B63FF; --you-soft: #251F47; --you-text: #B3A5FF; --live: #E0503F; --ok: #2BC584;
+    --scrim: rgba(0, 0, 0, .62); --shadow: 0 18px 40px rgba(0, 0, 0, .55);
+    --map-land: #15161A; --map-block: #1B1C21; --map-road: #26282F; --map-park: #1B281C; --map-water: #13202D; --map-label: #8E929D;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E0F12; --surface: #1A1B20; --surface-2: #24262C; --ink: #F2F3F5; --ink-2: #BFC2CB; --ink-3: #989CA8; --line: #2B2D34;
+  --cta: #F2F3F5; --cta-ink: #15161A; --you: #7B63FF; --you-soft: #251F47; --you-text: #B3A5FF; --live: #E0503F; --ok: #2BC584;
+  --scrim: rgba(0, 0, 0, .62); --shadow: 0 18px 40px rgba(0, 0, 0, .55);
+  --map-land: #15161A; --map-block: #1B1C21; --map-road: #26282F; --map-park: #1B281C; --map-water: #13202D; --map-label: #8E929D;
+  color-scheme: dark;
+}
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; overflow: hidden; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--you); outline-offset: 2px; border-radius: 12px; }
+.ic { width: 20px; height: 20px; flex: none; display: block; }
+.num { font-variant-numeric: tabular-nums; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+.muted { color: var(--ink-2); }
+.faint { color: var(--ink-3); }
+button:disabled { cursor: not-allowed; opacity: .5; }
+
+/* Stage: full screen on phones, a framed device beside a short note on wide screens. */
+.stage { height: 100%; display: flex; align-items: center; justify-content: center; gap: 44px; }
+.note { display: none; }
+.device { position: relative; width: 100%; height: 100%; }
+.app { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); isolation: isolate; }
+@media (min-width: 900px) and (min-height: 640px) {
+  .stage { padding-inline: max(24px, env(safe-area-inset-left, 0px)); }
+  .note { display: grid; gap: 16px; width: 330px; }
+  .note h1 { font-size: 34px; line-height: 1.05; }
+  .note p { margin: 0; color: var(--ink-2); }
+  .note ul { margin: 0; padding-left: 18px; color: var(--ink-2); display: grid; gap: 6px; }
+  .device { width: 393px; height: min(852px, calc(100% - 40px)); flex: none; border-radius: 54px; padding: 11px; background: #0A0B0E; box-shadow: 0 30px 80px rgba(15,16,20,.3); }
+  .app { border-radius: 44px; }
+  .app .top-safe { padding-top: 48px !important; }
+}
+.note .seg { max-width: 300px; }
+
+/* ── Screens ── */
+.screen { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px max(18px, env(safe-area-inset-left, 0px)) 120px max(18px, env(safe-area-inset-right, 0px)); }
+.screen[hidden], [hidden] { display: none !important; }
+#scr-play { padding: 0; overflow: hidden; }
+.head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.head h1 { font-size: 26px; }
+.sub { font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+.section { display: grid; gap: 12px; margin-top: 24px; }
+.section h2 { font-size: 17px; }
+
+/* ── Controls ── */
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 999px; font-weight: 700; font-size: 15px; background: var(--cta); color: var(--cta-ink); transition: transform .12s ease; white-space: nowrap; }
+.pill:active { transform: scale(.96); }
+.pill.soft { background: var(--surface-2); color: var(--ink); }
+.pill.you { background: var(--you); color: #fff; }
+.pill.block { width: 100%; }
+.pill.sm { min-height: 40px; padding: 0 16px; font-size: 14px; }
+.round { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); flex: none; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 0; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 15px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-weight: 700; font-size: 14px; white-space: nowrap; flex: none; transition: transform .12s ease; }
+.chip:active { transform: scale(.96); }
+.chip .ic { width: 17px; height: 17px; color: var(--c, currentColor); }
+.chip[aria-pressed="true"] { background: var(--c, var(--cta)); border-color: var(--c, var(--cta)); color: #fff; }
+.chip[aria-pressed="true"] .ic { color: #fff; }
+.chip.neutral[aria-pressed="true"] { background: var(--cta); border-color: var(--cta); color: var(--cta-ink); }
+.chip.neutral[aria-pressed="true"] .ic { color: var(--cta-ink); }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); }
+.seg button { min-height: 40px; border-radius: 999px; font-weight: 700; font-size: 14px; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+
+/* ── Floating tab bar ── */
+.tabbar { position: absolute; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: var(--cta); box-shadow: var(--shadow); }
+.app.framed .tabbar { bottom: 26px; }
+.tab { display: flex; align-items: center; gap: 8px; height: 50px; padding: 0 16px; border-radius: 999px; color: color-mix(in srgb, var(--cta-ink) 70%, transparent); font-weight: 700; font-size: 14px; transition: background-color .2s ease, color .2s ease; }
+.tab .ic { width: 22px; height: 22px; }
+.tab .lbl { display: none; }
+.tab[aria-current="page"] { background: var(--cta-ink); color: var(--cta); }
+.tab[aria-current="page"] .lbl { display: inline; }
+
+/* ── Play: map ── */
+.map { position: absolute; inset: 0; overflow: hidden; background: var(--map-land); touch-action: none; }
+.map-layer { position: absolute; left: 0; top: 0; transform-origin: 0 0; transition: transform .55s cubic-bezier(.2, .8, .2, 1); }
+.map-layer.dragging { transition: none; }
+.m-land { fill: var(--map-land); } .m-block { fill: var(--map-block); } .m-road { stroke: var(--map-road); stroke-linecap: round; fill: none; }
+.m-park { fill: var(--map-park); } .m-water { fill: none; stroke: var(--map-water); stroke-linecap: round; } .m-lake { fill: var(--map-water); }
+.m-label { fill: var(--map-label); font: 700 15px var(--f-body); }
+.pin { position: absolute; width: 0; height: 0; }
+.pin span { position: absolute; left: -15px; top: -15px; width: 30px; height: 30px; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; border: 3px solid var(--surface); box-shadow: 0 3px 10px rgba(0,0,0,.25); transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.pin span .ic { width: 15px; height: 15px; }
+.pin.on { z-index: 3; }
+.pin.on span { transform: scale(1.45); }
+.pin.on::after { content: ""; position: absolute; left: -26px; top: -26px; width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--c); animation: ripple .9s ease-out 1 forwards; }
+.pin.gone span { opacity: .35; transform: scale(.8); }
+@keyframes ripple { from { transform: scale(.5); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+.me { position: absolute; width: 0; height: 0; }
+.me::before { content: ""; position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: var(--you); border: 3px solid #fff; box-shadow: 0 0 0 10px color-mix(in srgb, var(--you) 18%, transparent); }
+
+/* ── Play: overlay ── */
+/* The top overlay keeps the map visible: only the greeting sits on a card, stories and chips float. */
+.play-top { position: absolute; left: 0; right: 0; top: 0; z-index: 10; padding: 12px max(14px, env(safe-area-inset-left, 0px)) 6px max(14px, env(safe-area-inset-right, 0px)); display: grid; gap: 10px; pointer-events: none; }
+.play-top > * { pointer-events: auto; }
+.hello { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 16px; border-radius: 26px; background: var(--surface); box-shadow: 0 6px 20px rgba(15,16,20,.12); }
+.hello h1 { font-size: 17px; flex: 1; min-width: 0; line-height: 1.2; }
+.hello h1 small { display: block; font: 600 13px var(--f-body); color: var(--ink-2); letter-spacing: 0; }
+.goal-ring { position: relative; width: 48px; height: 48px; flex: none; }
+.goal-ring svg { width: 48px; height: 48px; transform: rotate(-90deg); }
+.goal-ring circle { fill: none; stroke-width: 5; }
+.goal-ring .track { stroke: var(--surface-2); }
+.goal-ring .val { stroke: var(--you); stroke-linecap: round; transition: stroke-dashoffset .8s cubic-bezier(.2, .8, .2, 1); }
+.goal-ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 700 12px var(--f-display); }
+.streak { display: inline-flex; align-items: center; gap: 5px; height: 40px; padding: 0 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font: 700 14px var(--f-display); }
+.streak .ic { color: #D9480F; width: 18px; height: 18px; }
+
+.stories { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 4px; }
+.stories::-webkit-scrollbar { display: none; }
+.story { display: grid; justify-items: center; gap: 4px; width: 60px; flex: none; font-size: 12px; font-weight: 800; color: var(--ink); text-align: center; line-height: 1.15; }
+.story .t { padding: 1px 7px; border-radius: 999px; background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.story .ring { width: 56px; height: 56px; border-radius: 50%; padding: 3px; background: conic-gradient(var(--c) 0 100%); display: grid; place-items: center; }
+.story.seen .ring { background: var(--line); }
+.story .ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid var(--surface); }
+.story .t { display: block; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.deck-wrap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 12; padding: 0 max(16px, env(safe-area-inset-left, 0px)) calc(92px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; pointer-events: none; }
+.app.framed .deck-wrap { padding-bottom: 104px; }
+.deck-wrap > * { pointer-events: auto; }
+.deck { position: relative; height: 262px; }
+/* Shorter phones: a smaller deck and no hint line, so the sport chips and a strip of map stay visible. */
+@media (max-height: 760px) {
+  .deck { height: 196px; }
+  .hint { display: none; }
+  .deck-actions .round { width: 50px; height: 50px; }
+  .deck-actions .round.big { width: 58px; height: 58px; }
+  .gcard h3 { font-size: 17px; }
+  .story .ring { width: 50px; height: 50px; }
+}
+.gcard .body { gap: 6px; }
+.gcard { position: absolute; inset: 0; border-radius: var(--r-lg); overflow: hidden; background: var(--c); color: #fff; box-shadow: var(--shadow); display: grid; grid-template-rows: 1fr auto; touch-action: none; user-select: none; will-change: transform; transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .35s; }
+.gcard.dragging { transition: none; }
+.gcard[data-depth="1"] { transform: translateY(12px) scale(.95); }
+.gcard[data-depth="2"] { transform: translateY(24px) scale(.9); opacity: .7; }
+.gcard .photo { position: relative; min-height: 0; }
+.gcard .photo img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.gcard .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.25), transparent 40%); }
+.gcard .tags { position: absolute; left: 14px; top: 14px; z-index: 1; display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12.5px; font-weight: 800; background: rgba(0,0,0,.45); color: #fff; }
+.tag .ic { width: 14px; height: 14px; }
+.tag.live { background: #C9362C; }   /* fixed fill: white text stays above 4.5:1 in both themes */
+.gcard .body { padding: 14px 16px 16px; display: grid; gap: 8px; background: color-mix(in srgb, var(--c) 82%, #000); }
+.gcard h3 { font-size: 20px; line-height: 1.1; }
+.gcard .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; font-weight: 600; opacity: .95; }
+.gcard .meta span { display: inline-flex; align-items: center; gap: 5px; }
+.gcard .meta .ic { width: 15px; height: 15px; }
+.spots-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; }
+.spots-bar i { display: block; height: 100%; background: #fff; border-radius: 3px; }
+.stamp { position: absolute; top: 26px; z-index: 2; padding: 6px 14px; border: 4px solid; border-radius: 12px; font: 800 24px var(--f-display); letter-spacing: .02em; opacity: 0; pointer-events: none; }
+.stamp.in { left: 22px; color: #fff; border-color: #fff; background: rgba(12,131,83,.85); transform: rotate(-12deg); }
+.stamp.pass { right: 22px; color: #fff; border-color: #fff; background: rgba(21,22,26,.75); transform: rotate(12deg); }
+.deck-empty { position: absolute; inset: 0; border-radius: var(--r-lg); background: var(--surface); border: 2px dashed var(--line); display: grid; place-items: center; text-align: center; padding: 24px; gap: 10px; align-content: center; }
+.deck-actions { display: flex; justify-content: center; align-items: center; gap: 18px; }
+.deck-actions .round { width: 56px; height: 56px; box-shadow: var(--shadow); }
+.deck-actions .round.big { width: 68px; height: 68px; background: var(--ok); border-color: var(--ok); color: #fff; }
+.deck-actions .round.big .ic { width: 30px; height: 30px; }
+.deck-actions .round .ic { width: 24px; height: 24px; }
+.hint { justify-self: center; font-size: 12.5px; color: var(--ink-2); font-weight: 700; padding: 3px 10px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 88%, transparent); }
+
+/* ── Sheets ── */
+.scrim { position: absolute; inset: 0; z-index: 70; background: var(--scrim); animation: fade .2s; }
+@keyframes fade { from { opacity: 0; } }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 71; max-height: 90%; overflow-y: auto; background: var(--surface); border-radius: 30px 30px 0 0; padding: 10px max(20px, env(safe-area-inset-left, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; animation: up .32s cubic-bezier(.2, .8, .2, 1); }
+.sheet::before { content: ""; justify-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--line); }
+@keyframes up { from { transform: translateY(100%); } }
+.sheet h2 { font-size: 22px; }
+.sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.x { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; flex: none; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fact { padding: 12px; border-radius: 16px; background: var(--surface-2); display: grid; gap: 2px; }
+.fact b { font-size: 15px; }
+.fact span { font-size: 12.5px; color: var(--ink-2); }
+.xp-burst { justify-self: center; display: grid; justify-items: center; gap: 8px; text-align: center; }
+.xp-burst .big { font: 800 44px var(--f-display); color: var(--you-text); animation: pop .5s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } }
+
+/* ── Story viewer ── */
+.story-view { position: absolute; inset: 0; z-index: 80; background: #000; color: #fff; display: grid; animation: fade .2s; touch-action: none; user-select: none; }
+.story-view img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.story-view::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.55), transparent 28%, transparent 45%, rgba(0,0,0,.85)); }
+.sv-top, .sv-bottom { position: relative; z-index: 2; padding: 14px 16px; }
+.app.framed .sv-top { padding-top: 50px; }
+.sv-bars { display: flex; gap: 4px; }
+.sv-bars i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.35); overflow: hidden; }
+.sv-bars i b { display: block; height: 100%; width: 0; background: #fff; }
+.sv-head { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.sv-head .grow { flex: 1; min-width: 0; font-weight: 700; font-size: 14px; }
+.sv-head .grow small { display: block; font-weight: 600; opacity: .85; }
+.sv-head .round { background: rgba(255,255,255,.18); border: 0; color: #fff; }
+.sv-bottom { align-self: end; display: grid; gap: 12px; padding-bottom: 28px; }
+.sv-bottom h2 { font-size: 30px; line-height: 1.05; }
+.sv-tap { position: absolute; top: 90px; bottom: 170px; z-index: 1; width: 35%; }
+.sv-tap.l { left: 0; } .sv-tap.r { right: 0; }
+
+/* ── Book ── */
+.venues { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -18px; padding: 0 18px; scroll-padding-inline: 18px; scrollbar-width: none; }
+.venues::-webkit-scrollbar { display: none; }
+.venue { scroll-snap-align: start; position: relative; height: 150px; border-radius: var(--r); overflow: hidden; color: #fff; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; border: 3px solid transparent; }
+.venue img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.venue::before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 30%, rgba(0,0,0,.8)); z-index: 1; }
+.venue > * { position: relative; z-index: 2; }
+.venue b { font: 700 15px var(--f-display); }
+.venue small { font-weight: 600; opacity: .9; }
+.venue[aria-pressed="true"] { border-color: var(--you); }
+.timeline-wrap { overflow-x: auto; scrollbar-width: none; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.timeline-wrap::-webkit-scrollbar { display: none; }
+.timeline { position: relative; height: 96px; }
+.hour { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--line); font-size: 11.5px; font-weight: 700; color: var(--ink-3); padding: 6px 0 0 5px; }
+.hour.peak { background: color-mix(in srgb, #D9480F 7%, transparent); }
+.booked { position: absolute; top: 30px; height: 40px; border-radius: 10px; background: repeating-linear-gradient(45deg, var(--surface-2) 0 6px, var(--line) 6px 12px); }
+.window { position: absolute; top: 24px; height: 52px; border-radius: 14px; background: color-mix(in srgb, var(--you) 22%, transparent); border: 3px solid var(--you); cursor: grab; touch-action: none; display: grid; place-items: center; font: 700 13px var(--f-display); color: var(--you-text); transition: left .15s ease; }
+.window.dragging { cursor: grabbing; transition: none; }
+.window.bad { border-color: var(--live); background: color-mix(in srgb, var(--live) 18%, transparent); color: var(--live); }
+.big-num { font: 800 34px var(--f-display); line-height: 1; }
+.split { display: grid; gap: 10px; padding: 16px; }
+.split input[type="range"] { width: 100%; accent-color: var(--you); height: 32px; }
+.stepper { display: inline-flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); }
+.stepper button { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); }
+.stepper b { min-width: 46px; text-align: center; }
+
+/* ── Squad ── */
+.field { position: relative; aspect-ratio: 1 / 1.08; max-width: 100%; border-radius: 50% / 46%; background: #2F7D3A; overflow: hidden; border: 4px solid #276A31; }
+.field::before { content: ""; position: absolute; left: 50%; top: 50%; width: 14%; height: 34%; transform: translate(-50%, -50%); background: #C9B07A; border-radius: 4px; }
+.field::after { content: ""; position: absolute; inset: 18%; border: 2px dashed rgba(255,255,255,.35); border-radius: 50%; }
+.pos { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; z-index: 1; width: 64px; }
+.pos .dot { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--f-display); background: rgba(255,255,255,.18); border: 2px dashed rgba(255,255,255,.7); color: #fff; transition: transform .2s; }
+.pos.filled .dot { background: #fff; color: #1B4D22; border: 2px solid #fff; }
+.pos small { font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); text-align: center; line-height: 1.1; }
+.field.placing .pos:not(.filled) .dot { transform: scale(1.12); background: rgba(255,255,255,.35); }
+.bench { display: flex; gap: 8px; flex-wrap: wrap; }
+.bench .chip[aria-pressed="true"] { background: var(--you); border-color: var(--you); color: #fff; }
+.av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; flex: none; }
+.poll { display: grid; gap: 8px; }
+.poll button { position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 16px; border-radius: 14px; background: var(--surface-2); font-weight: 700; text-align: left; }
+.poll button i { position: absolute; left: 0; top: 0; bottom: 0; background: color-mix(in srgb, var(--you) 22%, transparent); transition: width .5s cubic-bezier(.2, .8, .2, 1); }
+.poll button span { position: relative; }
+.poll button[aria-pressed="true"] { outline: 2px solid var(--you); }
+.chat { display: grid; gap: 8px; }
+.msg { max-width: 80%; padding: 10px 13px; border-radius: 18px 18px 18px 6px; background: var(--surface-2); font-size: 14px; }
+.msg b { display: block; font-size: 12px; color: var(--ink-2); }
+.msg.mine { justify-self: end; border-radius: 18px 18px 6px 18px; background: var(--you); color: #fff; }
+
+/* ── Me ── */
+.player { position: relative; border-radius: var(--r-lg); padding: 20px; color: #fff; background: #15161A; overflow: hidden; display: grid; gap: 14px; }
+:root[data-theme="dark"] .player { border: 1px solid var(--line); }
+.player .row1 { display: flex; gap: 14px; align-items: center; }
+.player .ava { width: 68px; height: 68px; border-radius: 22px; display: grid; place-items: center; font: 800 24px var(--f-display); background: var(--you); }
+.player h2 { font-size: 22px; }
+.player .lvl { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); }
+.xpbar { height: 12px; border-radius: 6px; background: rgba(255,255,255,.14); overflow: hidden; }
+.xpbar i { display: block; height: 100%; border-radius: 6px; background: var(--you); transition: width .9s cubic-bezier(.2, .8, .2, 1); }
+.player .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.player .stats div { padding: 10px; border-radius: 14px; background: rgba(255,255,255,.08); text-align: center; }
+.player .stats b { display: block; font: 800 22px var(--f-display); }
+.player .stats span { font-size: 12px; color: rgba(255,255,255,.8); }
+.weeks { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; align-items: end; height: 84px; }
+.weeks div { display: grid; gap: 4px; justify-items: center; font-size: 11.5px; color: var(--ink-3); font-weight: 700; }
+.weeks i { width: 100%; border-radius: 8px; background: var(--surface-2); }
+.weeks i.hit { background: var(--you); }
+.badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.badge { display: grid; justify-items: center; gap: 6px; padding: 14px 8px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); text-align: center; font-size: 12.5px; font-weight: 700; }
+.badge .medal { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: var(--you-soft); color: var(--you-text); }
+.badge.locked { color: var(--ink-3); }
+.badge.locked .medal { background: var(--surface-2); color: var(--ink-3); }
+.goal-set { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; }
+
+/* ── Toast and confetti ── */
+.toast { position: absolute; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 95; background: var(--cta); color: var(--cta-ink); padding: 12px 16px; border-radius: 999px; font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; box-shadow: var(--shadow); width: max-content; max-width: calc(100% - 32px); animation: drop .25s ease-out; }
+.app.framed .toast { top: 52px; }
+@keyframes drop { from { transform: translate(-50%, -12px); opacity: 0; } }
+.confetti { position: absolute; inset: 0; z-index: 90; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+</style>
+<div class="stage">
+  <aside class="note" aria-label="About this design">
+    <h1>Design 2: Playground</h1>
+    <p>A second direction for LetsPlay that turns finding a game into a quick, physical interaction and makes progress visible.</p>
+    <ul>
+      <li>Swipe the cards over the live map: right to join, left to pass, up for details.</li>
+      <li>Tap a story ring for games starting soon.</li>
+      <li>Book: drag the time window along the day.</li>
+      <li>Squad: pick a player, then tap a fielding spot.</li>
+      <li>Me: your level, weekly goal, streak and badges.</li>
+    </ul>
+    <div class="seg" id="noteTheme" role="group" aria-label="Appearance"></div>
+    <p style="font-size:13px">Sample games, people and prices. Payments and messages are simulated.</p>
+  </aside>
+  <div class="device">
+    <div class="app" id="app">
+      <section class="screen" id="scr-play" aria-label="Play"></section>
+      <section class="screen top-safe" id="scr-book" aria-label="Book a venue" hidden></section>
+      <section class="screen top-safe" id="scr-squad" aria-label="Squad" hidden></section>
+      <section class="screen top-safe" id="scr-me" aria-label="Me" hidden></section>
+      <nav class="tabbar" id="tabbar" aria-label="Main"></nav>
+    </div>
+  </div>
+</div>
+<script>
+/* Icon paths from Lucide (ISC License, https://lucide.dev). */
+const ICONS={"map-pin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>","search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","locate-fixed":"<line x1=\"2\" x2=\"5\" y1=\"12\" y2=\"12\"/><line x1=\"19\" x2=\"22\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"5\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/><circle cx=\"12\" cy=\"12\" r=\"7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","lock":"<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/>","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>","user-plus":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\"/><line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\"/>","calendar":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/>","calendar-days":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/><path d=\"M8 14h.01\"/><path d=\"M12 14h.01\"/><path d=\"M16 14h.01\"/><path d=\"M8 18h.01\"/><path d=\"M12 18h.01\"/><path d=\"M16 18h.01\"/>","shopping-bag":"<path d=\"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z\"/><path d=\"M3 6h18\"/><path d=\"M16 10a4 4 0 0 1-8 0\"/>","user":"<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>","trophy":"<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\"/><path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\"/><path d=\"M4 22h16\"/><path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\"/><path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\"/><path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\"/>","crown":"<path d=\"M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z\"/><path d=\"M5 21h14\"/>","building-2":"<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\"/><path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\"/><path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\"/><path d=\"M10 6h4\"/><path d=\"M10 10h4\"/><path d=\"M10 14h4\"/><path d=\"M10 18h4\"/>","chevron-right":"<path d=\"m9 18 6-6-6-6\"/>","chevron-left":"<path d=\"m15 18-6-6 6-6\"/>","chevron-down":"<path d=\"m6 9 6 6 6-6\"/>","x":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","check":"<path d=\"M20 6 9 17l-5-5\"/>","share-2":"<circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\"/><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\"/>","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","map":"<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\"/><path d=\"M15 5.764v15\"/><path d=\"M9 3.236v15\"/>","navigation":"<polygon points=\"3 11 22 2 13 21 11 13 3 11\"/>","star":"<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>","heart":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>","minus":"<path d=\"M5 12h14\"/>","bell":"<path d=\"M10.268 21a2 2 0 0 0 3.464 0\"/><path d=\"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326\"/>","settings":"<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>","accessibility":"<circle cx=\"16\" cy=\"4\" r=\"1\"/><path d=\"m18 19 1-7-6 1\"/><path d=\"m5 8 3-3 5.5 3-2.36 3.5\"/><path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\"/><path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\"/>","credit-card":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><line x1=\"2\" x2=\"22\" y1=\"10\" y2=\"10\"/>","tag":"<path d=\"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>","zap":"<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\"/>","sparkles":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/>","medal":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\"/><path d=\"M11 12 5.12 2.2\"/><path d=\"m13 12 5.88-9.8\"/><path d=\"M8 7h8\"/><circle cx=\"12\" cy=\"17\" r=\"5\"/><path d=\"M12 18v-2h-.5\"/>","arrow-left":"<path d=\"m12 19-7-7 7-7\"/><path d=\"M19 12H5\"/>","ellipsis":"<circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/><circle cx=\"5\" cy=\"12\" r=\"1\"/>","circle-check":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/>","info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","wallet":"<path d=\"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1\"/><path d=\"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4\"/>","ticket":"<path d=\"M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z\"/><path d=\"M13 5v2\"/><path d=\"M13 17v2\"/><path d=\"M13 11v2\"/>","send":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>","link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","qr-code":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","flag":"<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\"/><line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\"/>","trending-up":"<polyline points=\"22 7 13.5 15.5 8.5 10.5 2 17\"/><polyline points=\"16 7 22 7 22 13\"/>","volleyball":"<path d=\"M11.1 7.1a16.55 16.55 0 0 1 10.9 4\"/><path d=\"M12 12a12.6 12.6 0 0 1-8.7 5\"/><path d=\"M16.8 13.6a16.55 16.55 0 0 1-9 7.5\"/><path d=\"M20.7 17a12.8 12.8 0 0 0-8.7-5 13.3 13.3 0 0 1 0-10\"/><path d=\"M6.3 3.8a16.55 16.55 0 0 0 1.9 11.5\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>","footprints":"<path d=\"M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z\"/><path d=\"M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z\"/><path d=\"M16 17h4\"/><path d=\"M4 13h4\"/>","person-standing":"<circle cx=\"12\" cy=\"5\" r=\"1\"/><path d=\"m9 20 3-6 3 6\"/><path d=\"m6 8 6 2 6-2\"/><path d=\"M12 10v4\"/>","waves":"<path d=\"M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>","bike":"<circle cx=\"18.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"5.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><path d=\"M12 17.5V14l-3-3 4-3 2 3h2\"/>","mountain":"<path d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/>","crosshair":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"22\" x2=\"18\" y1=\"12\" y2=\"12\"/><line x1=\"6\" x2=\"2\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"6\" y2=\"2\"/><line x1=\"12\" x2=\"12\" y1=\"22\" y2=\"18\"/>","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","megaphone":"<path d=\"m3 11 18-5v12L3 14v-3z\"/><path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\"/>","truck":"<path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"/><path d=\"M15 18H9\"/><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/>","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><path d=\"m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7\"/><path d=\"m7.5 4.27 9 5.15\"/>","shuffle":"<path d=\"m18 14 4 4-4 4\"/><path d=\"m18 2 4 4-4 4\"/><path d=\"M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22\"/><path d=\"M2 6h1.972a4 4 0 0 1 3.6 2.2\"/><path d=\"M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45\"/>","chart-column":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"M18 17V9\"/><path d=\"M13 17V5\"/><path d=\"M8 17v-3\"/>","store":"<path d=\"m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7\"/><path d=\"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8\"/><path d=\"M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4\"/><path d=\"M2 7h20\"/><path d=\"M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7\"/>","house":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>","message-circle":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"/>","dumbbell":"<path d=\"M14.4 14.4 9.6 9.6\"/><path d=\"M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z\"/><path d=\"m21.5 21.5-1.4-1.4\"/><path d=\"M3.9 3.9 2.5 2.5\"/><path d=\"M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z\"/>","shirt":"<path d=\"M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z\"/>","gift":"<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13\"/><path d=\"M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7\"/><path d=\"M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5\"/>","percent":"<line x1=\"19\" x2=\"5\" y1=\"5\" y2=\"19\"/><circle cx=\"6.5\" cy=\"6.5\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17.5\" r=\"2.5\"/>","timer":"<line x1=\"10\" x2=\"14\" y1=\"2\" y2=\"2\"/><line x1=\"12\" x2=\"15\" y1=\"14\" y2=\"11\"/><circle cx=\"12\" cy=\"14\" r=\"8\"/>","layers":"<path d=\"M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z\"/><path d=\"M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12\"/><path d=\"M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17\"/>","map-pin-plus":"<path d=\"M19.914 11.105A7.298 7.298 0 0 0 20 10a8 8 0 0 0-16 0c0 4.993 5.539 10.193 7.399 11.799a1 1 0 0 0 1.202 0 32 32 0 0 0 .824-.738\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/><path d=\"M16 18h6\"/><path d=\"M19 15v6\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","repeat":"<path d=\"m17 2 4 4-4 4\"/><path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/><path d=\"m7 22-4-4 4-4\"/><path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>","baby":"<path d=\"M9 12h.01\"/><path d=\"M15 12h.01\"/><path d=\"M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5\"/><path d=\"M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1\"/>","rotate-ccw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","cloud-sun":"<path d=\"M12 2v2\"/><path d=\"m4.93 4.93 1.41 1.41\"/><path d=\"M20 12h2\"/><path d=\"m19.07 4.93-1.41 1.41\"/><path d=\"M15.947 12.65a4 4 0 0 0-5.925-4.128\"/><path d=\"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z\"/>","signal":"<path d=\"M2 20h.01\"/><path d=\"M7 20v-4\"/><path d=\"M12 20v-8\"/><path d=\"M17 20V8\"/><path d=\"M22 4v16\"/>","wifi":"<path d=\"M12 20h.01\"/><path d=\"M2 8.82a15 15 0 0 1 20 0\"/><path d=\"M5 12.859a10 10 0 0 1 14 0\"/><path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/>","battery-full":"<rect width=\"16\" height=\"10\" x=\"2\" y=\"7\" rx=\"2\" ry=\"2\"/><line x1=\"22\" x2=\"22\" y1=\"11\" y2=\"13\"/><line x1=\"6\" x2=\"6\" y1=\"11\" y2=\"13\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"13\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"13\"/>","compass":"<path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>","swords":"<polyline points=\"14.5 17.5 3 6 3 3 6 3 17.5 14.5\"/><line x1=\"13\" x2=\"19\" y1=\"19\" y2=\"13\"/><line x1=\"16\" x2=\"20\" y1=\"16\" y2=\"20\"/><line x1=\"19\" x2=\"21\" y1=\"21\" y2=\"19\"/><polyline points=\"14.5 6.5 18 3 21 3 21 6 17.5 9.5\"/><line x1=\"5\" x2=\"9\" y1=\"14\" y2=\"18\"/><line x1=\"7\" x2=\"4\" y1=\"17\" y2=\"20\"/><line x1=\"3\" x2=\"5\" y1=\"19\" y2=\"21\"/>","target":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>","flame":"<path d=\"M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z\"/>","award":"<path d=\"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526\"/><circle cx=\"12\" cy=\"8\" r=\"6\"/>","list-checks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","badge-check":"<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/><path d=\"m9 12 2 2 4-4\"/>","trash-2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","arrow-right":"<path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/>","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M12 18h.01\"/>","camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","image-plus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","indian-rupee":"<path d=\"M6 3h12\"/><path d=\"M6 8h12\"/><path d=\"m6 13 8.5 8\"/><path d=\"M6 13h3\"/><path d=\"M9 13c6.667 0 6.667-10 0-10\"/>","eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","lock-keyhole":"<circle cx=\"12\" cy=\"16\" r=\"1\"/><rect x=\"3\" y=\"10\" width=\"18\" height=\"12\" rx=\"2\"/><path d=\"M7 10V7a5 5 0 0 1 10 0v3\"/>","milestone":"<path d=\"M12 13v8\"/><path d=\"M12 3v3\"/><path d=\"M4 6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h13a2 2 0 0 0 1.152-.365l3.424-2.317a1 1 0 0 0 0-1.635l-3.424-2.318A2 2 0 0 0 17 6z\"/>","list":"<path d=\"M3 12h.01\"/><path d=\"M3 18h.01\"/><path d=\"M3 6h.01\"/><path d=\"M8 12h13\"/><path d=\"M8 18h13\"/><path d=\"M8 6h13\"/>"};
+
+</script>
+<script>
+/* LetsPlay: sample data (India). Everything here is illustrative mock content for the prototype. */
+const CUR = '₹';
+const inr = (n) => '₹' + Math.round(Number(n)).toLocaleString('en-IN');
+
+const SPORTS = {
+  cricket:    { name: 'Cricket',    icon: 's-cricket',       c: '#D43B3B' },
+  football:   { name: 'Football',   icon: 's-football',      c: '#0F863E' },
+  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0A7CAE' },
+  kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#C05316' },
+  basketball: { name: 'Basketball', icon: 's-basketball',    c: '#C2410C' },
+  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#6A7B06' },
+  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#9B6C03' },
+  running:    { name: 'Running',    icon: 'footprints',      c: '#D93065' },
+  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9355DB' },
+  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0A77C3' },
+  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#0C8073' },
+  pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#4D7F0A' },
+  climbing:   { name: 'Climbing',   icon: 'mountain',        c: '#8A6A4C' },
+};
+/* Default cover photo per sport, used for games people host themselves. */
+const SPORT_IMG = { cricket: 'cricket', football: 'field', badminton: 'badminton', kabaddi: 'field', basketball: 'basketball', tennis: 'tennis', volleyball: 'volley', running: 'running', yoga: 'yoga', swimming: 'swim', cycling: 'cycling', pickleball: 'pickle', climbing: 'climb' };
+
+/* Map units: the world is 1600×1600; the user stands at (800, 800). 1 unit ≈ 2.5 m.
+   Main roads: vertical at x = 400/800/1200, horizontal at y = 400/800/1200. */
+const ME = { x: 800, y: 800 };
+const VROADS = [[400, 'Station Road'], [800, 'MG Road'], [1200, 'Lake Road']];
+const HROADS = [[400, 'Ring Road'], [800, 'Nehru Marg'], [1200, 'Market Road']];
+const AREA = 'Riverfront';
+
+/* d = days from today, t = 24h start time, price in rupees */
+const ACTIVITIES = [
+  { id: 'a1', title: 'Evening 5-a-side', sport: 'football', venue: 'Riverfront Maidan · Turf 3', x: 690, y: 645, d: 0, t: '19:30', mins: 60, level: 'All levels', ages: '16+', spots: 3, total: 10, price: 150, host: 'Riverfront FC', img: 'field', setting: 'Outdoor', surface: 'Artificial turf, floodlit', equipment: 'Studs or turf shoes, shin pads. Bibs provided.', access: 'Ramp from the MG Road gate. Accessible washroom near the pavilion.', cancel: 'Full refund up to 3 hours before kick-off.' },
+  { id: 'a2', title: 'Pickup Hoops', sport: 'basketball', venue: 'Northgate Courts', x: 935, y: 610, d: 0, t: '18:30', mins: 90, level: 'Intermediate', ages: '16+', spots: 4, total: 10, price: 0, host: 'Northgate Ballers', img: 'basketball', setting: 'Outdoor', surface: 'Acrylic court, lit', equipment: 'Bring a ball if you have one.', access: 'Level access from Nehru Marg.', cancel: 'Free game. Let the host know if you cannot make it.' },
+  { id: 'a3', title: 'Doubles Ladder Night', sport: 'tennis', venue: 'Lakeview Tennis Club', x: 1030, y: 850, d: 1, t: '18:00', mins: 120, level: 'Intermediate', ages: '18+', spots: 2, total: 8, price: 300, host: 'Lakeview TC', img: 'tennis2', setting: 'Outdoor', surface: 'Clay, 4 courts', equipment: 'Racquet. Balls provided.', access: 'Ramp to courts 1–2.', cancel: 'Refund up to 24 hours before.' },
+  { id: 'a4', title: 'Shuttle Social', sport: 'badminton', venue: 'Shuttle Zone Arena', x: 520, y: 905, d: 1, t: '20:00', mins: 90, level: 'Beginner friendly', ages: '14+', spots: 6, total: 16, price: 200, host: 'Shuttle Zone', img: 'badminton', setting: 'Indoor', surface: 'Synthetic mat, 6 courts', equipment: 'Non-marking shoes. Racquets to borrow.', access: 'Lift to court level, accessible changing room.', cancel: 'Refund up to 6 hours before.' },
+  { id: 'a5', title: 'Box Cricket Night', sport: 'cricket', venue: 'Oval Cricket Ground', x: 870, y: 1110, d: 0, t: '20:30', mins: 120, level: 'All levels', ages: '12+', spots: 5, total: 16, price: 250, host: 'Oval Strikers CC', img: 'cricket2', setting: 'Outdoor', surface: 'Netted box, floodlit', equipment: 'Tennis-ball cricket. Bats and stumps provided.', access: 'Paved path; side gate for wheelchair access.', cancel: 'Full refund if rained off.' },
+  { id: 'a6', title: 'Sunset Beach Volley', sport: 'volleyball', venue: 'Lakeside Sand Courts', x: 1105, y: 1030, d: 0, t: '17:00', mins: 90, level: 'All levels', ages: '16+', spots: 2, total: 12, price: 0, host: 'Lakeside Volley', img: 'volley', setting: 'Outdoor', surface: 'Sand, 2 courts', equipment: 'Barefoot. Carry water.', access: 'Boardwalk to court edge.', cancel: 'Free game.' },
+  { id: 'a7', title: 'Riverfront 5K Run Club', sport: 'running', venue: 'Riverfront Promenade', x: 625, y: 770, d: 1, t: '06:00', mins: 45, level: 'All paces', ages: '14+', spots: 18, total: 40, price: 0, host: 'Riverfront Runners', img: 'running', setting: 'Outdoor', surface: 'Flat riverside path', equipment: 'Running shoes, water.', access: 'Flat, paved route. Pacers for walk-run.', cancel: 'Free. Runs in light drizzle.' },
+  { id: 'a8', title: 'Sunrise Yoga in the Garden', sport: 'yoga', venue: 'Botanical Garden Lawn', x: 720, y: 1195, d: 2, t: '06:30', mins: 60, level: 'All levels', ages: '16+', spots: 9, total: 20, price: 100, host: 'Open Sky Yoga', img: 'yoga', setting: 'Outdoor', surface: 'Lawn', equipment: 'Mat and water. Spare mats available.', access: 'Firm path to the lawn; chair-yoga option.', cancel: 'Moves to the pavilion if it rains.' },
+  { id: 'a9', title: 'Lane Swim Masters', sport: 'swimming', venue: 'Westside Aquatic Centre', x: 455, y: 640, d: 2, t: '06:00', mins: 60, level: 'Advanced', ages: '18+', spots: 3, total: 12, price: 250, host: 'Westside Masters', img: 'swim', setting: 'Indoor', surface: '25 m pool, 6 lanes', equipment: 'Goggles, cap. Kickboards provided.', access: 'Pool hoist and accessible changing.', cancel: 'Refund up to 12 hours before.' },
+  { id: 'a10', title: 'Sunrise Hill Ride', sport: 'cycling', venue: 'Northgate Park', x: 1085, y: 455, d: 6, t: '05:45', mins: 150, level: 'Intermediate', ages: '18+', spots: 11, total: 25, price: 0, host: 'Spokes & Chai', img: 'cycling', setting: 'Outdoor', surface: 'Road, 40 km loop', equipment: 'Road or hybrid bike, helmet, lights.', access: 'No-drop ride with a sweeper.', cancel: 'Free. Cancelled in heavy rain.' },
+  { id: 'a11', title: 'Pickleball Drop-in', sport: 'pickleball', venue: 'Lake Road Sports Centre', x: 1200, y: 760, d: 3, t: '19:00', mins: 90, level: 'Beginner friendly', ages: 'All ages', spots: 7, total: 16, price: 200, host: 'Lake Road Rec', img: 'pickle', setting: 'Indoor', surface: '4 courts', equipment: 'Paddles to borrow.', access: 'Fully step-free.', cancel: 'Refund up to 2 hours before.' },
+  { id: 'a12', title: 'Bouldering Basics', sport: 'climbing', venue: 'Boulder Box Gym', x: 380, y: 1050, d: 4, t: '18:30', mins: 90, level: 'Beginner', ages: '12+', spots: 4, total: 10, price: 600, host: 'Boulder Box', img: 'climb', setting: 'Indoor', surface: 'Bouldering walls, padded floor', equipment: 'Shoes and chalk included.', access: 'Ground-floor walls; ask staff for adaptive sessions.', cancel: 'Refund up to 24 hours before.' },
+  { id: 'a13', title: 'Junior Futsal (8–11)', sport: 'football', venue: 'Shuttle Zone Arena · Hall B', x: 590, y: 985, d: 6, t: '09:00', mins: 60, level: 'Beginner', ages: '8–11', spots: 5, total: 16, price: 150, host: 'Shuttle Zone Juniors', img: 'football', setting: 'Indoor', surface: 'Sports hall', equipment: 'Sports shoes, water. Parent consent required.', access: 'Lift and accessible washrooms. Quiet room available.', cancel: 'Refund up to 24 hours before.' },
+  { id: 'a14', title: '3×3 Street Tournament', sport: 'basketball', venue: 'Oval Courts', x: 985, y: 1065, d: 6, t: '16:00', mins: 240, level: 'Competitive', ages: '16+', spots: 3, total: 16, price: 500, host: 'City Hoops League', img: 'bball2', setting: 'Outdoor', surface: 'Concrete, 2 courts', equipment: 'Team of 3–4. Price is per team.', access: 'Level access, seating for spectators.', cancel: 'Refund until registration closes.' },
+  { id: 'a15', title: 'Evening Kabaddi Practice', sport: 'kabaddi', venue: 'Hilltop Akhada Ground', x: 455, y: 415, d: 1, t: '17:30', mins: 90, level: 'All levels', ages: '14+', spots: 6, total: 14, price: 0, host: 'Hilltop Kabaddi Club', img: 'field', setting: 'Outdoor', surface: 'Mud court with mats', equipment: 'Comfortable sportswear. Barefoot play.', access: 'Ground-level court; seating under the banyan tree.', cancel: 'Free. Moves indoors if it rains.' },
+];
+
+const STORES = [
+  { id: 's1', name: 'Riverfront Sports Co.', x: 765, y: 700, promo: 'Flat 20% off cricket gear this week', sponsored: true },
+];
+
+const COMMUNITY_SPOTS = [
+  { id: 'c1', name: 'Open badminton court', sport: 'badminton', x: 1180, y: 610, by: 'Priya N.', setting: 'Outdoor', note: 'Public court in the colony park, lights until 10 pm.', visibility: 'Everyone' },
+];
+
+/* No profile photo: people show initials until they add their own picture. */
+const ME_USER = { name: 'Arjun Mehta' };
+
+const PEOPLE = [
+  { id: 'u1', name: 'Rohan Iyer', sport: 'Football · Cricket', dist: '0.6 km' },
+  { id: 'u2', name: 'Ananya Rao', sport: 'Tennis · Running', dist: '1.1 km' },
+  { id: 'u3', name: 'Kavya Nair', sport: 'Badminton', dist: '1.4 km' },
+  { id: 'u4', name: 'Vikram Singh', sport: 'Cricket · Kabaddi', dist: '2.0 km' },
+  { id: 'u5', name: 'Sameer Khan', sport: 'Football', dist: '2.3 km' },
+];
+
+const FAMILY = [
+  { id: 'f0', name: 'Arjun Mehta', note: 'You' },
+  { id: 'f1', name: 'Aanya Mehta', note: 'Age 11 · consent on file' },
+  { id: 'f2', name: 'Vihaan Mehta', note: 'Age 8 · consent on file' },
+];
+
+const TEAM_COLORS = ['#0F863E', '#1D4FF2', '#D93065', '#C05316', '#6A45F5', '#0A7CAE', '#D43B3B', '#0D1530'];
+
+const SAMPLE_TEAMS = [
+  { id: 't1', name: 'Riverfront Strikers', sport: 'cricket', color: '#D43B3B', privacy: 'Invite only',
+    members: [
+      { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
+      { name: 'Rohan Iyer', role: 'Vice-captain', status: 'yes' },
+      { name: 'Vikram Singh', role: 'Player', status: 'maybe' },
+      { name: 'Sameer Khan', role: 'Player', status: 'yes' },
+      { name: 'Neha Joshi', role: 'Player', status: 'no' },
+      { name: 'Karthik Reddy', role: 'Player', status: 'yes' },
+    ],
+    next: { vs: 'Oval Strikers CC', d: 3, t: '19:00', venue: 'Oval Cricket Ground' } },
+  { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0A7CAE', privacy: 'Public',
+    members: [
+      { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
+      { name: 'Kavya Nair', role: 'Player', status: 'yes' },
+      { name: 'Ravi Shah', role: 'Player', status: 'maybe' },
+      { name: 'Pooja Desai', role: 'Player', status: 'yes' },
+    ],
+    next: { vs: 'Shuttle Social mixer', d: 1, t: '20:00', venue: 'Shuttle Zone Arena' } },
+];
+
+/* Enterprise: a fictional company running an internal league. */
+const ORG = {
+  name: 'Halcyon Systems',
+  league: 'Monsoon Corporate Cup',
+  employees: 412,
+  teams: [
+    { id: 'e1', name: 'Engineering Eagles', dept: 'Engineering', c: '#1D4FF2', ab: 'EE', w: 6, d: 1, l: 1, form: 'WWDWL', players: 14 },
+    { id: 'e2', name: 'Sales Sharks', dept: 'Sales', c: '#D93065', ab: 'SS', w: 5, d: 2, l: 1, form: 'WDWWD', players: 12 },
+    { id: 'e3', name: 'Design Dynamos', dept: 'Design', c: '#9355DB', ab: 'DD', w: 5, d: 0, l: 3, form: 'LWWLW', players: 9 },
+    { id: 'e4', name: 'Finance Falcons', dept: 'Finance', c: '#0F863E', ab: 'FF', w: 4, d: 2, l: 2, form: 'DWLWD', players: 10 },
+    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#C05316', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
+    { id: 'e6', name: 'People Panthers', dept: 'People', c: '#0A7CAE', ab: 'PP', w: 2, d: 3, l: 3, form: 'DDLWL', players: 8 },
+    { id: 'e7', name: 'Marketing Mavericks', dept: 'Marketing', c: '#9B6C03', ab: 'MM', w: 2, d: 1, l: 5, form: 'LLWLD', players: 11 },
+    { id: 'e8', name: 'Legal Lions', dept: 'Legal', c: '#0D1530', ab: 'LL', w: 1, d: 1, l: 6, form: 'LLLDL', players: 7 },
+  ],
+  participation: [ ['Engineering', 78], ['Sales', 71], ['Design', 69], ['Operations', 58], ['Finance', 54], ['Marketing', 47], ['People', 44], ['Legal', 31] ],
+};
+
+const SAMPLE_FIXTURES = [
+  { id: 'x1', a: 'e1', b: 'e2', sport: 'cricket', d: 1, t: '18:30', venue: 'Oval Cricket Ground' },
+  { id: 'x2', a: 'e3', b: 'e5', sport: 'badminton', d: 1, t: '13:15', venue: 'Shuttle Zone Arena' },
+  { id: 'x3', a: 'e4', b: 'e8', sport: 'football', d: 2, t: '19:00', venue: 'Riverfront Maidan · Turf 2' },
+  { id: 'x4', a: 'e6', b: 'e7', sport: 'kabaddi', d: 3, t: '17:30', venue: 'Hilltop Akhada Ground' },
+  { id: 'x5', a: 'e2', b: 'e3', sport: 'volleyball', d: 4, t: '13:00', venue: 'Lakeside Sand Courts' },
+  { id: 'x6', a: 'e1', b: 'e4', sport: 'cricket', d: 6, t: '07:00', venue: 'Oval Cricket Ground' },
+];
+
+const VENUES_ENT = ['Oval Cricket Ground', 'Riverfront Maidan · Turf 2', 'Shuttle Zone Arena', 'Northgate Courts', 'Lakeside Sand Courts', 'Hilltop Akhada Ground'];
+
+const PRODUCTS = [
+  { id: 'p1', name: 'Match Futsal Ball, Size 4', brand: 'Kinetiq', cat: 'equipment', price: 1299, was: 1799, img: 'p-futsal', rating: 4.7, reviews: 212, seller: 'Riverfront Sports Co.', sizes: null },
+  { id: 'p2', name: 'Velocity Trail Runner', brand: 'Stride', cat: 'footwear', price: 4499, was: 5999, img: 'p-running2', rating: 4.6, reviews: 98, seller: 'Stride Official', sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10'] },
+  { id: 'p3', name: 'Everyday Dri-Fit Tee', brand: 'Courtline', cat: 'apparel', price: 799, img: 'p-tshirt', rating: 4.5, reviews: 340, seller: 'Courtline', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
+  { id: 'p4', name: 'Pro Sparring Gloves 12oz', brand: 'Kinetiq', cat: 'equipment', price: 2499, img: 'p-gloves', rating: 4.8, reviews: 61, seller: 'Boulder Box Pro Shop', sizes: ['10oz', '12oz', '14oz'] },
+  { id: 'p5', name: 'Insulated Sport Bottle 750 ml', brand: 'Hydra', cat: 'accessories', price: 899, img: 'p-bottle', rating: 4.9, reviews: 520, seller: 'Hydra', sizes: null },
+  { id: 'p6', name: 'Club Kit Backpack 28 L', brand: 'Courtline', cat: 'accessories', price: 1999, was: 2699, img: 'p-bag', rating: 4.6, reviews: 143, seller: 'Riverfront Sports Co.', sizes: null },
+];
+
+const FREE_DELIVERY = 999;
+const DELIVERY_FEE = 49;
+
+const PLANS = {
+  lite: { name: 'Lite', monthly: 0, icon: 'compass', blurb: 'Find games near you and jump in.',
+    feats: ['Live map of nearby sports', 'Join games and events', 'Family profiles and calendar', 'Marketplace and deals'],
+    no: ['Pin and photograph new places', 'Host games, create teams, invite players', 'Company leagues and leaderboards'] },
+  pro: { name: 'Pro', monthly: 199, icon: 'zap', blurb: 'Organise teams and grow your local scene.',
+    feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
+    no: ['Company leagues and leaderboards'] },
+  enterprise: { name: 'Enterprise', monthly: 149, perSeat: true, minSeats: 20, icon: 'building-2', blurb: 'Run sport across your company.',
+    feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
+    no: [] },
+};
+/* Billing: yearly is 12 months less 20%, rounded down to the rupee. Example pricing for the prototype. */
+const YEARLY_DISCOUNT = 0.2;
+const yearlyPrice = (monthly) => Math.floor(monthly * 12 * (1 - YEARLY_DISCOUNT));
+
+/* ── Upgrades data ── */
+ACTIVITIES.push({ id: 'a16', title: 'Kids Swim Lessons (6–12)', sport: 'swimming', venue: 'Westside Aquatic Centre · Learner pool', x: 480, y: 600, d: 6, t: '09:30', mins: 60, level: 'Beginner', ages: '6–12', spots: 4, total: 10, price: 300, host: 'Westside Swim School', img: 'swim', setting: 'Indoor', surface: 'Learner pool, 0.9 m deep', equipment: 'Swimsuit, cap, towel.', access: 'Pool hoist and family changing rooms.', cancel: 'Refund up to 24 hours before.' });
+ACTIVITIES.find((a) => a.id === 'a3').spots = 0; /* full: shows the waitlist */
+
+/* Coach and credential shown on game pages */
+const COACH = {
+  a1: ['Imran Shaikh', 'AIFF D licence'], a3: ['Neha Kulkarni', 'AITA certified coach'], a4: ['Sameer Patil', 'Badminton coach, Level 2'],
+  a5: ['Rahul Menon', 'BCCI Level 1'], a8: ['Divya Rao', 'RYT-500 yoga teacher'], a9: ['Arvind Pillai', 'Swim coach, Level 2'],
+  a12: ['Tenzing Dorje', 'Climbing instructor'], a13: ['Imran Shaikh', 'AIFF grassroots coach'], a15: ['Balwinder Singh', 'NIS kabaddi coach'], a16: ['Lakshmi Iyer', 'Swim instructor'],
+};
+
+FAMILY[0].age = 34; FAMILY[1].age = 11; FAMILY[2].age = 8;
+const FAMILY_COLORS = { f0: '#1D4FF2', f1: '#D93065', f2: '#0A7CAE' };
+const PROFILES = {
+  f0: { phone: '98765 43210', ecName: 'Meera Mehta (spouse)', ecPhone: '98765 01234', medical: '' },
+  f1: { phone: '', ecName: 'Arjun Mehta (father)', ecPhone: '98765 43210', medical: 'Mild asthma, carries an inhaler' },
+  f2: { phone: '', ecName: 'Arjun Mehta (father)', ecPhone: '98765 43210', medical: '' },
+};
+
+/* Notifications: what changed, what it means, what to do. pri: urgent | action | info | promo; cat drives user controls. */
+const NOTE_SEED = [
+  { id: 'n1', pri: 'urgent', cat: 'change', icon: 'cloud-sun', when: '12 min ago', ref: 'a7', title: 'Rain alert for Riverfront 5K',
+    body: 'Light rain is forecast at 6 am tomorrow. The run goes ahead in drizzle and moves to Saturday if rain is heavy. You get a full refund if it is cancelled.',
+    actions: [['Keep my spot', 'keep'], ['Cancel my place', 'cancelSpot']] },
+  { id: 'n2', pri: 'urgent', cat: 'change', icon: 'map-pin', when: '1 hr ago', ref: 'a7', title: 'Riverfront 5K: meeting point moved',
+    body: 'Now starting at the promenade clock tower, 200 m east of the old spot. The start time is unchanged.',
+    actions: [['Got it', 'ack'], ['View game', 'view']] },
+  { id: 'n3', pri: 'action', cat: 'payment', icon: 'indian-rupee', when: '3 hr ago', ref: 'a16', title: 'Payment due: Aanya’s swim lessons',
+    body: 'Pay ₹300 by Friday 8 pm to keep Aanya’s place for Saturday. Unpaid places go to the waitlist.',
+    actions: [['Pay ₹300 via UPI', 'pay'], ['Remind me tomorrow', 'snooze']] },
+  { id: 'n4', pri: 'action', cat: 'team', icon: 'users', when: 'Yesterday', ref: 't1', title: 'Are you available on Wednesday?',
+    body: 'Riverfront Strikers v Oval Strikers CC, Wed 7 pm at Oval Cricket Ground. Rohan (vice-captain) needs 11 players by Tuesday.',
+    actions: [['I’m in', 'yes'], ['Can’t make it', 'no']] },
+  { id: 'n5', pri: 'info', cat: 'club', icon: 'list-checks', when: 'Yesterday', ref: 'a13', title: 'Coach Imran shared the kit list',
+    body: 'For Junior Futsal on Saturday, Vihaan needs non-marking shoes, shin pads and a water bottle.',
+    actions: [['View game', 'view']] },
+  { id: 'n6', pri: 'info', cat: 'recs', icon: 'compass', when: '2 days ago', ref: 'a15', title: 'New near you: Evening Kabaddi Practice',
+    body: 'Free, tomorrow at 5:30 pm at Hilltop Akhada Ground, 1.5 km away. Beginners welcome.',
+    actions: [['View game', 'view']] },
+  { id: 'n7', pri: 'promo', cat: 'promo', icon: 'tag', when: '2 days ago', title: 'Riverfront Sports Co.: flat 20% off cricket gear',
+    body: 'Bats, pads and helmets this week only. Click & collect in 2 hours.',
+    actions: [['Shop the deal', 'shop']] },
+];
+
+/* Turfs and courts that can be booked by the hour. price = off-peak per hour, peak = after 6 pm and weekends. */
+const VENUES_BOOK = [
+  { id: 'v1', name: 'Riverfront Maidan Turf', x: 690, y: 645, sports: ['football', 'cricket'], courts: ['Turf A · 5-a-side', 'Turf B · 7-a-side'], price: 1200, peak: 1600, img: 'field', setting: 'Outdoor', rating: 4.6, reviews: 812, amenities: ['Floodlights', 'Parking', 'Washrooms', 'Drinking water', 'Changing room'] },
+  { id: 'v2', name: 'Oval Box Cricket', x: 870, y: 1110, sports: ['cricket'], courts: ['Box 1', 'Box 2'], price: 1400, peak: 1800, img: 'cricket2', setting: 'Outdoor', rating: 4.5, reviews: 640, amenities: ['Floodlights', 'Bats & stumps', 'Parking', 'Washrooms'] },
+  { id: 'v3', name: 'Shuttle Zone Arena', x: 520, y: 905, sports: ['badminton'], courts: ['Court 1', 'Court 2', 'Court 3', 'Court 4'], price: 450, peak: 600, img: 'badminton', setting: 'Indoor', rating: 4.7, reviews: 1204, amenities: ['Air cooled', 'Racquet hire', 'Changing room', 'Lift access'] },
+  { id: 'v4', name: 'Northgate Courts', x: 935, y: 610, sports: ['basketball'], courts: ['Full court', 'Half court'], price: 800, peak: 1000, img: 'basketball', setting: 'Outdoor', rating: 4.3, reviews: 210, amenities: ['Floodlights', 'Drinking water', 'Seating'] },
+  { id: 'v5', name: 'Lake Road Pickleball', x: 1200, y: 760, sports: ['pickleball'], courts: ['Court 1', 'Court 2'], price: 500, peak: 700, img: 'pickle', setting: 'Indoor', rating: 4.8, reviews: 156, amenities: ['Paddle hire', 'Air cooled', 'Step-free'] },
+  { id: 'v6', name: 'Lakeside Sand Courts', x: 1105, y: 1030, sports: ['volleyball'], courts: ['Court 1', 'Court 2'], price: 600, peak: 800, img: 'volley', setting: 'Outdoor', rating: 4.4, reviews: 98, amenities: ['Floodlights', 'Showers', 'Ball hire'] },
+];
+const LINEUP_SIZE = { cricket: 11, football: 7, kabaddi: 7, basketball: 5, volleyball: 6, badminton: 4 };
+
+/* Players on LetsPlay, for adding to teams. km = distance from you. lft = looking for a team. */
+const PLAYERS = [
+  { id: 'u6', name: 'Aditya Kulkarni', sports: ['cricket', 'football'], level: 'Intermediate', km: 0.3, lft: true, games: 58, bio: 'Opening batter, part-time spin' },
+  { id: 'u1', name: 'Rohan Iyer', sports: ['football', 'cricket'], level: 'Intermediate', km: 0.6, lft: false, games: 42, bio: 'Midfielder, plays weekday evenings' },
+  { id: 'u7', name: 'Fatima Sheikh', sports: ['badminton', 'volleyball'], level: 'Advanced', km: 0.8, lft: true, games: 77, bio: 'State-level doubles player' },
+  { id: 'u2', name: 'Ananya Rao', sports: ['tennis', 'running'], level: 'Intermediate', km: 1.1, lft: true, games: 35, bio: 'Morning runner, weekend tennis' },
+  { id: 'u8', name: 'Harpreet Gill', sports: ['kabaddi', 'football'], level: 'Advanced', km: 1.2, lft: true, games: 64, bio: 'Raider, 6 years club kabaddi' },
+  { id: 'u3', name: 'Kavya Nair', sports: ['badminton'], level: 'Intermediate', km: 1.4, lft: false, games: 49, bio: 'Singles and mixed doubles' },
+  { id: 'u9', name: 'Siddharth Jain', sports: ['cricket'], level: 'Beginner', km: 1.7, lft: true, games: 6, bio: 'New to the city, keen fast bowler' },
+  { id: 'u4', name: 'Vikram Singh', sports: ['cricket', 'kabaddi'], level: 'Advanced', km: 2.0, lft: false, games: 91, bio: 'Wicketkeeper-batter' },
+  { id: 'u5', name: 'Sameer Khan', sports: ['football'], level: 'Intermediate', km: 2.3, lft: true, games: 28, bio: 'Centre-back, free on weekends' },
+  { id: 'u10', name: 'Meenakshi Pillai', sports: ['volleyball', 'basketball'], level: 'Intermediate', km: 2.9, lft: true, games: 22, bio: 'Setter, also plays 3×3' },
+  { id: 'u11', name: 'Arnav Bose', sports: ['football', 'basketball'], level: 'Beginner', km: 3.4, lft: true, games: 9, bio: 'College student, evenings free' },
+  { id: 'u12', name: 'Deepa Menon', sports: ['cricket', 'badminton'], level: 'Intermediate', km: 3.8, lft: false, games: 31, bio: 'All-rounder, corporate league' },
+  { id: 'u13', name: 'Imran Qureshi', sports: ['cricket'], level: 'Advanced', km: 4.6, lft: true, games: 120, bio: 'Left-arm seam, club captain' },
+  { id: 'u14', name: 'Tanvi Shah', sports: ['badminton', 'pickleball'], level: 'Beginner', km: 5.2, lft: true, games: 4, bio: 'Learning, happy to join any team' },
+  { id: 'u15', name: 'Rahul Verma', sports: ['kabaddi', 'cricket'], level: 'Intermediate', km: 6.5, lft: false, games: 40, bio: 'Defender, weekend matches only' },
+];
+
+</script>
+<script>
+/* LetsPlay Design 2 ("Playground"): engagement-first prototype sharing Design 1's data. */
+(function () {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const IMG = 'img/';
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const app = $('#app');
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Icons: Lucide paths from icons.js plus the same custom sport glyphs as Design 1. */
+const GLYPHS = {
+  's-football': '<circle cx="12" cy="12" r="9"/><path d="M12 8.2l3.4 2.5-1.3 4h-4.2l-1.3-4z"/><path d="M12 3v5.2M15.4 10.7l5-1.6M14.1 14.7l3 4.2M9.9 14.7l-3 4.2M8.6 10.7l-5-1.6"/>',
+  's-basketball': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18"/><path d="M5.6 5.6c2.3 1.8 3.6 3.9 3.6 6.4s-1.3 4.6-3.6 6.4M18.4 5.6c-2.3 1.8-3.6 3.9-3.6 6.4s1.3 4.6 3.6 6.4"/>',
+  's-tennis': '<circle cx="12" cy="12" r="9"/><path d="M5.2 6c2.4 1.6 3.8 3.6 3.8 6s-1.4 4.4-3.8 6M18.8 6c-2.4 1.6-3.8 3.6-3.8 6s1.4 4.4 3.8 6"/>',
+  's-shuttle': '<path d="M9.5 15.5 6 4h12l-3.5 11.5z"/><path d="M10.5 15.5 10 4M13.5 15.5 14 4M7 8h10"/><path d="M9.5 15.5h5v1.5a2.5 2.5 0 0 1-5 0z"/>',
+  's-cricket': '<path d="M14.5 3.5l4 4-8.8 8.8a1.5 1.5 0 0 1-2.1 0l-1.9-1.9a1.5 1.5 0 0 1 0-2.1z"/><path d="M6.5 15.5 3 19"/><circle cx="18" cy="17.5" r="2.5"/>',
+  's-kabaddi': '<circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v5.5l-4.5 7.5M12 13l4.5 7.5M5 11l7-3 7 3"/>',
+  's-paddle': '<circle cx="14" cy="9.5" r="6"/><path d="M9.8 13.7 4.5 19"/><circle cx="5.5" cy="6" r="1.6"/>',
+};
+function ic(name) { const b = GLYPHS[name] || ICONS[name] || ICONS['circle-check']; return `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${b}</svg>`; }
+const sp = (k) => SPORTS[k];
+const money = (n) => (n ? inr(n) : 'Free');
+const today = new Date(); today.setHours(0, 0, 0, 0);
+const dateAt = (d, t) => { const x = new Date(today); x.setDate(x.getDate() + d); const [h, m] = t.split(':'); x.setHours(+h, +m); return x; };
+const tf = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' });
+const wf = new Intl.DateTimeFormat('en-IN', { weekday: 'short' });
+const dayLabel = (d) => (d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : wf.format(dateAt(d, '12:00')));
+const when = (a) => `${dayLabel(a.d)} · ${tf.format(dateAt(a.d, a.t))}`;
+const km = (x, y) => Math.hypot(x - ME.x, y - ME.y) * 0.0025;
+const fmtKm = (k) => (k < 1 ? Math.round(k * 100) * 10 + ' m' : k.toFixed(1) + ' km');
+const AVC = ['#D93065', '#0A7CAE', '#0F863E', '#C05316', '#9355DB', '#9B6C03'];
+const avatar = (n) => `<span class="av" style="background:${AVC[[...n].reduce((a, c) => a + c.charCodeAt(0), 0) % AVC.length]}">${esc(n.split(' ').map((w) => w[0]).join('').slice(0, 2))}</span>`;
+function buzz(ms = 12) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* unsupported */ } }
+
+/* ── State ── */
+const KEY = 'letsplay-d2-v1';
+const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7'], passed: [], seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], vote: null, poll: { yes: 4, maybe: 1, no: 1 }, lineup: {}, chat: null, venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10 });
+let S = fresh();
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) S = Object.assign(fresh(), s); } catch (e) { /* storage unavailable */ }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } };
+const LV = 250;
+const level = () => Math.floor(S.xp / LV) + 1;
+const TITLES = ['Rookie', 'Regular', 'Weekend warrior', 'Team player', 'All-rounder', 'Local legend', 'Captain material', 'Club hero'];
+
+/* ── Shell ── */
+const framed = () => matchMedia('(min-width: 900px) and (min-height: 640px)').matches;
+const syncFrame = () => app.classList.toggle('framed', framed());
+syncFrame(); addEventListener('resize', () => { syncFrame(); if (tab === 'play') focusMap(false); });
+const HOST_THEME = document.documentElement.getAttribute('data-theme');
+function applyTheme() { const r = document.documentElement; if (S.theme === 'system') { if (HOST_THEME) r.setAttribute('data-theme', HOST_THEME); else r.removeAttribute('data-theme'); } else r.setAttribute('data-theme', S.theme); renderNoteTheme(); }
+function renderNoteTheme() { const n = $('#noteTheme'); if (n) n.innerHTML = [['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join(''); }
+function toast(msg, icon = 'circle-check') { $$('.toast', app).forEach((t) => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.innerHTML = ic(icon) + esc(msg); app.appendChild(t); setTimeout(() => t.remove(), 2600); }
+function sheet(html) {
+  closeSheet();
+  const sc = document.createElement('div'); sc.className = 'scrim'; sc.dataset.act = 'close';
+  const sh = document.createElement('div'); sh.className = 'sheet'; sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.innerHTML = html;
+  app.append(sc, sh); const f = sh.querySelector('button:not(.x)'); if (f) setTimeout(() => f.focus({ preventScroll: true }), 320);
+}
+function closeSheet() { $$('.sheet, .scrim', app).forEach((e) => e.remove()); }
+const head = (t, s) => `<div class="sheet-head"><div><h2>${t}</h2>${s ? `<div class="muted" style="margin-top:4px">${s}</div>` : ''}</div><button class="x" data-act="close" aria-label="Close">${ic('x')}</button></div>`;
+
+let tab = 'play';
+function go(t) {
+  tab = t; closeSheet(); closeStory();
+  $$('.screen').forEach((s) => (s.hidden = s.id !== 'scr-' + t));
+  $('#tabbar').innerHTML = [['play', 'compass', 'Play'], ['book', 'calendar-days', 'Book'], ['squad', 'users', 'Squad'], ['me', 'user', 'Me']]
+    .map(([k, i, l]) => `<button class="tab" data-act="tab" data-id="${k}" aria-label="${l}" ${tab === k ? 'aria-current="page"' : ''}>${ic(i)}<span class="lbl">${l}</span></button>`).join('');
+  ({ play: renderPlay, book: renderBook, squad: renderSquad, me: renderMe })[t]();
+}
+
+/* ═════ PLAY: map + swipe deck ═════ */
+const MAP_S = 0.62;
+function mapSVG() {
+  let o = '<svg width="1600" height="1600" viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg"><rect class="m-land" width="1600" height="1600"/>';
+  for (let x = 0; x < 1600; x += 100) for (let y = 0; y < 1600; y += 100) o += `<rect class="m-block" x="${x + 14}" y="${y + 14}" width="72" height="72" rx="14"/>`;
+  [[600, 590, 200, 150], [820, 1040, 200, 130], [640, 1140, 170, 110], [280, 280, 230, 190], [1000, 390, 200, 140], [1240, 1260, 200, 160]].forEach(([x, y, w, h]) => { o += `<rect class="m-park" x="${x}" y="${y}" width="${w}" height="${h}" rx="40"/>`; });
+  o += '<path class="m-water" stroke-width="60" d="M-60 500 C 240 560, 380 740, 520 830 S 760 880, 900 990 S 1150 1230, 1700 1170"/><ellipse class="m-lake" cx="1190" cy="1080" rx="96" ry="64"/>';
+  for (let i = 0; i <= 1600; i += 100) { const w = i % 400 === 0 ? 20 : 10; o += `<line class="m-road" x1="${i}" y1="0" x2="${i}" y2="1600" stroke-width="${w}"/><line class="m-road" x1="0" y1="${i}" x2="1600" y2="${i}" stroke-width="${w}"/>`; }
+  [[800, 1340, 'MG Road', 90], [1380, 792, 'Nehru Marg', 0], [640, 392, 'Ring Road', 0]].forEach(([x, y, n, r]) => { o += `<text class="m-label" x="${x}" y="${y}" text-anchor="middle" dy="5" transform="rotate(${r} ${x} ${y})">${n}</text>`; });
+  return o + '</svg>';
+}
+const queue = () => ACTIVITIES.filter((a) => !S.joined.includes(a.id) && !S.passed.includes(a.id) && (S.mood === 'all' || a.sport === S.mood)).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
+const soon = () => ACTIVITIES.filter((a) => a.d <= 1).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t)).slice(0, 8);
+function goalRing() {
+  const r = 20, c = 2 * Math.PI * r, done = Math.min(S.week, S.goal);
+  return `<button class="goal-ring" data-act="tab" data-id="me" aria-label="Weekly goal: ${done} of ${S.goal} games"><svg viewBox="0 0 48 48"><circle class="track" cx="24" cy="24" r="${r}"/><circle class="val" cx="24" cy="24" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - done / S.goal)}"/></svg><b class="num">${done}/${S.goal}</b></button>`;
+}
+/* Weeks in a row with the goal hit. The current week only counts once it is hit, so it never breaks the streak early. */
+function streakWeeks() { let i = S.streak.length - 1, n = 0; if (!S.streak[i]) i--; for (; i >= 0 && S.streak[i]; i--) n++; return n; }
+function renderPlay() {
+  const el = $('#scr-play');
+  if (!$('#map')) {
+    el.innerHTML = `<div class="map" id="map" aria-label="Map of games near you"><div class="map-layer" id="mapLayer">${mapSVG()}<div id="pins"></div></div></div>
+      <div class="play-top top-safe" id="playTop"></div>
+      <div class="deck-wrap"><div class="deck" id="deck" aria-live="polite"></div>
+        <div class="deck-actions"><button class="round" data-act="pass" aria-label="Pass on this game">${ic('x')}</button><button class="round big" data-act="in" aria-label="I’m in: join this game">${ic('check')}</button><button class="round" data-act="info" aria-label="See details">${ic('info')}</button></div>
+        <div class="hint">Swipe right to join, left to pass, up for details</div></div>`;
+    bindMapDrag();
+  }
+  const moods = [['all', 'Anything', null]].concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga'].map((k) => [k, sp(k).name, sp(k)]));
+  $('#playTop').innerHTML = `<div class="hello"><h1><small>Good to see you, Arjun</small>What do you feel like playing?</h1><span class="streak" title="Weekly streak">${ic('flame')}<span class="num">${streakWeeks()}</span></span>${goalRing()}</div>
+    <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${IMG + a.img}.jpg" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
+    <div class="chips">${moods.map(([k, n, s]) => `<button class="chip ${s ? '' : 'neutral'}" style="${s ? '--c:' + s.c : ''}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('')}</div>`;
+  $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>` + ACTIVITIES.map((a) => `<div class="pin ${S.joined.includes(a.id) || S.passed.includes(a.id) ? 'gone' : ''}" id="pin-${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px"><span>${ic(sp(a.sport).icon)}</span></div>`).join('');
+  renderDeck();
+}
+function cardHTML(a, depth) {
+  const s = sp(a.sport), left = Math.max(0, a.spots - (S.joined.includes(a.id) ? 1 : 0));
+  return `<article class="gcard" data-id="${a.id}" data-depth="${depth}" style="--c:${s.c};z-index:${10 - depth}" ${depth ? 'aria-hidden="true"' : `aria-label="${esc(a.title)}"`}>
+    <div class="photo"><img src="${IMG + a.img}.jpg" alt="" draggable="false"><div class="tags">${a.d === 0 ? '<span class="tag live">Today</span>' : ''}<span class="tag">${ic(s.icon)}${s.name}</span><span class="tag">${money(a.price)}</span></div>
+      <span class="stamp in">I’M IN</span><span class="stamp pass">PASS</span></div>
+    <div class="body"><h3>${esc(a.title)}</h3>
+      <div class="meta"><span>${ic('clock')}${when(a)}</span><span>${ic('navigation')}${fmtKm(km(a.x, a.y))}</span><span>${ic('users')}${left} of ${a.total} left</span></div>
+      <div class="spots-bar"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></div></div></article>`;
+}
+function renderDeck() {
+  const q = queue(), d = $('#deck');
+  if (!q.length) {
+    d.innerHTML = `<div class="deck-empty"><h3 style="font-size:18px">You’ve seen every game nearby</h3><div class="muted">Try another sport, book a court for your own game, or start the deck again.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="pill sm" data-act="resetDeck">Show games again</button><button class="pill sm soft" data-act="tab" data-id="book">Book a court</button></div></div>`;
+    $$('.deck-actions .round').forEach((b) => (b.disabled = true)); focusMap(true, null); return;
+  }
+  $$('.deck-actions .round').forEach((b) => (b.disabled = false));
+  d.innerHTML = q.slice(0, 3).map((a, i) => cardHTML(a, i)).reverse().join('');
+  bindCard($('.gcard[data-depth="0"]', d)); focusMap(true, q[0]);
+}
+let mapPos = { x: 0, y: 0 };
+function setMap(x, y, anim) { const l = $('#mapLayer'); if (!l) return; mapPos = { x, y }; l.classList.toggle('dragging', !anim); l.style.transform = `translate(${x}px,${y}px) scale(${MAP_S})`; }
+function focusMap(anim, a) {
+  const m = $('#map'); if (!m) return; const target = a === undefined ? queue()[0] : a; const p = target || ME;
+  const topH = ($('#playTop') || {}).offsetHeight || 200, deckTop = ($('.deck-wrap') || {}).offsetTop || m.clientHeight * 0.5;
+  const cy = topH + (deckTop - topH) / 2;
+  setMap(m.clientWidth / 2 - p.x * MAP_S, cy - p.y * MAP_S, anim);
+  $$('.pin.on').forEach((e) => e.classList.remove('on'));
+  if (target) { const pin = $('#pin-' + target.id); if (pin) { void pin.offsetWidth; pin.classList.add('on'); } }
+}
+function bindMapDrag() {
+  const m = $('#map'); let start = null;
+  m.addEventListener('pointerdown', (e) => { start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y }; m.setPointerCapture(e.pointerId); });
+  m.addEventListener('pointermove', (e) => { if (start) setMap(start.mx + e.clientX - start.x, start.my + e.clientY - start.y, false); });
+  const end = () => { start = null; }; m.addEventListener('pointerup', end); m.addEventListener('pointercancel', end);
+}
+/* Card physics: follow the finger, tilt with distance, show the stamp, decide on release. */
+function bindCard(c) {
+  if (!c) return; let s = null;
+  c.addEventListener('pointerdown', (e) => { s = { x: e.clientX, y: e.clientY }; c.setPointerCapture(e.pointerId); c.classList.add('dragging'); });
+  c.addEventListener('pointermove', (e) => {
+    if (!s) return; const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    c.style.transform = `translate(${dx}px,${dy}px) rotate(${dx / 18}deg)`;
+    $('.stamp.in', c).style.opacity = Math.max(0, Math.min(1, dx / 90)); $('.stamp.pass', c).style.opacity = Math.max(0, Math.min(1, -dx / 90));
+  });
+  const up = (e) => {
+    if (!s) return; const dx = e.clientX - s.x, dy = e.clientY - s.y; s = null; c.classList.remove('dragging');
+    if (dx > 100) return decide('in', c); if (dx < -100) return decide('pass', c);
+    if (dy < -90 || (Math.abs(dx) < 6 && Math.abs(dy) < 6)) { c.style.transform = ''; resetStamps(c); return openDetail(c.dataset.id); }
+    c.style.transform = ''; resetStamps(c);
+  };
+  c.addEventListener('pointerup', up); c.addEventListener('pointercancel', () => { s = null; c.classList.remove('dragging'); c.style.transform = ''; resetStamps(c); });
+}
+const resetStamps = (c) => $$('.stamp', c).forEach((x) => (x.style.opacity = 0));
+function decide(kind, c) {
+  c = c || $('.gcard[data-depth="0"]'); if (!c) return; const id = c.dataset.id;
+  $('.stamp.' + (kind === 'in' ? 'in' : 'pass'), c).style.opacity = 1;
+  c.style.transform = `translate(${kind === 'in' ? 520 : -520}px, 40px) rotate(${kind === 'in' ? 24 : -24}deg)`; c.style.opacity = '0';
+  buzz(kind === 'in' ? 18 : 8);
+  setTimeout(() => {
+    if (kind === 'pass') { S.passed.push(id); save(); renderPlay(); toast('Passed. It stays on the map if you change your mind', 'x'); }
+    else { renderDeckWithout(id); joinSheet(id); }
+  }, REDUCED ? 0 : 280);
+}
+function renderDeckWithout(id) { S.passed.push(id); renderDeck(); S.passed = S.passed.filter((x) => x !== id); }
+
+/* Join: confirm, celebrate, show progress */
+function joinSheet(id) {
+  const a = ACTIVITIES.find((x) => x.id === id), s = sp(a.sport);
+  sheet(`${head('Join ' + esc(a.title) + '?', `${when(a)} · ${esc(a.venue)}`)}
+    <div class="facts"><div class="fact"><b>${money(a.price)}</b><span>${a.price ? 'Paid with UPI' : 'No payment needed'}</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div></div>
+    <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px;background:var(--you-soft);border-color:transparent"><span style="color:var(--you-text)">${ic('zap')}</span><div style="flex:1"><b>+50 XP</b> for joining<div class="muted" style="font-size:13px">Counts towards your weekly goal of ${S.goal} games</div></div></div>
+    <button class="pill block" data-act="confirmJoin" data-id="${a.id}" style="min-height:56px">${a.price ? `${ic('smartphone')}Pay ${inr(a.price)} with UPI` : `${ic('check')}Count me in`}</button>
+    <button class="pill block soft" data-act="cancelJoin">Not now</button>`);
+}
+function confirmJoin(id) {
+  const a = ACTIVITIES.find((x) => x.id === id); const before = level();
+  S.joined.push(id); S.week += 1; S.xp += 50; S.streak[S.streak.length - 1] = 1; save();
+  const lvlUp = level() > before; const goalHit = S.week === S.goal;
+  sheet(`<div class="xp-burst"><span class="big num">+50 XP</span><h2>${lvlUp ? `Level ${level()}! You’re a ${TITLES[Math.min(level() - 1, TITLES.length - 1)].toLowerCase()} now` : 'You’re in!'}</h2>
+      <div class="muted">${esc(a.title)} · ${when(a)}<br>Added to your games. The host can see you’re coming.</div></div>
+    <div class="card" style="padding:14px;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;font-weight:700"><span>Level ${level()}</span><span class="num">${S.xp % LV}/${LV} XP</span></div><div class="xpbar" style="background:var(--surface-2)"><i style="width:0%" id="xpFill"></i></div>
+      <div class="muted" style="font-size:13.5px">${goalHit ? 'Weekly goal reached. Your streak is safe.' : `Weekly goal: ${Math.min(S.week, S.goal)} of ${S.goal} games`}</div></div>
+    <button class="pill block" data-act="close">Keep swiping</button>`);
+  requestAnimationFrame(() => setTimeout(() => { const f = $('#xpFill'); if (f) f.style.width = ((S.xp % LV) / LV) * 100 + '%'; }, 60));
+  confetti(sp(a.sport).c); buzz(30);
+  if (tab === 'play') renderPlay();
+}
+/* A one-second celebration, drawn on canvas, skipped when the user prefers less motion. */
+function confetti(color) {
+  if (REDUCED) return; const cv = document.createElement('canvas'); cv.className = 'confetti'; app.appendChild(cv);
+  const w = cv.width = app.clientWidth, h = cv.height = app.clientHeight, ctx = cv.getContext('2d');
+  const cols = [color, '#5B3FE6', '#F2B33D', '#ffffff', '#0C8353'];
+  const ps = Array.from({ length: 70 }, () => ({ x: w / 2, y: h * 0.42, vx: (Math.random() - 0.5) * 11, vy: -Math.random() * 12 - 4, r: Math.random() * 6 + 3, c: cols[Math.floor(Math.random() * cols.length)], a: Math.random() * 6 }));
+  const t0 = performance.now();
+  (function frame(t) { const k = (t - t0) / 1100; ctx.clearRect(0, 0, w, h);
+    ps.forEach((p) => { p.vy += 0.42; p.x += p.vx; p.y += p.vy; p.a += 0.2; ctx.save(); ctx.globalAlpha = Math.max(0, 1 - k); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); });
+    if (k < 1) requestAnimationFrame(frame); else cv.remove(); })(t0);
+}
+function openDetail(id) {
+  const a = ACTIVITIES.find((x) => x.id === id), s = sp(a.sport), joined = S.joined.includes(id);
+  sheet(`<div style="margin:-10px -20px 0;height:170px;position:relative;border-radius:30px 30px 0 0;overflow:hidden"><img src="${IMG + a.img}.jpg" alt="" style="width:100%;height:100%;object-fit:cover"><span class="tag" style="position:absolute;left:16px;bottom:14px;background:${s.c}">${ic(s.icon)}${s.name}</span><button class="x" data-act="close" aria-label="Close" style="position:absolute;right:14px;top:14px">${ic('x')}</button></div>
+    <div><h2>${esc(a.title)}</h2><div class="muted" style="margin-top:4px">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))}</div></div>
+    <div class="facts"><div class="fact"><b>${when(a)}</b><span>${a.mins} min</span></div><div class="fact"><b>${money(a.price)}</b><span>${a.spots} of ${a.total} spots left</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div><div class="fact"><b>${a.setting}</b><span>${esc(a.surface)}</span></div></div>
+    <div class="muted" style="font-size:14px"><b style="color:var(--ink)">Bring:</b> ${esc(a.equipment)}<br><b style="color:var(--ink)">Access:</b> ${esc(a.access)}</div>
+    ${joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
+}
+
+/* Stories: games starting soon, full screen, auto-advancing (manual when motion is reduced). */
+let SV = null;
+function openStory(i) {
+  const list = soon(); SV = { list, i, t: 0, paused: false, raf: 0, last: 0 };
+  const v = document.createElement('div'); v.className = 'story-view'; v.id = 'storyView'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-label', 'Games starting soon'); app.appendChild(v);
+  drawStory(); if (!REDUCED) { SV.last = performance.now(); SV.raf = requestAnimationFrame(tickStory); }
+  v.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; SV.paused = true; SV.downAt = performance.now(); SV.downX = e.clientX; });
+  v.addEventListener('pointerup', (e) => { if (e.target.closest('button') || !SV) return; SV.paused = false; SV.last = performance.now();
+    if (performance.now() - SV.downAt < 250) { const r = v.getBoundingClientRect(); stepStory(e.clientX - r.left < r.width * 0.35 ? -1 : 1); } });
+}
+function drawStory() {
+  const a = SV.list[SV.i], s = sp(a.sport); if (!S.seen.includes(a.id)) { S.seen.push(a.id); save(); }
+  const mins = Math.round((dateAt(a.d, a.t) - Date.now()) / 60000);
+  $('#storyView').innerHTML = `<img src="${IMG + a.img}.jpg" alt="">
+    <div class="sv-top"><div class="sv-bars">${SV.list.map((_, k) => `<i><b style="width:${k < SV.i ? 100 : k === SV.i ? SV.t * 100 : 0}%"></b></i>`).join('')}</div>
+      <div class="sv-head"><span class="av" style="background:${s.c}">${ic(s.icon)}</span><div class="grow">${esc(a.host)}<small>${mins > 0 && mins < 600 ? `Starts in ${mins >= 60 ? Math.floor(mins / 60) + ' h ' : ''}${mins % 60} min` : when(a)}</small></div><button class="round" data-act="closeStory" aria-label="Close stories">${ic('x')}</button></div></div>
+    <div class="sv-bottom"><span class="tag" style="background:${s.c};justify-self:start">${ic(s.icon)}${s.name} · ${money(a.price)}</span><h2>${esc(a.title)}</h2>
+      <div style="font-weight:600;opacity:.92">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))} · ${a.spots} spots left</div>
+      ${S.joined.includes(a.id) ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : `<button class="pill block" style="background:#fff;color:#15161A;min-height:56px" data-act="storyJoin" data-id="${a.id}">${ic('check')}I’m in</button>`}</div>`;
+}
+function tickStory(now) { if (!SV) return; if (!SV.paused) { SV.t += (now - SV.last) / 5000; } SV.last = now; if (SV.t >= 1) { stepStory(1); } else { const b = $$('#storyView .sv-bars i b')[SV.i]; if (b) b.style.width = SV.t * 100 + '%'; } SV.raf = requestAnimationFrame(tickStory); }
+function stepStory(d) { if (!SV) return; const n = SV.i + d; if (n < 0) { SV.t = 0; drawStory(); return; } if (n >= SV.list.length) { closeStory(); return; } SV.i = n; SV.t = 0; drawStory(); }
+function closeStory() { if (SV) cancelAnimationFrame(SV.raf); SV = null; const v = $('#storyView'); if (v) v.remove(); if (tab === 'play' && $('#playTop')) renderPlay(); }
+
+/* ═════ BOOK: drag a time window along the day ═════ */
+const HPX = 64, H0 = 6, H1 = 23;
+const VB = (id) => VENUES_BOOK.find((v) => v.id === id);
+const isPeak = (d, h) => { const wd = dateAt(d, '12:00').getDay(); return h >= 18 || wd === 0 || wd === 6; };
+const booked = (v, d) => { const vi = VENUES_BOOK.indexOf(v); const out = []; for (let h = H0; h < H1; h++) if (((vi * 31 + d * 13 + h * 7) % 10) < 3) out.push(h); return out; };
+function renderBook() {
+  const v = VB(S.venue), bk = booked(v, S.bookDay);
+  const hrs = []; for (let h = S.start; h < S.start + S.dur; h++) hrs.push(h);
+  const clash = hrs.some((h) => bk.includes(h) || h >= H1);
+  const total = hrs.reduce((n, h) => n + (isPeak(S.bookDay, h) ? v.peak : v.price), 0);
+  const each = Math.ceil(total / S.players);
+  const hl = (h) => new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(h % 24).padStart(2, '0') + ':00'));
+  $('#scr-book').innerHTML = `<div class="head"><div><h1>Book a court</h1><div class="sub">Drag the window to your time</div></div></div>
+    <div class="venues">${VENUES_BOOK.map((x) => `<button class="venue" data-act="venue" data-id="${x.id}" aria-pressed="${S.venue === x.id}"><img src="${IMG + x.img}.jpg" alt=""><b>${esc(x.name)}</b><small>${x.sports.map((k) => sp(k).name).join(' · ')} · from ${inr(x.price)}/hr</small></button>`).join('')}</div>
+    <div class="section"><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="bookDay" data-id="${d}" aria-pressed="${S.bookDay === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
+      <div class="timeline-wrap" id="tlWrap"><div class="timeline" id="tl" style="width:${(H1 - H0) * HPX}px">
+        ${Array.from({ length: H1 - H0 }, (_, k) => H0 + k).map((h) => `<div class="hour ${isPeak(S.bookDay, h) ? 'peak' : ''}" style="left:${(h - H0) * HPX}px;width:${HPX}px">${hl(h)}</div>`).join('')}
+        ${bk.map((h) => `<div class="booked" style="left:${(h - H0) * HPX + 4}px;width:${HPX - 8}px" title="Booked"></div>`).join('')}
+        <div class="window ${clash ? 'bad' : ''}" id="win" role="slider" tabindex="0" aria-label="Booking start time" aria-valuemin="${H0}" aria-valuemax="${H1 - S.dur}" aria-valuenow="${S.start}" aria-valuetext="${hl(S.start)} to ${hl(S.start + S.dur)}" style="left:${(S.start - H0) * HPX}px;width:${S.dur * HPX}px">${hl(S.start)}–${hl(S.start + S.dur)}</div>
+      </div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="faint" style="font-size:13px">Striped hours are taken. Tinted hours are peak.</span><div class="stepper" aria-label="Hours"><button data-act="dur" data-d="-1" aria-label="One hour less">${ic('minus')}</button><b class="num">${S.dur} h</b><button data-act="dur" data-d="1" aria-label="One hour more">${ic('plus')}</button></div></div></div>
+    <div class="section card split"><div style="display:flex;justify-content:space-between;align-items:end"><div><div class="faint" style="font-size:13px;font-weight:700">Split between</div><div class="big-num num" id="pl">${S.players}</div></div><div style="text-align:right"><div class="faint" style="font-size:13px;font-weight:700">Each pays</div><div class="big-num num" id="each" style="color:var(--you-text)">${inr(each)}</div></div></div>
+      <input type="range" id="players" min="1" max="22" value="${S.players}" aria-label="Number of players sharing">
+      <div class="faint" style="font-size:13px">Total <b class="num" style="color:var(--ink)">${inr(total)}</b> for ${S.dur} h. Each player gets a UPI request.</div></div>
+    <div class="section"><button class="pill block" style="min-height:56px" data-act="book" ${clash ? 'disabled' : ''}>${clash ? 'That time overlaps a booking' : `${ic('smartphone')}Pay my share · ${inr(each)}`}</button></div>`;
+  const win = $('#win'), tl = $('#tl'); let s = null;
+  $('#tlWrap').scrollLeft = Math.max(0, (S.start - H0 - 1) * HPX);
+  win.addEventListener('pointerdown', (e) => { s = { x: e.clientX, start: S.start }; win.setPointerCapture(e.pointerId); win.classList.add('dragging'); });
+  win.addEventListener('pointermove', (e) => { if (!s) return; const left = Math.max(0, Math.min((H1 - H0 - S.dur) * HPX, (s.start - H0) * HPX + e.clientX - s.x)); win.style.left = left + 'px'; const h = H0 + Math.round(left / HPX); win.textContent = `${hl(h)}–${hl(h + S.dur)}`; });
+  win.addEventListener('pointerup', (e) => { if (!s) return; const left = parseFloat(win.style.left); s = null; S.start = H0 + Math.round(left / HPX); save(); buzz(8); renderBook(); });
+  win.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); S.start = Math.max(H0, Math.min(H1 - S.dur, S.start + (e.key === 'ArrowRight' ? 1 : -1))); save(); renderBook(); $('#win').focus(); } });
+  $('#players').addEventListener('input', (e) => { S.players = +e.target.value; $('#pl').textContent = S.players; $('#each').textContent = inr(Math.ceil(total / S.players)); const b = $('[data-act="book"]'); if (b && !clash) b.innerHTML = `${ic('smartphone')}Pay my share · ${inr(Math.ceil(total / S.players))}`; });
+  $('#players').addEventListener('change', save);
+}
+
+/* ═════ SQUAD: set the field, poll, chat ═════ */
+const POS = [['Bowler', 50, 28], ['Keeper', 50, 72], ['Slip', 63, 77], ['Point', 18, 50], ['Cover', 25, 31], ['Mid-off', 38, 17], ['Mid-on', 62, 17], ['Midwicket', 77, 33], ['Sq. leg', 82, 54], ['Fine leg', 70, 84], ['Third man', 30, 84]];
+let picking = null;
+function renderSquad() {
+  const t = SAMPLE_TEAMS[0]; const members = t.members.map((m) => m.name);
+  if (!S.chat) S.chat = [['Rohan Iyer', 'Nets at 6 before the match?'], ['Vikram Singh', 'I can bring the stumps and two balls.'], ['Sameer Khan', 'Running 10 min late, start without me.']];
+  const placed = Object.values(S.lineup); const total = S.poll.yes + S.poll.maybe + S.poll.no;
+  $('#scr-squad').innerHTML = `<div class="head"><div><h1>${esc(t.name)}</h1><div class="sub">v ${esc(t.next.vs)} · ${dayLabel(t.next.d)} ${tf.format(dateAt(t.next.d, t.next.t))}</div></div></div>
+    <div class="section" style="margin-top:4px"><h2>Set the field</h2><div class="muted" style="font-size:14px">${picking ? `Tap a spot for <b style="color:var(--ink)">${esc(picking)}</b>` : 'Pick a player, then tap a fielding spot. Tap a placed player to bench them.'}</div>
+      <div class="field ${picking ? 'placing' : ''}" role="group" aria-label="Fielding positions">${POS.map(([n, x, y]) => { const who = S.lineup[n]; return `<button class="pos ${who ? 'filled' : ''}" style="left:${x}%;top:${y}%" data-act="pos" data-id="${n}" aria-label="${n}${who ? ': ' + esc(who) : ', empty'}"><span class="dot">${who ? esc(who.split(' ').map((w) => w[0]).join('')) : ''}</span><small>${n}</small></button>`; }).join('')}</div>
+      <div class="bench">${members.map((m) => `<button class="chip" data-act="pick" data-id="${esc(m)}" aria-pressed="${picking === m}" ${placed.includes(m) ? 'disabled' : ''}>${avatar(m)}${esc(m.split(' ')[0])}</button>`).join('')}</div>
+      <div class="faint" style="font-size:13px"><span class="num">${placed.length}</span> of 11 placed${placed.length < 11 ? `. ${11 - placed.length} more needed for a full side.` : '. Full side.'}</div></div>
+    <div class="section"><h2>Are you playing Wednesday?</h2><div class="poll">${[['yes', 'I’m in'], ['maybe', 'Maybe'], ['no', 'Can’t make it']].map(([k, l]) => `<button data-act="vote" data-id="${k}" aria-pressed="${S.vote === k}"><i style="width:${Math.round((S.poll[k] / total) * 100)}%"></i><span>${l}</span><span class="num">${S.poll[k]}</span></button>`).join('')}</div></div>
+    <div class="section"><h2>Team chat</h2><div class="chat">${S.chat.map(([w, m]) => `<div class="msg ${w === 'You' ? 'mine' : ''}">${w === 'You' ? '' : `<b>${esc(w)}</b>`}${esc(m)}</div>`).join('')}</div>
+      <div class="chips">${['On my way', 'Who has the kit?', 'Great game, team!'].map((m) => `<button class="chip neutral" data-act="say" data-id="${m}">${ic('send')}${m}</button>`).join('')}</div></div>`;
+}
+
+/* ═════ ME: player card, goal, streak, badges ═════ */
+const BADGES = [['First whistle', 'award', 'Join your first game', () => S.joined.length >= 1], ['Early bird', 'clock', 'Play a game before 7 am', () => S.joined.some((id) => +((ACTIVITIES.find((a) => a.id === id) || { t: '12' }).t.split(':')[0]) < 7)], ['Captain', 'crown', 'Captain a team', () => true],
+  ['Hat-trick', 'flame', 'Hit your weekly goal 3 weeks running', () => streakWeeks() >= 3], ['Explorer', 'compass', 'Play 4 different sports', () => new Set(S.joined.map((id) => (ACTIVITIES.find((a) => a.id === id) || {}).sport)).size >= 4], ['Court boss', 'calendar-days', 'Book a court for your crew', () => !!S.booked]];
+function renderMe() {
+  const lv = level(), title = TITLES[Math.min(lv - 1, TITLES.length - 1)];
+  const weeks = S.streak.map((v, i) => ({ v, l: i === S.streak.length - 1 ? 'Now' : `-${S.streak.length - 1 - i}w` }));
+  $('#scr-me').innerHTML = `<div class="player"><div class="row1"><span class="ava">AM</span><div><h2>Arjun Mehta</h2><div class="lvl">Level ${lv} · ${title}</div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:6px"><span>${S.xp % LV} / ${LV} XP to level ${lv + 1}</span><span class="num">${S.xp} total</span></div><div class="xpbar"><i style="width:${((S.xp % LV) / LV) * 100}%"></i></div></div>
+      <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter((b) => b[3]()).length}</b><span>Badges</span></div></div></div>
+    <div class="section card goal-set"><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div><b>Weekly goal</b><div class="muted" style="font-size:13.5px">${Math.min(S.week, S.goal)} of ${S.goal} games this week</div></div></div><div class="stepper"><button data-act="goal" data-d="-1" aria-label="Lower goal">${ic('minus')}</button><b class="num">${S.goal}</b><button data-act="goal" data-d="1" aria-label="Raise goal">${ic('plus')}</button></div></div>
+    <div class="section"><h2>Streak</h2><div class="weeks" aria-label="Weeks you hit your goal">${weeks.map((w) => `<div><i class="${w.v ? 'hit' : ''}" style="height:${w.v ? 56 : 18}px"></i>${w.l}</div>`).join('')}</div></div>
+    <div class="section"><h2>Badges</h2><div class="badges">${BADGES.map(([n, i, how, got], k) => `<button class="badge ${got() ? '' : 'locked'}" data-act="badge" data-i="${k}"><span class="medal">${ic(got() ? i : 'lock')}</span>${n}</button>`).join('')}</div></div>
+    <div class="section"><h2>Appearance</h2><div class="seg">${[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join('')}</div></div>
+    <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks and players are sample data.</div></div>`;
+}
+
+/* ── Actions ── */
+const A = {
+  tab: (el) => go(el.dataset.id),
+  close: () => closeSheet(),
+  theme: (el) => { S.theme = el.dataset.id; save(); applyTheme(); if (tab === 'me') renderMe(); },
+  mood: (el) => { S.mood = el.dataset.id; save(); renderPlay(); },
+  pass: () => decide('pass'), in: () => decide('in'),
+  info: () => { const c = $('.gcard[data-depth="0"]'); if (c) openDetail(c.dataset.id); },
+  confirmJoin: (el) => confirmJoin(el.dataset.id),
+  cancelJoin: () => { closeSheet(); renderPlay(); },
+  joinFromDetail: (el) => joinSheet(el.dataset.id),
+  resetDeck: () => { S.passed = []; save(); renderPlay(); },
+  story: (el) => openStory(+el.dataset.i),
+  closeStory: () => closeStory(),
+  storyJoin: (el) => { const id = el.dataset.id; closeStory(); joinSheet(id); },
+  venue: (el) => { S.venue = el.dataset.id; save(); renderBook(); },
+  bookDay: (el) => { S.bookDay = +el.dataset.id; save(); renderBook(); },
+  dur: (el) => { S.dur = Math.max(1, Math.min(4, S.dur + +el.dataset.d)); S.start = Math.min(S.start, H1 - S.dur); save(); renderBook(); },
+  book: () => { const v = VB(S.venue); S.booked = true; const before = level(); S.xp += 30; save(); buzz(25); confetti('#5B3FE6');
+    sheet(`<div class="xp-burst"><span class="big num">+30 XP</span><h2>${esc(v.name)} is yours</h2><div class="muted">${dayLabel(S.bookDay)}, ${S.dur} h from ${new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(S.start).padStart(2, '0') + ':00'))}<br>UPI requests sent to ${S.players - 1} players.${level() > before ? `<br><b>Level ${level()} reached.</b>` : ''}</div></div><button class="pill block" data-act="close">Done</button>`); },
+  pick: (el) => { picking = picking === el.dataset.id ? null : el.dataset.id; renderSquad(); },
+  pos: (el) => { const n = el.dataset.id;
+    if (S.lineup[n]) { delete S.lineup[n]; save(); renderSquad(); return; }
+    if (!picking) { toast('Pick a player from the bench first', 'info'); return; }
+    S.lineup[n] = picking; picking = null; save(); buzz(10); renderSquad();
+    if (Object.keys(S.lineup).length === SAMPLE_TEAMS[0].members.length) toast('Everyone is placed. Invite more to fill the side', 'users'); },
+  vote: (el) => { const k = el.dataset.id; if (S.vote) S.poll[S.vote]--; S.vote = S.vote === k ? null : k; if (S.vote) S.poll[S.vote]++; save(); renderSquad(); },
+  say: (el) => { S.chat.push(['You', el.dataset.id]); save(); renderSquad(); const c = $('.chat'); if (c) c.lastElementChild.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'nearest' }); },
+  goal: (el) => { S.goal = Math.max(1, Math.min(7, S.goal + +el.dataset.d)); save(); renderMe(); },
+  badge: (el) => { const [n, i, how, got] = BADGES[+el.dataset.i];
+    sheet(`${head(n, got() ? 'Earned' : 'Not yet earned')}<div style="display:grid;justify-items:center;gap:10px;text-align:center"><span class="medal" style="width:80px;height:80px;border-radius:24px;display:grid;place-items:center;background:${got() ? 'var(--you-soft)' : 'var(--surface-2)'};color:${got() ? 'var(--you-text)' : 'var(--ink-3)'}">${ic(got() ? i : 'lock')}</span><div class="muted">${how}</div></div><button class="pill block" data-act="${got() ? 'close' : 'tab'}" data-id="play">${got() ? 'Nice' : 'Find a game'}</button>`); },
+  reset: () => { S = fresh(); save(); applyTheme(); go('play'); toast('Demo reset', 'rotate-ccw'); },
+};
+document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { if ($('#storyView')) closeStory(); else closeSheet(); }
+  if ($('#storyView') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) stepStory(e.key === 'ArrowRight' ? 1 : -1);
+  if (tab === 'play' && !$('.sheet') && !$('#storyView') && document.activeElement === document.body) { if (e.key === 'ArrowRight') decide('in'); if (e.key === 'ArrowLeft') decide('pass'); }
+});
+
+applyTheme();
+go('play');
+requestAnimationFrame(() => focusMap(false));
+})();
+
+</script>
+</body>
+</html>

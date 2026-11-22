@@ -884,6 +884,7 @@ function renderMe() {
       <div class="rows">
         <button class="row" data-act="notePrefs">${ic('bell', 'lead')}<div class="grow"><b>Notifications</b><small>Changes and payments always on, the rest is your choice</small></div>${ic('chevron-right')}</button>
         <button class="row" data-act="payPrefs">${ic('wallet', 'lead')}<div class="grow"><b>Default UPI app</b><small>${esc(S.payDefault || UPI_APPS[0])}</small></div>${ic('chevron-right')}</button>
+        <button class="row" data-act="themePrefs">${ic('eye', 'lead')}<div class="grow"><b>Appearance</b><small>${({ light: 'Light', dark: 'Dark', system: 'Match my phone' })[S.theme || 'system']}</small></div>${ic('chevron-right')}</button>
         <button class="row" data-act="a11yPrefs">${ic('accessibility', 'lead')}<div class="grow"><b>Accessibility</b><small>${S.bigText ? 'Larger text on' : 'Standard text'}${S.calm ? ' · reduced motion' : ''}</small></div>${ic('chevron-right')}</button>
         <div class="row" aria-disabled="true">${ic('globe', 'lead')}<div class="grow"><b>Language</b><small>English. Hindi and regional languages planned</small></div><span class="soon">Coming soon</span></div>
         <div class="row" aria-disabled="true">${ic('shield-check', 'lead')}<div class="grow"><b>Privacy and safety</b><small>Who can invite you and see your games</small></div><span class="soon">Coming soon</span></div>
@@ -908,6 +909,7 @@ function renderPanel() {
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
   const tries = { lite: ['Tap a pin, then Join: step-by-step registration', 'Book venue → pick hours → split the cost', 'My games → Family calendar (see the clash)'], pro: ['Teams → open a team → Match day', 'My games → Host a game → point the address', 'Add place → take a photo of a new place'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
+  $('#panelTheme').innerHTML = [['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, n]) => `<button data-act="themeQuick" data-id="${k}" aria-pressed="${(S.theme || 'system') === k}">${n}</button>`).join('');
 }
 
 /* ───────── Actions ───────── */

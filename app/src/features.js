@@ -578,7 +578,25 @@ function todoCount() { return notes().filter((n) => !n.done && noteVisible(n) &&
 /* Sports you picked at first run come first in the filter row. */
 function sportsByPreference() { const fav = S.favSports || []; return fav.concat(Object.keys(SPORTS).filter((k) => !fav.includes(k))); }
 function buzz() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { /* not supported */ } }
-function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); app.classList.toggle('calm', !!S.calm); }
+/* Appearance: Light / Dark / System. "System" hands control back to the device (or the host page's own theme). */
+const HOST_THEME = document.documentElement.getAttribute('data-theme');
+function applyTheme() {
+  const t = S.theme || 'system', root = document.documentElement;
+  if (t === 'system') { if (HOST_THEME) root.setAttribute('data-theme', HOST_THEME); else root.removeAttribute('data-theme'); }
+  else root.setAttribute('data-theme', t);
+}
+function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); app.classList.toggle('calm', !!S.calm); applyTheme(); }
+function themeSheet() {
+  const t = S.theme || 'system';
+  sheetSet(`${sheetHead('Appearance')}
+    <div class="pick">${[['light', 'Light', 'compass', 'Bright map and white cards, best outdoors'], ['dark', 'Dark', 'eye', 'Deep navy, easier on the eyes at night games'], ['system', 'Match my phone', 'smartphone', 'Follows your phone’s light or dark setting']]
+      .map(([k, n, i, d]) => `<button class="opt" data-act="themePick" data-id="${k}" aria-pressed="${t === k}"><span class="sport-ic" style="--c:${k === 'dark' ? '#0D1530' : 'var(--brand)'}">${ic(i)}</span><div><b>${n}</b><div class="faint" style="font-size:13px">${d}</div></div><span class="tick">${ic('check')}</span></button>`).join('')}</div>`, 'theme');
+}
+Object.assign(A, {
+  themePrefs: () => themeSheet(),
+  themePick: (el) => { S.theme = el.dataset.id; save(); applyTheme(); themeSheet(); if (tab === 'me') renderMe(); renderPanel(); },
+  themeQuick: (el) => { S.theme = el.dataset.id; save(); applyTheme(); renderPanel(); if (tab === 'me') renderMe(); },
+});
 
 /* Extra family members added in the app survive reloads. */
 (S.familyExtra || []).forEach((f) => { if (!FAMILY.find((x) => x.id === f.id)) FAMILY.push(f); FAMILY_COLORS[f.id] = f.color; });

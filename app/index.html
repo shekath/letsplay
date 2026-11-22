@@ -750,6 +750,10 @@ label.opt, label.loc-opt { cursor: pointer; }
       <ul class="feat-list" id="panelFeats"></ul>
     </div>
     <div class="panel-card">
+      <div class="eyebrow">Appearance</div>
+      <div class="seg" id="panelTheme" role="group" aria-label="Appearance"></div>
+    </div>
+    <div class="panel-card">
       <div class="eyebrow">Try this</div>
       <ul class="feat-list" id="panelTry"></ul>
     </div>
@@ -1890,6 +1894,7 @@ function renderMe() {
       <div class="rows">
         <button class="row" data-act="notePrefs">${ic('bell', 'lead')}<div class="grow"><b>Notifications</b><small>Changes and payments always on, the rest is your choice</small></div>${ic('chevron-right')}</button>
         <button class="row" data-act="payPrefs">${ic('wallet', 'lead')}<div class="grow"><b>Default UPI app</b><small>${esc(S.payDefault || UPI_APPS[0])}</small></div>${ic('chevron-right')}</button>
+        <button class="row" data-act="themePrefs">${ic('eye', 'lead')}<div class="grow"><b>Appearance</b><small>${({ light: 'Light', dark: 'Dark', system: 'Match my phone' })[S.theme || 'system']}</small></div>${ic('chevron-right')}</button>
         <button class="row" data-act="a11yPrefs">${ic('accessibility', 'lead')}<div class="grow"><b>Accessibility</b><small>${S.bigText ? 'Larger text on' : 'Standard text'}${S.calm ? ' · reduced motion' : ''}</small></div>${ic('chevron-right')}</button>
         <div class="row" aria-disabled="true">${ic('globe', 'lead')}<div class="grow"><b>Language</b><small>English. Hindi and regional languages planned</small></div><span class="soon">Coming soon</span></div>
         <div class="row" aria-disabled="true">${ic('shield-check', 'lead')}<div class="grow"><b>Privacy and safety</b><small>Who can invite you and see your games</small></div><span class="soon">Coming soon</span></div>
@@ -1914,6 +1919,7 @@ function renderPanel() {
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
   const tries = { lite: ['Tap a pin, then Join: step-by-step registration', 'Book venue → pick hours → split the cost', 'My games → Family calendar (see the clash)'], pro: ['Teams → open a team → Match day', 'My games → Host a game → point the address', 'Add place → take a photo of a new place'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
+  $('#panelTheme').innerHTML = [['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, n]) => `<button data-act="themeQuick" data-id="${k}" aria-pressed="${(S.theme || 'system') === k}">${n}</button>`).join('');
 }
 
 /* ───────── Actions ───────── */
@@ -2887,7 +2893,25 @@ function todoCount() { return notes().filter((n) => !n.done && noteVisible(n) &&
 /* Sports you picked at first run come first in the filter row. */
 function sportsByPreference() { const fav = S.favSports || []; return fav.concat(Object.keys(SPORTS).filter((k) => !fav.includes(k))); }
 function buzz() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { /* not supported */ } }
-function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); app.classList.toggle('calm', !!S.calm); }
+/* Appearance: Light / Dark / System. "System" hands control back to the device (or the host page's own theme). */
+const HOST_THEME = document.documentElement.getAttribute('data-theme');
+function applyTheme() {
+  const t = S.theme || 'system', root = document.documentElement;
+  if (t === 'system') { if (HOST_THEME) root.setAttribute('data-theme', HOST_THEME); else root.removeAttribute('data-theme'); }
+  else root.setAttribute('data-theme', t);
+}
+function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); app.classList.toggle('calm', !!S.calm); applyTheme(); }
+function themeSheet() {
+  const t = S.theme || 'system';
+  sheetSet(`${sheetHead('Appearance')}
+    <div class="pick">${[['light', 'Light', 'compass', 'Bright map and white cards, best outdoors'], ['dark', 'Dark', 'eye', 'Deep navy, easier on the eyes at night games'], ['system', 'Match my phone', 'smartphone', 'Follows your phone’s light or dark setting']]
+      .map(([k, n, i, d]) => `<button class="opt" data-act="themePick" data-id="${k}" aria-pressed="${t === k}"><span class="sport-ic" style="--c:${k === 'dark' ? '#0D1530' : 'var(--brand)'}">${ic(i)}</span><div><b>${n}</b><div class="faint" style="font-size:13px">${d}</div></div><span class="tick">${ic('check')}</span></button>`).join('')}</div>`, 'theme');
+}
+Object.assign(A, {
+  themePrefs: () => themeSheet(),
+  themePick: (el) => { S.theme = el.dataset.id; save(); applyTheme(); themeSheet(); if (tab === 'me') renderMe(); renderPanel(); },
+  themeQuick: (el) => { S.theme = el.dataset.id; save(); applyTheme(); renderPanel(); if (tab === 'me') renderMe(); },
+});
 
 /* Extra family members added in the app survive reloads. */
 (S.familyExtra || []).forEach((f) => { if (!FAMILY.find((x) => x.id === f.id)) FAMILY.push(f); FAMILY_COLORS[f.id] = f.color; });

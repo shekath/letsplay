@@ -40,8 +40,22 @@ TAIL = """<script>if('serviceWorker' in navigator&&location.protocol!=='file:'){
 </html>
 """
 
+SRC2 = ROOT / "app" / "design2" / "src"
+
+
+def bundle_design2() -> str:
+    """Design 2 shares Design 1's data and icons, with its own shell, styles and interaction code."""
+    html = (SRC2 / "shell.html").read_text()
+    for marker, path in (("CSS", SRC2 / "d2.css"), ("ICONS", SRC / "icons.js"), ("DATA", SRC / "data.js"), ("APP", SRC2 / "d2.js")):
+        html = html.replace(f"/*@@{marker}@@*/", path.read_text())
+    return html
+
+
 if __name__ == "__main__":
     body = bundle()
     (ROOT / "app" / "embed.html").write_text(body)
     (ROOT / "app" / "index.html").write_text(HEAD + body + TAIL)
-    print("built app/embed.html and app/index.html")
+    body2 = bundle_design2()
+    (ROOT / "app" / "design2-embed.html").write_text(body2)
+    (ROOT / "app" / "design2.html").write_text(HEAD.replace("#1D4FF2", "#15161A").replace("LetsPlay</", "LetsPlay 2</") + body2 + "</body>\n</html>\n")
+    print("built app/embed.html, app/index.html, app/design2-embed.html and app/design2.html")
