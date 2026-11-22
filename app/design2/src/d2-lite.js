@@ -183,9 +183,9 @@ function noteAct(id, k) {
 function gamesHead() {
   const v = S.gamesView;
   return `<div class="head"><div><h1>My games</h1></div>${bellHTML()}</div>
-    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">Book a court</button></div>`;
+    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">${can.pin() ? 'Book' : 'Book a court'}</button>${can.pin() ? `<button data-act="gamesView" data-id="hosting" aria-pressed="${v === 'hosting'}">Hosting</button>` : ''}</div>`;
 }
-function renderGames() { if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else renderUpcoming(); }
+function renderGames() { if (S.gamesView === 'hosting' && !can.pin()) S.gamesView = 'upcoming'; if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else if (S.gamesView === 'hosting') renderHosting(); else renderUpcoming(); }
 function famEvents() {
   const ev = [];
   allActs().filter((a) => S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'g' + a.id, ref: a.id, kind: 'game', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: S.bookings[a.id] || ['f0'], sport: a.sport }));
@@ -300,6 +300,8 @@ function promoteSheet() {
 function meSettingsHTML() {
   return `<div class="section"><h2>Family and settings</h2><div class="lrows">
     ${rowHTML({ act: 'familySheet', icon: 'users', title: 'Family profiles', sub: family().map((f) => esc(firstName(f.id))).join(', ') })}
+    ${rowHTML({ act: 'sportsList', icon: 'g-carrom', title: 'Your sports', sub: can.pin() ? (customSports().length ? customSports().map((c) => esc(c.name)).join(', ') : 'Add carrom, table tennis and more') : 'Add your own sports with Pro' })}
+    ${can.pin() ? rowHTML({ act: 'gamesView', id: 'hosting', icon: 'megaphone', title: 'Games you host', sub: `${S.hosted.filter((a) => a.hostedByYou && a.d >= 0).length} upcoming · ${S.hosted.filter((a) => a.hostedByYou && a.d < 0).length} finished` }) : ''}
     ${rowHTML({ act: 'paySheet', icon: 'wallet', title: 'Payments', sub: `UPI · ${S.payApp} by default` })}
     ${rowHTML({ act: 'notePrefs', icon: 'bell', title: 'Notifications', sub: 'Choose updates, offers and suggestions' })}
     ${rowHTML({ act: 'bigText', icon: 'accessibility', pressed: !!S.bigText, title: 'Larger text', sub: 'Easier reading across the app', end: `<span class="tickbox">${ic('check')}</span>` })}</div></div>`;

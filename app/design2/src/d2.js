@@ -99,9 +99,9 @@ function mapSVG() {
   [[800, 1340, 'MG Road', 90], [1380, 792, 'Nehru Marg', 0], [640, 392, 'Ring Road', 0]].forEach(([x, y, n, r]) => { o += `<text class="m-label" x="${x}" y="${y}" text-anchor="middle" dy="5" transform="rotate(${r} ${x} ${y})">${n}</text>`; });
   return o + '</svg>';
 }
-const games = () => allActs().filter((a) => (S.mood === 'all' || a.sport === S.mood) && advPass(a)).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
+const games = () => allActs().filter((a) => a.d >= 0 && (S.mood === 'all' || a.sport === S.mood) && advPass(a)).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
 let focused = null;   /* the game the map is showing */
-const soon = () => allActs().filter((a) => a.d <= 1).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t)).slice(0, 8);
+const soon = () => allActs().filter((a) => a.d >= 0 && a.d <= 1).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t)).slice(0, 8);
 function goalRing() {
   const r = 20, c = 2 * Math.PI * r, done = Math.min(S.week, S.goal);
   return `<button class="goal-ring" data-act="tab" data-id="me" aria-label="Weekly goal: ${done} of ${S.goal} games"><svg viewBox="0 0 48 48"><circle class="track" cx="24" cy="24" r="${r}"/><circle class="val" cx="24" cy="24" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - done / S.goal)}"/></svg><b class="num">${done}/${S.goal}</b></button>`;
@@ -119,7 +119,7 @@ function renderPlay() {
       <div class="lsheet" id="lsheet"><div class="lgrab" id="lgrab" aria-hidden="true"></div><div class="lhead" id="lhead"></div><div class="llist" id="llist"></div></div>`;
     bindMapDrag(); bindSheet();
   }
-  const moods = [['all', 'Anything', null]].concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga'].map((k) => [k, sp(k).name, sp(k)]));
+  const moods = [['all', 'Anything', null]].concat(customIds().filter((k) => allActs().some((a) => a.sport === k && a.d >= 0)).concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga']).map((k) => [k, sp(k).name, sp(k)]));
   const nf = advCount();
   $('#playTop').innerHTML = `<div class="hello"><h1><small>Good to see you, Arjun · <button class="tierword t-${S.tier}" data-act="plans">${PLANS[S.tier].name}</button></small>What do you feel like playing?</h1>${bellHTML()}${goalRing()}</div>
     <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${imgOf(a)}" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
@@ -128,7 +128,7 @@ function renderPlay() {
   if (!list.find((a) => a.id === focused)) focused = list[0] ? list[0].id : null;
   $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>`
     + COMMUNITY_SPOTS.concat(S.places).map((p) => `<button class="pin place" data-act="place" data-id="${p.id}" style="left:${p.x}px;top:${p.y}px" aria-label="Place: ${esc(p.name)}"><span>${ic(p.photo ? 'camera' : 'map-pin')}</span></button>`).join('')
-    + allActs().map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
+    + allActs().filter((a) => a.d >= 0).map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
   $('#lhead').innerHTML = `<div><h2>${list.length} game${list.length === 1 ? '' : 's'} near you</h2><div class="faint" style="font-size:13px;font-weight:600">Tap a game to see it on the map</div></div><button class="pill sm soft" data-act="sheetToggle" aria-label="Expand or collapse the list">${ic('layers')}${sheetIdx ? 'Map' : 'List'}</button>`;
   $('#llist').innerHTML = list.length ? `<div class="grows">${list.map(itemHTML).join('')}</div>` : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() + ' ' : '')}games match</b><div class="muted">${nf ? 'Try fewer filters' : 'Try another sport'}, or book a court and start your own.</div><div style="display:flex;gap:8px;justify-content:center">${nf ? '<button class="pill sm" data-act="advReset">Clear filters</button>' : ''}<button class="pill sm soft" data-act="openBook">Book a court</button></div></div>`;
   focusMap(true, list.find((a) => a.id === focused) || null);
@@ -359,6 +359,7 @@ const A = {
 /*@@d2-pro.js@@*/
 /*@@d2-corp.js@@*/
 /*@@d2-badges.js@@*/
+/*@@d2-custom.js@@*/
 
 document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
 document.addEventListener('keydown', (e) => {

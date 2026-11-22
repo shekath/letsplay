@@ -29,11 +29,11 @@ function endPick() { if (PICK) clearInterval(PICK.timer); const o = $('#pickUI')
 /* ── Add a place: photo + name, visible to everyone ── */
 let NP = null;
 function addPlaceSheet() {
-  const sports = ['cricket', 'football', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'running'];
+  const sports = ['cricket', 'football', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'running'].concat(customIds());
   sheetUpdate(`${head('Add a place', 'Everyone nearby will see it on the map')}
     <label class="photo-drop ${NP.photo ? 'has' : ''}">${NP.photo ? `<img src="${NP.photo}" alt="Your photo of the place">` : `<span class="up-ic">${ic('camera')}</span><b>Take a photo of the place</b><small>Or choose one from your gallery</small>`}<input type="file" accept="image/*" capture="environment" id="npPhoto" aria-label="Photo of the place"></label>
     <label class="fld"><span>Name</span><input id="npName" value="${esc(NP.name)}" placeholder="For example Colony park court"></label>
-    <div class="fgrp"><b>Good for</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="npSport" data-id="${k}" aria-pressed="${NP.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Good for</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="npSport" data-id="${k}" aria-pressed="${NP.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('place')}</div></div>
     <div class="seg" role="group" aria-label="Setting">${['Outdoor', 'Indoor'].map((s) => `<button data-act="npSet" data-id="${s}" aria-pressed="${NP.setting === s}">${s}</button>`).join('')}</div>
     ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Set the location', sub: NP.x ? 'Tap to move the pin' : 'Point to it on the map' })}
     <label class="fld"><span>Note for players (optional)</span><input id="npNote" value="${esc(NP.note)}" placeholder="Lights until 10 pm, bring your own net"></label>
@@ -54,7 +54,7 @@ let HOST = null;
 function hostFresh(loc) { return { loc: loc || null, title: '', sport: 'football', d: 1, t: '18:30', mins: 90, players: 10, fee: 100, vis: 'everyone', landmark: '', invites: [] }; }
 function hostStart(loc) { if (!can.pin()) { upsell('host'); return; } HOST = HOST && !loc ? HOST : hostFresh(loc); if (loc) HOST.loc = loc; hostSheet(); }
 function hostSheet() {
-  const H = HOST, sports = ['football', 'cricket', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'pickleball'];
+  const H = HOST, sports = customIds().concat(['football', 'cricket', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'pickleball']);
   const venues = VENUES_BOOK.map((v) => ({ id: v.id, name: v.name, x: v.x, y: v.y, photo: null })).concat(S.places.map((p) => ({ id: p.id, name: p.name, x: p.x, y: p.y, photo: p.photo })));
   sheetUpdate(`${head('Host a game', 'Publish it to people nearby or just your invitees')}
     <div class="fgrp"><b>Where</b>
@@ -62,7 +62,7 @@ function hostSheet() {
       <div class="chips wrap"><button class="chip neutral" data-act="hostPick">${ic('map-pin')}Point on the map</button><button class="chip neutral" data-act="hostMe">${ic('locate-fixed')}My location</button><button class="chip neutral" data-act="placeNew" data-id="host">${ic('camera')}Snap a new place</button></div>
       <div class="chips">${venues.map((v) => `<button class="chip neutral" data-act="hostVenue" data-id="${v.id}" aria-pressed="${!!(H.loc && H.loc.id === v.id)}">${esc(v.name)}</button>`).join('')}</div></div>
     <label class="fld"><span>Title</span><input id="hTitle" value="${esc(H.title)}" placeholder="For example Friday night 5-a-side"></label>
-    <div class="fgrp"><b>Sport</b><div class="chips">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="hostSport" data-id="${k}" aria-pressed="${H.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Sport</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="hostSport" data-id="${k}" aria-pressed="${H.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('host')}</div></div>
     <div class="fgrp"><b>When</b><div class="chips">${[0, 1, 2, 3, 4, 5, 6].map((d) => `<button class="chip neutral" data-act="hostDay" data-id="${d}" aria-pressed="${H.d === d}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div>
       <div class="chips">${['06:30', '07:30', '17:30', '18:30', '19:30', '20:30'].map((t) => `<button class="chip neutral" data-act="hostTime" data-id="${t}" aria-pressed="${H.t === t}">${tf.format(dateAt(0, t))}</button>`).join('')}</div></div>
     <div class="two"><div class="fgrp"><b>Players needed</b><div class="stepper"><button data-act="hostN" data-k="players" data-d="-1" aria-label="One fewer player">${ic('minus')}</button><b class="num">${H.players}</b><button data-act="hostN" data-k="players" data-d="1" aria-label="One more player">${ic('plus')}</button></div></div>
@@ -79,7 +79,8 @@ function publishHost() {
   if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; err.scrollIntoView({ block: 'nearest' }); return; }
   const id = 'h' + Date.now(), invitees = H.invites.reduce((n, tid) => n + S.teams.find((t) => t.id === tid).members.length - 1, 0);
   const a = { id, title: H.title.trim(), sport: H.sport, venue: H.loc.address.trim(), landmark: H.landmark.trim(), x: H.loc.x, y: H.loc.y, d: H.d, t: H.t, mins: H.mins, level: 'All levels', ages: '16+',
-    spots: H.players, total: H.players, price: H.fee, host: 'Arjun Mehta', img: SPORT_IMG[H.sport] || 'field', photo: H.loc.photo || null, setting: 'Outdoor', surface: 'As described by the host', equipment: 'Ask the host in the game chat.', access: 'Ask the host about access.', cancel: 'Free cancellation up to 2 hours before.', hostedByYou: true, vis: H.vis };
+    date: ymd(dateAt(H.d, '12:00')),
+    spots: H.players, total: H.players, price: H.fee, host: 'Arjun Mehta', img: SPORT_IMG[H.sport] || 'gym', photo: H.loc.photo || ((allCustom().find((c) => c.id === H.sport) || {}).cover) || null, setting: (allCustom().find((c) => c.id === H.sport) || {}).setting || 'Outdoor', surface: 'As described by the host', equipment: 'Ask the host in the game chat.', access: 'Ask the host about access.', cancel: 'Free cancellation up to 2 hours before.', hostedByYou: true, vis: H.vis };
   S.hosted.push(a); HOST = null; S.xp += 40; save(); closeSheet();
   focused = id; S.mood = 'all'; go('play'); setTimeout(() => focusGame(id, true), 80); confetti(sp(a.sport).c); buzz(25);
   badgeCheck();
@@ -147,7 +148,7 @@ function newTeamSheet() {
   const N = NT;
   sheetUpdate(`${head('New team', 'You’ll be the captain')}
     <label class="fld"><span>Team name</span><input id="ntName" value="${esc(N.name)}" placeholder="For example Lake Road Legends"></label>
-    <div class="fgrp"><b>Sport</b><div class="chips wrap">${Object.keys(LINEUP_SIZE).map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="ntSport" data-id="${k}" aria-pressed="${N.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>
+    <div class="fgrp"><b>Sport</b><div class="chips wrap">${Object.keys(LINEUP_SIZE).map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="ntSport" data-id="${k}" aria-pressed="${N.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('team')}</div></div>
     <div class="fgrp"><b>Who can join</b><div class="seg" role="group" aria-label="Privacy"><button data-act="ntPriv" data-id="Invite only" aria-pressed="${N.priv === 'Invite only'}">Invite only</button><button data-act="ntPriv" data-id="Public" aria-pressed="${N.priv === 'Public'}">Anyone can ask</button></div></div>
     <div class="errbox" id="ntErr" hidden>${ic('info')}<div></div></div>
     <button class="pill block" style="min-height:56px" data-act="ntCreate">Create and add players</button>`);
