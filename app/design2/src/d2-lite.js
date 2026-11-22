@@ -191,7 +191,7 @@ function famEvents() {
   allActs().filter((a) => S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'g' + a.id, ref: a.id, kind: 'game', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: S.bookings[a.id] || ['f0'], sport: a.sport }));
   S.hosted.filter((a) => !S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'h' + a.id, ref: a.id, kind: 'host', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: ['f0'], sport: a.sport }));
   S.turf.forEach((b) => { const v = VB(b.vid); ev.push({ key: 't' + b.id, ref: b.id, kind: 'turf', title: v.name, d: b.d, t: pad2(b.start) + ':00', mins: b.dur * 60, venue: v.name, who: ['f0'], sport: v.sports[0] }); });
-  if (can.teams()) S.teams.forEach((t) => t.next && ev.push({ key: 'm' + t.id, ref: t.id, kind: 'team', title: `${t.name} v ${t.next.vs}`, d: t.next.d, t: t.next.t, mins: 120, venue: t.next.venue, who: ['f0'], sport: t.sport }));
+  (can.teams() ? S.teams : S.teams.filter((t) => t.mine)).forEach((t) => t.next && ev.push({ key: 'm' + t.id, ref: t.id, kind: 'team', title: `${t.name} v ${t.next.vs}`, d: t.next.d, t: t.next.t, mins: 120, venue: t.next.venue, who: ['f0'], sport: t.sport }));
   return ev.filter((e) => e.d >= 0 && e.d <= 6).sort((x, y) => x.d - y.d || toMin(x.t) - toMin(y.t));
 }
 function findClashes(ev) {

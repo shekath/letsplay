@@ -48,7 +48,8 @@ function searchAddr(q) {
   return named.filter(([s]) => s >= 2).map(([, g]) => g).concat(streets, named.filter(([s]) => s < 2).map(([, g]) => g)).slice(0, 7);
 }
 const ADDR = {};
-const addrBox = (ctx, ph) => (can.pin() ? `<div class="addrbox"><label class="search">${ic('search')}<input class="addrQ" data-ctx="${ctx}" type="search" autocomplete="off" placeholder="${ph || 'Search a venue, street or landmark'}" aria-label="Search for an address" aria-controls="addrRes-${ctx}"></label><div class="addr-res" id="addrRes-${ctx}" role="listbox"></div></div>` : '');
+/* Available on every plan: Lite users add grounds too; hosting and company venues are gated where they're offered. */
+const addrBox = (ctx, ph) => (ctx ? `<div class="addrbox"><label class="search">${ic('search')}<input class="addrQ" data-ctx="${ctx}" type="search" autocomplete="off" placeholder="${ph || 'Search a venue, street or landmark'}" aria-label="Search for an address" aria-controls="addrRes-${ctx}"></label><div class="addr-res" id="addrRes-${ctx}" role="listbox"></div></div>` : '');
 function renderAddr(ctx, q) {
   const box = $('#addrRes-' + ctx); if (!box) return;
   const list = ADDR[ctx] = searchAddr(q);
@@ -66,7 +67,7 @@ function addCompanyVenue(r) {
 Object.assign(A, {
   addrPick: (el) => { const ctx = el.dataset.ctx, r = (ADDR[ctx] || [])[+el.dataset.i]; if (!r) return;
     if (ctx === 'host') { HOST.loc = locFrom(r); if (r.id && VENUES_BOOK.find((v) => v.id === r.id)) HOST.sport = VB(r.id).sports[0]; hostSheet(); toast('Location set. Adjust it on the map if needed', 'map-pin'); }
-    else if (ctx === 'place') { NP.x = r.x; NP.y = r.y; addPlaceSheet(); }
+    else if (ctx === 'place') { NP.x = r.x; NP.y = r.y; NP.address = r.address || `${r.name}, ${addrOf(r.x, r.y)}`; addPlaceSheet(); }
     else if (ctx === 'pick') { const [cx, cy] = mapCentre(); setMap(cx - r.x * mz, cy - r.y * mz, true); const q = $('#pickUI .addrQ'); if (q) { q.value = ''; q.blur(); } $('#addrRes-pick').innerHTML = ''; setTimeout(() => { const a = $('#pickAddr'); if (a) a.textContent = addrOf(...pickXY()); }, 600); }
     else if (ctx === 'fx') { FX.venue = addCompanyVenue(r); FX.clash = ''; fixtureSheet(); }
     else if (ctx === 'tour') { const n = addCompanyVenue(r); if (!TD.venues.includes(n)) TD.venues.push(n); genSheet(); } },

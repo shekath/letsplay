@@ -737,6 +737,22 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .regcta { display: grid; gap: 12px; padding: 16px; border-radius: var(--r); background: var(--corp-soft); }
 .regcta b { display: block; } .regcta small { display: block; font-size: 13px; color: var(--ink-2); font-weight: 600; margin-top: 2px; }
 
+/* ── Place photos and Lite team ── */
+.photos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.ph { position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: var(--surface-2); }
+.ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph.add { display: grid; place-items: center; align-content: center; gap: 4px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; text-align: center; }
+.ph.add small { font-size: 11.5px; font-weight: 700; } .ph.add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.phx { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: rgba(10,11,14,.66); color: #fff; }
+.phx .ic { width: 15px; height: 15px; }
+.ph .cover { position: absolute; left: 4px; bottom: 4px; padding: 1px 7px; border-radius: 999px; background: rgba(10,11,14,.7); color: #fff; font-size: 10.5px; font-weight: 800; }
+.gallery { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin: -10px -20px 0; padding: 0 20px; scrollbar-width: none; }
+.gallery::-webkit-scrollbar { display: none; }
+.gallery img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 22px; scroll-snap-align: center; }
+.gallery:has(img:only-child) { grid-auto-columns: 100%; }
+.lite-empty { padding: 22px 18px; }
+.sport-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 4px; }
+
 /* ── Captains ── */
 .capbox { padding: 12px 14px; border-radius: 18px; background: color-mix(in srgb, #E09A12 10%, var(--surface)); border: 1px solid color-mix(in srgb, #E09A12 30%, var(--line)); }
 .capbox > b { display: flex; align-items: center; gap: 6px; } .capbox > b .ic { width: 17px; height: 17px; color: #B07A06; }
@@ -1576,6 +1592,12 @@ function tours() { if (!S.tournaments) { S.tournaments = [sampleTournament()]; s
 /* ═════ PLANS: Lite, Pro, Corporate · billing · shared helpers ═════
    Locked features stay visible and lead to an upgrade sheet, so people can see what a plan adds. */
 
+/* What Lite and Pro offer in this design (Design 1 keeps its own lists). */
+PLANS.lite.feats = ['Live map of nearby sports', 'Join games and events', 'One team: cricket, football, volleyball, cycling, badminton or tennis', 'Add grounds and play zones with photos and an address', 'Family profiles and calendar', 'Marketplace and deals'];
+PLANS.lite.no = ['More teams and every sport', 'Host games and add custom sports', 'Company workspace'];
+PLANS.pro.feats = ['Everything in Lite', 'Unlimited teams in every sport', 'Custom sports and indoor games', 'Host games at any address', 'Add players nearest first and invite to any app', '10% off in the marketplace'];
+PLANS.pro.no = ['Company workspace'];
+
 /* Shared helpers used by the plan modules */
 const UPI_APPS = ['GPay', 'PhonePe', 'Paytm', 'BHIM'];
 const pad2 = (n) => String(n).padStart(2, '0');
@@ -1659,7 +1681,7 @@ function checkoutSheet() {
 }
 /* What a locked feature needs, and what the plan adds. */
 const UPSELL = {
-  pin: ['pro', 'map-pin-plus', 'Add places and host games with Pro', 'Snap a photo of a court or ground to put it on the map for everyone, and host games at any address.'],
+  pin: ['pro', 'megaphone', 'Host games and add your own sports with Pro', 'Host games at any address, and add sports like carrom or table tennis with their own icon.'],
   host: ['pro', 'megaphone', 'Host games with Pro', 'Pick any address, set the fee and players needed, and publish it to people nearby or just your invitees.'],
   teams: ['pro', 'users', 'Build your team with Pro', 'Create teams, add players near you, run match day with availability, lineups and team chat.'],
   org: ['corporate', 'trophy', 'Run sport across your company', 'Department teams, a league with live standings, a schedule builder and a tournament organizer that builds brackets for you.'],
@@ -1681,7 +1703,7 @@ function planCardHTML() {
 
 /* ── Desktop side note: plan switcher and things to try ── */
 const TRY = {
-  lite: ['Tap + on a game: step-by-step registration with family members', 'Games → Family: two kids’ drop-offs clash', 'Tap the pin button on the map to see what Pro adds'],
+  lite: ['Team → Create a team (one on Lite), then edit or delete it', 'Map pin button → Add a ground or play zone with photos and an address', 'Tap + on a game: step-by-step registration with family members'],
   pro: ['Map pin button → Add a place: snap a photo of a new court', 'Map pin button → Host a game at any address', 'Team → Create a team → add players nearest first and share'],
   corporate: ['Company → People → Import sheet → try the sample sheet', 'Teams: approve Night Owls FC, or switch to Employee and register a team', 'Events → Tournaments → create and publish, then check the bell as an employee'],
 };
@@ -1909,7 +1931,7 @@ function famEvents() {
   allActs().filter((a) => S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'g' + a.id, ref: a.id, kind: 'game', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: S.bookings[a.id] || ['f0'], sport: a.sport }));
   S.hosted.filter((a) => !S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'h' + a.id, ref: a.id, kind: 'host', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: ['f0'], sport: a.sport }));
   S.turf.forEach((b) => { const v = VB(b.vid); ev.push({ key: 't' + b.id, ref: b.id, kind: 'turf', title: v.name, d: b.d, t: pad2(b.start) + ':00', mins: b.dur * 60, venue: v.name, who: ['f0'], sport: v.sports[0] }); });
-  if (can.teams()) S.teams.forEach((t) => t.next && ev.push({ key: 'm' + t.id, ref: t.id, kind: 'team', title: `${t.name} v ${t.next.vs}`, d: t.next.d, t: t.next.t, mins: 120, venue: t.next.venue, who: ['f0'], sport: t.sport }));
+  (can.teams() ? S.teams : S.teams.filter((t) => t.mine)).forEach((t) => t.next && ev.push({ key: 'm' + t.id, ref: t.id, kind: 'team', title: `${t.name} v ${t.next.vs}`, d: t.next.d, t: t.next.t, mins: 120, venue: t.next.venue, who: ['f0'], sport: t.sport }));
   return ev.filter((e) => e.d >= 0 && e.d <= 6).sort((x, y) => x.d - y.d || toMin(x.t) - toMin(y.t));
 }
 function findClashes(ev) {
@@ -2120,26 +2142,35 @@ function pickXY() { const [cx, cy] = mapCentre(); return [Math.round((cx - mapPo
 function positionCrosshair() { const c = $('#pickUI .crosshair'); if (!c) return; const [cx, cy] = mapCentre(); c.style.left = cx + 'px'; c.style.top = cy + 'px'; }
 function endPick() { if (PICK) clearInterval(PICK.timer); const o = $('#pickUI'); if (o) o.remove(); $('#scr-play').classList.remove('picking'); const p = PICK; PICK = null; return p; }
 
-/* ── Add a place: photo + name, visible to everyone ── */
+/* ── Add a ground or play zone (every plan): photos, address and pin, visible to everyone ── */
 let NP = null;
+const MAX_PHOTOS = 4, PLACE_KINDS = ['Ground', 'Turf', 'Court', 'Play zone', 'Indoor hall'];
 function addPlaceSheet() {
-  const sports = ['cricket', 'football', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'running'].concat(customIds());
-  sheetUpdate(`${head('Add a place', 'Everyone nearby will see it on the map')}
-    <label class="photo-drop ${NP.photo ? 'has' : ''}">${NP.photo ? `<img src="${NP.photo}" alt="Your photo of the place">` : `<span class="up-ic">${ic('camera')}</span><b>Take a photo of the place</b><small>Or choose one from your gallery</small>`}<input type="file" accept="image/*" capture="environment" id="npPhoto" aria-label="Photo of the place"></label>
-    <label class="fld"><span>Name</span><input id="npName" value="${esc(NP.name)}" placeholder="For example Colony park court"></label>
+  const sports = ['cricket', 'football', 'badminton', 'volleyball', 'tennis', 'cycling', 'basketball', 'kabaddi', 'running'].concat(customIds());
+  sheetUpdate(`${head('Add a ground or play zone', 'Everyone nearby will see it on the map')}
+    <div class="fgrp"><b>Photos <span class="faint num">${NP.photos.length} of ${MAX_PHOTOS}</span></b>
+      <div class="photos">${NP.photos.map((ph, i) => `<div class="ph"><img src="${ph}" alt="Photo ${i + 1} of the place">${i === 0 ? '<span class="cover">Cover</span>' : ''}<button class="phx" data-act="npPhotoDel" data-i="${i}" aria-label="Remove photo ${i + 1}">${ic('x')}</button></div>`).join('')}
+        ${NP.photos.length < MAX_PHOTOS ? `<label class="ph add">${ic('camera')}<small>${NP.photos.length ? 'Add another' : 'Add photos'}</small><input type="file" accept="image/*" multiple id="npPhoto" aria-label="Add photos of the place"></label>` : ''}</div>
+      <small class="faint" style="font-size:12.5px">Show the playing surface, the entrance and any facilities. The first photo is the cover.</small></div>
+    <label class="fld"><span>Name</span><input id="npName" value="${esc(NP.name)}" placeholder="For example Colony park ground"></label>
+    <div class="fgrp"><b>Type</b><div class="chips wrap">${PLACE_KINDS.map((k) => `<button class="chip neutral" data-act="npKind" data-id="${k}" aria-pressed="${NP.kind === k}">${k}</button>`).join('')}</div></div>
     <div class="fgrp"><b>Good for</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="npSport" data-id="${k}" aria-pressed="${NP.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('place')}</div></div>
     <div class="seg" role="group" aria-label="Setting">${['Outdoor', 'Indoor'].map((s) => `<button data-act="npSet" data-id="${s}" aria-pressed="${NP.setting === s}">${s}</button>`).join('')}</div>
-    <div class="fgrp"><b>Location</b>${addrBox('place')}
-    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? esc(addrOf(NP.x, NP.y)) : 'Or point to it on the map', sub: NP.x ? 'Tap to fine-tune the pin on the map' : 'Drag the map under a pin' })}</div>
+    <div class="fgrp"><b>Address</b>${addrBox('place', 'Search the address or a nearby landmark')}
+    ${rowHTML({ act: 'npPick', icon: 'map-pin', title: NP.x ? 'Pin set on the map' : 'Or point to it on the map', sub: NP.x ? 'Tap to fine-tune the pin' : 'Drag the map under a pin' })}
+    ${NP.x ? `<label class="fld"><span>Address players will see</span><input id="npAddr" value="${esc(NP.address)}"></label><label class="fld"><span>Landmark (optional)</span><input id="npLand" value="${esc(NP.landmark)}" placeholder="Behind the water tank, gate on the left"></label>` : ''}</div>
     <label class="fld"><span>Note for players (optional)</span><input id="npNote" value="${esc(NP.note)}" placeholder="Lights until 10 pm, bring your own net"></label>
     <div class="errbox" id="npErr" hidden>${ic('info')}<div></div></div>
-    <button class="pill block" style="min-height:56px" data-act="npSave">${ic('map-pin-plus')}Save place for everyone</button>`);
-  const f = $('#npPhoto'); f.addEventListener('change', async () => { if (!f.files[0]) return; try { NP.photo = await readPhoto(f.files[0]); addPlaceSheet(); } catch (e) { toast('That photo could not be read. Try another', 'info'); } });
-  ['npName', 'npNote'].forEach((id) => $('#' + id).addEventListener('input', (e) => { NP[id === 'npName' ? 'name' : 'note'] = e.target.value; }));
+    <button class="pill block" style="min-height:56px" data-act="npSave">${ic('map-pin-plus')}Save for everyone</button>`);
+  const f = $('#npPhoto'); if (f) f.addEventListener('change', async () => { const files = [...f.files].slice(0, MAX_PHOTOS - NP.photos.length); let bad = 0;
+    for (const file of files) { try { NP.photos.push(await readPhoto(file)); } catch (e) { bad++; } }
+    if (bad) toast(`${bad} photo${bad > 1 ? 's' : ''} could not be read`, 'info'); addPlaceSheet(); });
+  [['npName', 'name'], ['npNote', 'note'], ['npAddr', 'address'], ['npLand', 'landmark']].forEach(([id, k]) => { const el = $('#' + id); if (el) el.addEventListener('input', (e) => { NP[k] = e.target.value; }); });
 }
 function placeSheet(id) {
-  const p = placeById(id), s = sp(p.sport) || sp('football');
-  sheet(`${p.photo ? `<div class="pimg big"><img src="${p.photo}" alt="Photo of ${esc(p.name)}"></div>` : ''}${head(esc(p.name), `${p.setting} · ${esc(addrOf(p.x, p.y))}`)}
+  const p = placeById(id), s = sp(p.sport) || sp('football'), photos = p.photos && p.photos.length ? p.photos : p.photo ? [p.photo] : [];
+  sheet(`${photos.length ? `<div class="gallery">${photos.map((ph, i) => `<img src="${ph}" alt="Photo ${i + 1} of ${esc(p.name)}">`).join('')}</div>` : ''}${head(esc(p.name), `${esc(p.kind || 'Place')} · ${p.setting} · ${esc(p.address || addrOf(p.x, p.y))}`)}
+    ${p.landmark ? `<div class="faint" style="font-size:13.5px;margin-top:-8px">${ic('map-pin')} ${esc(p.landmark)}</div>` : ''}
     <div class="lrows">${rowHTML({ icon: s.icon, c: s.c, title: `Good for ${s.name.toLowerCase()}`, sub: esc(p.note || 'No notes yet') })}${rowHTML({ icon: 'user', title: `Added by ${esc(p.by)}`, sub: `Visible to ${esc(p.visibility || 'everyone').toLowerCase()}` })}</div>
     <button class="pill block" data-act="hostHere" data-id="${p.id}">${ic('megaphone')}Host a game here${can.pin() ? '' : ' · Pro'}</button>`);
 }
@@ -2190,22 +2221,32 @@ const tmOf = (t) => { if (!S.tm[t.id]) S.tm[t.id] = { lineup: {}, picks: [], cap
 const teamCode = (t) => t.name.replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() + '-' + (1000 + (t.id.length * 7919 + t.name.length * 31) % 9000);
 const teamLink = (t) => 'https://letsplay.app/join/' + teamCode(t).toLowerCase();
 const crestTxt = (t) => t.name.split(' ').map((w) => w[0]).join('').slice(0, 2);
+/* Lite: one team you create yourself, in six popular sports. Pro and Corporate: any number, any sport. */
+const LITE_SPORTS = ['cricket', 'football', 'volleyball', 'cycling', 'badminton', 'tennis'];
+LINEUP_SIZE.tennis = LINEUP_SIZE.tennis || 4; LINEUP_SIZE.cycling = LINEUP_SIZE.cycling || 8;
+const myTeams = () => S.teams.filter((t) => t.mine);
+const canOpenTeam = (t) => !!t && (can.teams() || t.mine);
+const teamCard = (t) => { const yes = t.members.filter((m) => m.status === 'yes').length; return `<button class="tcard" style="--c:${t.color}" data-act="openTeam" data-id="${t.id}">
+  <span class="crest lg" style="--c:${t.color}">${esc(crestTxt(t))}</span><span class="ltext"><b>${esc(t.name)}</b><small>${sp(t.sport).name} · ${t.members.length} member${t.members.length === 1 ? '' : 's'} · ${esc(t.privacy)}</small>
+  ${t.next ? `<small class="tnext">${ic('calendar-days')}v ${esc(t.next.vs)} · ${dayLabel(t.next.d)} ${fmtT(t.next.d, t.next.t)}</small>` : '<small class="tnext">No match scheduled</small>'}</span>
+  <span class="tyes num"><b>${yes}</b><small>in</small></span></button>`; };
 function renderTeam() {
   if (can.org() && !S.corpPersonal) { renderCorp(); return; }
-  if (TV && teamOf(TV) && can.teams()) { renderTeamView(); return; }
+  if (TV && canOpenTeam(teamOf(TV))) { renderTeamView(); return; }
   const el = $('#scr-team');
   if (!can.teams()) {
-    el.innerHTML = `<div class="head"><div><h1>Team</h1><div class="sub">Organise your crew with Pro</div></div></div>
-      <div class="up-hero t-pro"><span class="up-ic">${ic('users')}</span><h2>Your team, sorted</h2><div>Create teams, add players who live near you, set the lineup and know who’s coming before match day.</div></div>
-      <div class="section"><h2>What you get</h2><div class="lrows">${[['user-plus', 'Add players nearest first', 'Browse everyone on LetsPlay sorted by distance, and share an invite to any app'], ['list-checks', 'Match day', 'Availability poll, lineup with captain, attendance and quick messages'], ['megaphone', 'Host games anywhere', 'Pick any address, set the fee, publish to people nearby'], ['map-pin-plus', 'Put new places on the map', 'Snap a photo of a court and everyone can find it']].map(([i, t, d]) => rowHTML({ icon: i, title: t, sub: d })).join('')}</div></div>
-      <div class="section"><button class="pill block" style="min-height:56px" data-act="subscribe" data-id="pro" data-period="yearly">Get Pro · ${inr(Math.floor(yearlyPrice(PLANS.pro.monthly) / 12))}/month, billed yearly</button><button class="pill block soft" data-act="plans">Compare plans</button></div>`;
+    const t = myTeams()[0];
+    el.innerHTML = `<div class="head"><div><h1>Your team</h1><div class="sub">Lite includes one team</div></div>${t ? '' : `<button class="pill sm" data-act="newTeam">${ic('plus')}Create</button>`}</div>
+      ${t ? `<div class="tcards">${teamCard(t)}</div>
+        <div class="two" style="margin-top:10px"><button class="pill soft" data-act="teamEdit" data-id="${t.id}">${ic('pencil')}Edit team</button><button class="pill soft danger" data-act="teamDelete" data-id="${t.id}">${ic('trash-2')}Delete</button></div>
+        <div class="faint" style="font-size:12.5px;margin-top:8px">Want a different team? Delete this one and create a new one, or get Pro for as many teams as you like.</div>`
+      : `<div class="empty lite-empty"><div class="sport-row">${LITE_SPORTS.map((k) => `<span class="sp-badge sm" style="--c:${sp(k).c}">${ic(sp(k).icon)}</span>`).join('')}</div><b>Create your team</b><span class="muted">Cricket, football, volleyball, cycling, badminton or tennis. Add players near you, pick the lineup and chat with your team.</span><button class="pill" data-act="newTeam">${ic('plus')}Create a team</button></div>`}
+      <div class="section"><h2>With Pro</h2><div class="lrows">${[['users', 'As many teams as you like', 'In every sport, plus your own custom sports'], ['megaphone', 'Host games anywhere', 'Pick any address, set the fee, publish to people nearby'], ['percent', '10% off in the shop', 'On every order']].map(([i, ti, d]) => rowHTML({ icon: i, title: ti, sub: d })).join('')}</div>
+        <button class="pill block soft" data-act="plans">See Pro · ${inr(Math.floor(yearlyPrice(PLANS.pro.monthly) / 12))}/month, billed yearly</button></div>`;
     return;
   }
   el.innerHTML = `${can.org() ? `<button class="pill sm soft" style="margin-bottom:12px" data-act="backToCompany">${ic('arrow-left')}Company</button>` : ''}<div class="head"><div><h1>Your teams</h1><div class="sub">${S.teams.length} team${S.teams.length === 1 ? '' : 's'} · you captain ${S.teams.filter((t) => t.members[0].role === 'Captain').length}</div></div><button class="pill sm" data-act="newTeam">${ic('plus')}New team</button></div>
-    <div class="tcards">${S.teams.map((t) => { const yes = t.members.filter((m) => m.status === 'yes').length; return `<button class="tcard" style="--c:${t.color}" data-act="openTeam" data-id="${t.id}">
-      <span class="crest lg" style="--c:${t.color}">${esc(crestTxt(t))}</span><span class="ltext"><b>${esc(t.name)}</b><small>${sp(t.sport).name} · ${t.members.length} members · ${esc(t.privacy)}</small>
-      ${t.next ? `<small class="tnext">${ic('calendar-days')}v ${esc(t.next.vs)} · ${dayLabel(t.next.d)} ${fmtT(t.next.d, t.next.t)}</small>` : '<small class="tnext">No match scheduled</small>'}</span>
-      <span class="tyes num"><b>${yes}</b><small>in</small></span></button>`; }).join('')}</div>
+    <div class="tcards">${S.teams.map(teamCard).join('')}</div>
     <div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>`;
 }
 function openTeam(id) { TV = id; teamTab = 'match'; if (tab !== 'team') go('team'); else renderTeam(); $('#scr-team').scrollTop = 0; }
@@ -2235,19 +2276,22 @@ function renderTeamView() {
     body = `<div class="section"><div class="chat">${M.chat.map(([w, m]) => `<div class="msg ${w === 'You' ? 'mine' : ''}">${w === 'You' ? '' : `<b>${esc(w)}</b>`}${esc(m)}</div>`).join('')}</div>
       <div class="chips">${['On my way', 'Who has the kit?', 'Running 10 min late', 'Great game, team!'].map((m) => `<button class="chip neutral" data-act="say" data-id="${m}">${ic('send')}${m}</button>`).join('')}</div></div>`;
   }
-  $('#scr-team').innerHTML = `<div class="head"><button class="round" data-act="teamBack" aria-label="Back to your teams">${ic('arrow-left')}</button><div style="flex:1;min-width:0"><h1 style="font-size:22px">${esc(t.name)}</h1><div class="sub">${s.name} · ${t.members.length} members</div></div><button class="round" data-act="shareTeam" data-id="${t.id}" aria-label="Share team invite">${ic('share-2')}</button></div>
+  $('#scr-team').innerHTML = `<div class="head"><button class="round" data-act="teamBack" aria-label="Back to your teams">${ic('arrow-left')}</button><div style="flex:1;min-width:0"><h1 style="font-size:22px">${esc(t.name)}</h1><div class="sub">${s.name} · ${t.members.length} members</div></div>${t.members[0].role === 'Captain' ? `<button class="round" data-act="teamEdit" data-id="${t.id}" aria-label="Edit team">${ic('pencil')}</button>` : ''}<button class="round" data-act="shareTeam" data-id="${t.id}" aria-label="Share team invite">${ic('share-2')}</button></div>
     <button class="nexthero" style="--c:${t.color}" data-act="tSchedule">${t.next ? `<span class="eyebrow" style="color:rgba(255,255,255,.85)">Next match</span><h2>v ${esc(t.next.vs)}</h2><span>${longFmt.format(dateAt(t.next.d, t.next.t))} · ${fmtT(t.next.d, t.next.t)} · ${esc(t.next.venue)}</span><span class="faint" style="color:rgba(255,255,255,.8);font-size:13px">Tap to reschedule</span>` : `<span class="eyebrow" style="color:rgba(255,255,255,.85)">No match yet</span><h2>Schedule a match</h2><span>Pick an opponent, day and ground</span>`}</button>
     <div class="seg" role="group" aria-label="Team section" style="margin-top:16px"><button data-act="teamTab" data-id="match" aria-pressed="${teamTab === 'match'}">Match day</button><button data-act="teamTab" data-id="roster" aria-pressed="${teamTab === 'roster'}">Roster</button><button data-act="teamTab" data-id="chat" aria-pressed="${teamTab === 'chat'}">Chat</button></div>
     ${body}`;
 }
 function newTeamSheet() {
-  const N = NT;
-  sheetUpdate(`${head('New team', 'You’ll be the captain')}
-    <label class="fld"><span>Team name</span><input id="ntName" value="${esc(N.name)}" placeholder="For example Lake Road Legends"></label>
-    <div class="fgrp"><b>Sport</b><div class="chips wrap">${Object.keys(LINEUP_SIZE).map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="ntSport" data-id="${k}" aria-pressed="${N.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('team')}</div></div>
+  const N = NT, sports = can.teams() ? Object.keys(LINEUP_SIZE) : LITE_SPORTS;
+  sheetUpdate(`${head(N.id ? 'Edit team' : 'New team', N.id ? 'Changes are shared with your teammates' : can.teams() ? 'You’ll be the captain' : 'Your one Lite team. You’ll be the captain')}
+    <label class="fld"><span>Team name</span><input id="ntName" value="${esc(N.name)}" placeholder="For example Lake Road Legends" maxlength="32"></label>
+    <div class="fgrp"><b>Sport</b><div class="chips wrap">${sports.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="ntSport" data-id="${k}" aria-pressed="${N.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('team')}</div>
+      ${can.teams() ? '' : '<small class="faint" style="font-size:12.5px">Lite teams play cricket, football, volleyball, cycling, badminton or tennis. Pro adds every sport.</small>'}
+      ${N.id && N.sport !== N.was ? '<small class="faint" style="font-size:12.5px">Changing the sport clears the current lineup.</small>' : ''}</div>
     <div class="fgrp"><b>Who can join</b><div class="seg" role="group" aria-label="Privacy"><button data-act="ntPriv" data-id="Invite only" aria-pressed="${N.priv === 'Invite only'}">Invite only</button><button data-act="ntPriv" data-id="Public" aria-pressed="${N.priv === 'Public'}">Anyone can ask</button></div></div>
     <div class="errbox" id="ntErr" hidden>${ic('info')}<div></div></div>
-    <button class="pill block" style="min-height:56px" data-act="ntCreate">Create and add players</button>`);
+    <button class="pill block" style="min-height:56px" data-act="ntCreate">${N.id ? `${ic('check')}Save changes` : 'Create and add players'}</button>
+    ${N.id ? `<button class="pill block soft danger" data-act="teamDelete" data-id="${N.id}">${ic('trash-2')}Delete team</button>` : ''}`);
   $('#ntName').addEventListener('input', (e) => { NT.name = e.target.value; });
 }
 let NT = null;
@@ -2275,7 +2319,7 @@ function apSheet() {
     <div class="stickybar"><span class="faint num">${AP.sel.length} selected</span><button class="pill" data-act="apAdd" ${AP.sel.length ? '' : 'disabled'}>${ic('user-plus')}${AP.sel.length ? `Invite ${AP.sel.length}` : 'Select players'}</button></div>`);
   const qi = $('#apQ'); qi.addEventListener('input', () => { AP.q = qi.value; const pos = qi.selectionStart; apSheet(); const n = $('#apQ'); n.focus(); n.setSelectionRange(pos, pos); });
 }
-function openAddPlayers(tid, isNew) { if (!can.teams()) { upsell('teams'); return; } const t = teamOf(tid); AP = { tid, q: '', sport: t.sport, km: 'any', lft: false, sel: [], isNew }; closeSheet(); apSheet(); }
+function openAddPlayers(tid, isNew) { const t = teamOf(tid); if (!canOpenTeam(t)) { upsell('teams'); return; } AP = { tid, q: '', sport: t.sport, km: 'any', lft: false, sel: [], isNew }; closeSheet(); apSheet(); }
 function scheduleSheet() {
   const t = teamOf(TV), n = t.next || { vs: '', d: 3, t: '19:00', venue: VENUES_BOOK[0].name };
   SCH = SCH || clone(n);
@@ -2290,21 +2334,22 @@ function scheduleSheet() {
 let SCH = null;
 
 Object.assign(A, {
-  addToMap: () => { if (!can.pin()) { upsell('pin'); return; }
-    sheet(`${head('Add to the map')}<div class="lrows">${rowHTML({ act: 'placeNew', icon: 'camera', title: 'Add a place', sub: 'Snap a photo of a court or ground. Everyone will see it.' })}${rowHTML({ act: 'hostStart', icon: 'megaphone', title: 'Host a game', sub: 'At any address, published to people nearby or invitees' })}</div>`); },
+  addToMap: () => sheet(`${head('Add to the map')}<div class="lrows">${rowHTML({ act: 'placeNew', icon: 'camera', title: 'Add a ground or play zone', sub: 'Photos, address and pin. Everyone nearby will see it.' })}${rowHTML({ act: 'hostStart', icon: 'megaphone', title: 'Host a game', sub: can.pin() ? 'At any address, published to people nearby or invitees' : 'At any address · Pro', end: can.pin() ? null : `<span class="tierword t-pro">${ic('lock')}Pro</span>` })}</div>`),
   place: (el) => placeSheet(el.dataset.id),
-  placeNew: (el) => { if (!can.pin()) { upsell('pin'); return; } NP = { photo: null, name: '', sport: 'football', setting: 'Outdoor', note: '', x: 0, y: 0, ret: el.dataset.id || null }; addPlaceSheet(); },
+  placeNew: (el) => { NP = { photos: [], name: '', kind: 'Ground', sport: 'football', setting: 'Outdoor', note: '', address: '', landmark: '', x: 0, y: 0, ret: el.dataset.id || null }; addPlaceSheet(); },
+  npKind: (el) => { NP.kind = el.dataset.id; addPlaceSheet(); },
+  npPhotoDel: (el) => { NP.photos.splice(+el.dataset.i, 1); addPlaceSheet(); },
   npSport: (el) => { NP.sport = el.dataset.id; addPlaceSheet(); },
   npSet: (el) => { NP.setting = el.dataset.id; addPlaceSheet(); },
   npPick: () => startPick('place', NP.x ? { x: NP.x, y: NP.y } : null),
-  npSave: () => { const err = $('#npErr'), bad = !NP.name.trim() ? 'Give the place a name.' : !NP.x ? 'Set the location on the map.' : '';
-    if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; return; }
-    const p = { id: 'c' + Date.now(), name: NP.name.trim(), sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photo, by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
+  npSave: () => { const err = $('#npErr'), bad = !NP.name.trim() ? 'Give the place a name.' : !NP.x ? 'Set the address or point to it on the map.' : !NP.address.trim() ? 'Add the address players will see.' : '';
+    if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; err.scrollIntoView({ block: 'nearest' }); return; }
+    const p = { id: 'c' + Date.now(), name: NP.name.trim(), kind: NP.kind, sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photos[0] || null, photos: NP.photos.slice(), address: NP.address.trim(), landmark: NP.landmark.trim(), by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
     S.places.push(p); S.xp += 20; save(); const ret = NP.ret; NP = null;
     if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
     closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); badgeCheck(); },
   pickUse: () => { const [x, y] = pickXY(), p = endPick();
-    if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else { const keep = HOST && HOST.loc && Math.hypot(HOST.loc.x - x, HOST.loc.y - y) < 30; hostStart(keep ? Object.assign({}, HOST.loc, { x, y }) : { id: null, x, y, address: addrOf(x, y) }); } },
+    if (p.purpose === 'place') { NP.x = x; NP.y = y; NP.address = addrOf(x, y); addPlaceSheet(); } else { const keep = HOST && HOST.loc && Math.hypot(HOST.loc.x - x, HOST.loc.y - y) < 30; hostStart(keep ? Object.assign({}, HOST.loc, { x, y }) : { id: null, x, y, address: addrOf(x, y) }); } },
   pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
   hostStart: () => hostStart(),
   hostHere: (el) => { const p = placeById(el.dataset.id); hostStart({ id: p.id, x: p.x, y: p.y, address: `${p.name}, ${addrOf(p.x, p.y)}`, photo: p.photo }); },
@@ -2320,11 +2365,24 @@ Object.assign(A, {
   hostPublish: () => publishHost(),
   postSpots: (el) => { if (!can.pin()) { upsell('host'); return; } const b = S.turf.find((x) => x.id === el.dataset.id), v = VB(b.vid);
     HOST = hostFresh({ id: v.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}` }); Object.assign(HOST, { sport: v.sports[0], d: b.d, t: pad2(b.start) + ':00', mins: b.dur * 60, players: Math.max(2, b.players - 1), fee: Math.ceil((b.dur * v.peak) / b.players / 10) * 10, title: `Open spots at ${v.name}` }); hostSheet(); },
-  newTeam: () => { if (!can.teams()) { upsell('teams'); return; } NT = { name: '', sport: 'football', priv: 'Invite only' }; newTeamSheet(); },
+  newTeam: () => { if (!can.teams() && myTeams().length) { const t = myTeams()[0];
+      sheet(`${head('Lite includes one team', `You already have ${esc(t.name)}`)}<div class="muted" style="font-size:14px">Delete it to create a different team, or get Pro for as many teams as you like, in every sport.</div>
+        <div class="two"><button class="pill soft danger" data-act="teamDelete" data-id="${t.id}">${ic('trash-2')}Delete ${esc(t.name)}</button><button class="pill" data-act="subscribe" data-id="pro" data-period="yearly">Get Pro</button></div>`); return; }
+    NT = { name: '', sport: can.teams() ? 'football' : 'cricket', priv: 'Invite only' }; newTeamSheet(); },
+  teamEdit: (el) => { const t = teamOf(el.dataset.id); NT = { id: t.id, name: t.name, sport: t.sport, was: t.sport, priv: t.privacy }; newTeamSheet(); },
+  teamDelete: (el) => { const t = teamOf(el.dataset.id);
+    sheet(`${head(`Delete ${esc(t.name)}?`, `${t.members.length} member${t.members.length === 1 ? '' : 's'} will be told the team has closed.`)}<div class="muted" style="font-size:14px">The roster, lineup and team chat are removed. This can’t be undone.${can.teams() ? '' : ' You can create a new team straight after.'}</div>
+      <div style="display:flex;gap:10px"><button class="pill soft" style="flex:1" data-act="close">Keep it</button><button class="pill danger-fill" style="flex:1" data-act="teamDeleteGo" data-id="${t.id}">${ic('trash-2')}Delete</button></div>`); },
+  teamDeleteGo: (el) => { const t = teamOf(el.dataset.id); S.teams = S.teams.filter((x) => x.id !== t.id); delete S.tm[t.id]; TV = null; picking = null; save(); closeSheet(); renderTeam();
+    toast(can.teams() ? `${t.name} deleted` : `${t.name} deleted. You can create a new team`, 'trash-2'); },
   ntSport: (el) => { NT.sport = el.dataset.id; newTeamSheet(); },
   ntPriv: (el) => { NT.priv = el.dataset.id; newTeamSheet(); },
-  ntCreate: () => { if (!NT.name.trim()) { const e = $('#ntErr'); e.hidden = false; e.lastElementChild.textContent = 'Give your team a name.'; return; }
-    const t = { id: 't' + Date.now(), name: NT.name.trim(), sport: NT.sport, color: TEAM_COLORS[S.teams.length % TEAM_COLORS.length], privacy: NT.priv, members: [{ name: 'Arjun Mehta', role: 'Captain', status: 'yes' }], next: null };
+  ntCreate: () => { const e = $('#ntErr'), name = NT.name.trim(), fail = (m) => { e.hidden = false; e.lastElementChild.textContent = m; };
+    if (!name) return fail('Give your team a name.');
+    if (S.teams.some((x) => x.id !== NT.id && x.name.toLowerCase() === name.toLowerCase())) return fail('You already have a team with that name.');
+    if (NT.id) { const t = teamOf(NT.id); if (t.sport !== NT.sport) { delete S.tm[t.id]; picking = null; } Object.assign(t, { name, sport: NT.sport, privacy: NT.priv }); NT = null; save(); closeSheet(); renderTeam(); toast('Team updated. Teammates were told', 'check'); return; }
+    if (!can.teams() && myTeams().length) return fail('Lite includes one team. Delete your current team first.');
+    const t = { id: 't' + Date.now(), mine: true, name, sport: NT.sport, color: TEAM_COLORS[S.teams.length % TEAM_COLORS.length], privacy: NT.priv, members: [{ name: 'Arjun Mehta', role: 'Captain', status: 'yes' }], next: null };
     S.teams.push(t); save(); NT = null; TV = t.id; teamTab = 'roster'; renderTeam(); openAddPlayers(t.id, true); },
   openTeam: (el) => openTeam(el.dataset.id),
   teamBack: () => { TV = null; picking = null; renderTeam(); },
@@ -2407,7 +2465,8 @@ function searchAddr(q) {
   return named.filter(([s]) => s >= 2).map(([, g]) => g).concat(streets, named.filter(([s]) => s < 2).map(([, g]) => g)).slice(0, 7);
 }
 const ADDR = {};
-const addrBox = (ctx, ph) => (can.pin() ? `<div class="addrbox"><label class="search">${ic('search')}<input class="addrQ" data-ctx="${ctx}" type="search" autocomplete="off" placeholder="${ph || 'Search a venue, street or landmark'}" aria-label="Search for an address" aria-controls="addrRes-${ctx}"></label><div class="addr-res" id="addrRes-${ctx}" role="listbox"></div></div>` : '');
+/* Available on every plan: Lite users add grounds too; hosting and company venues are gated where they're offered. */
+const addrBox = (ctx, ph) => (ctx ? `<div class="addrbox"><label class="search">${ic('search')}<input class="addrQ" data-ctx="${ctx}" type="search" autocomplete="off" placeholder="${ph || 'Search a venue, street or landmark'}" aria-label="Search for an address" aria-controls="addrRes-${ctx}"></label><div class="addr-res" id="addrRes-${ctx}" role="listbox"></div></div>` : '');
 function renderAddr(ctx, q) {
   const box = $('#addrRes-' + ctx); if (!box) return;
   const list = ADDR[ctx] = searchAddr(q);
@@ -2425,7 +2484,7 @@ function addCompanyVenue(r) {
 Object.assign(A, {
   addrPick: (el) => { const ctx = el.dataset.ctx, r = (ADDR[ctx] || [])[+el.dataset.i]; if (!r) return;
     if (ctx === 'host') { HOST.loc = locFrom(r); if (r.id && VENUES_BOOK.find((v) => v.id === r.id)) HOST.sport = VB(r.id).sports[0]; hostSheet(); toast('Location set. Adjust it on the map if needed', 'map-pin'); }
-    else if (ctx === 'place') { NP.x = r.x; NP.y = r.y; addPlaceSheet(); }
+    else if (ctx === 'place') { NP.x = r.x; NP.y = r.y; NP.address = r.address || `${r.name}, ${addrOf(r.x, r.y)}`; addPlaceSheet(); }
     else if (ctx === 'pick') { const [cx, cy] = mapCentre(); setMap(cx - r.x * mz, cy - r.y * mz, true); const q = $('#pickUI .addrQ'); if (q) { q.value = ''; q.blur(); } $('#addrRes-pick').innerHTML = ''; setTimeout(() => { const a = $('#pickAddr'); if (a) a.textContent = addrOf(...pickXY()); }, 600); }
     else if (ctx === 'fx') { FX.venue = addCompanyVenue(r); FX.clash = ''; fixtureSheet(); }
     else if (ctx === 'tour') { const n = addCompanyVenue(r); if (!TD.venues.includes(n)) TD.venues.push(n); genSheet(); } },
@@ -3016,8 +3075,8 @@ const BADGES = [
   { id: 'explorer', name: 'Explorer', how: 'Play 4 different sports', tier: 'silver', shape: 'hex', glyph: 'compass', prog: () => countIf(new Set(S.joined.map((id) => (actById(id) || {}).sport)).size, 4), cta: ['tab', 'play', 'Try a new sport'] },
   { id: 'court', name: 'Court boss', how: 'Book a court for your crew', tier: 'bronze', shape: 'shield', glyph: 'calendar-days', prog: () => countIf(S.turf.length, 1), cta: ['openBook', '', 'Book a court'] },
   { id: 'family', name: 'Family captain', how: 'Book games for 3 people in your family', tier: 'silver', shape: 'round', glyph: 'users', prog: () => countIf(new Set(Object.values(S.bookings).flat()).size, 3), cta: ['tab', 'play', 'Find a family game'] },
-  { id: 'captain', name: 'Captain', how: 'Captain a team (Pro)', tier: 'gold', shape: 'shield', glyph: 'crown', prog: () => countIf(can.teams() ? S.teams.filter((t) => t.members[0].role === 'Captain').length : 0, 1), cta: ['tab', 'team', 'Go to Team'] },
-  { id: 'mapper', name: 'Map maker', how: 'Put a new place on the map (Pro)', tier: 'silver', shape: 'hex', glyph: 'map-pin-plus', prog: () => countIf(S.places.length, 1), cta: ['placeNew', '', 'Add a place'] },
+  { id: 'captain', name: 'Captain', how: 'Captain a team', tier: 'gold', shape: 'shield', glyph: 'crown', prog: () => countIf((can.teams() ? S.teams : S.teams.filter((t) => t.mine)).filter((t) => t.members[0].role === 'Captain').length, 1), cta: ['tab', 'team', 'Go to Team'] },
+  { id: 'mapper', name: 'Map maker', how: 'Add a ground or play zone to the map', tier: 'silver', shape: 'hex', glyph: 'map-pin-plus', prog: () => countIf(S.places.length, 1), cta: ['placeNew', '', 'Add a place'] },
   { id: 'host', name: 'Host with the most', how: 'Host a game (Pro)', tier: 'gold', shape: 'round', glyph: 'megaphone', prog: () => countIf(S.hosted.length, 1), cta: ['hostStart', '', 'Host a game'] },
   { id: 'recruit', name: 'Recruiter', how: 'Invite 5 players to your teams (Pro)', tier: 'bronze', shape: 'shield', glyph: 'user-plus', prog: () => countIf(S.teams.flatMap((t) => t.members).filter((m) => m.status === 'invited').length, 5), cta: ['tab', 'team', 'Add players'] },
   { id: 'iron', name: 'Iron streak', how: 'Keep your streak going for 8 weeks', tier: 'epic', shape: 'star', glyph: 'zap', prog: () => countIf(streakWeeks(), 8), cta: ['tab', 'play', 'Keep it going'] },
