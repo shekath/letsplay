@@ -143,5 +143,5 @@ Object.assign(A, {
   pickOne: (el) => { $$(`#${el.dataset.group} [aria-pressed]`).forEach((b) => b.setAttribute('aria-pressed', b === el)); if (el.dataset.group !== 'regApp' && el.dataset.group !== 'subApp' && el.dataset.group !== 'cartApp') return; S.payApp = el.dataset.id; save(); },
   copyShare: () => { const txt = $('#shareTxt').textContent; const sel = () => { const r = document.createRange(); r.selectNodeContents($('#shareTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected. Copy it from the menu', 'copy'); };
     try { navigator.clipboard.writeText(txt).then(() => toast('Copied. Paste it into any app', 'copy'), sel); } catch (e) { sel(); } },
-  shareGame: (el) => { const a = actById(el.dataset.id); shareAny(a.title, `${a.title} · ${when(a)} at ${a.venue}. ${spotsLeft(a)} spots left, ${money(a.price)}. Join me on LetsPlay:`, 'https://letsplay.app/g/' + a.id); },
+  shareGame: (el) => { const a = actById(el.dataset.id); shareAny(a.title, `${a.title} · ${when(a)} at ${a.venue}. ${spotsLeft(a)} spots left, ${money(a.price)}. Join me on Splayer:`, 'https://splayer.app/g/' + a.id); },
 });

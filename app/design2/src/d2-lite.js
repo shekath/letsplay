@@ -343,7 +343,7 @@ Object.assign(A, {
   calWho: (el) => { S.calWho = el.dataset.id; save(); renderFamily(); },
   calDay: (el) => { S.calDay = +el.dataset.id; save(); renderFamily(); },
   clashSlot: (el) => { S.mood = el.dataset.id; save(); go('play'); setSheet(1); toast(`Showing other ${sp(el.dataset.id).name.toLowerCase()} times`, 'search'); },
-  carpool: (el) => shareAny('Carpool?', `Anyone heading to ${el.dataset.id} on ${dayLabel(+el.dataset.d)}? I can’t do both drop-offs, happy to swap a ride.`, 'https://letsplay.app/carpool'),
+  carpool: (el) => shareAny('Carpool?', `Anyone heading to ${el.dataset.id} on ${dayLabel(+el.dataset.d)}? I can’t do both drop-offs, happy to swap a ride.`, 'https://splayer.app/carpool'),
   evOpen: (el) => { const k = el.dataset.kind, id = el.dataset.id;
     if (k === 'game' || k === 'host') openDetail(id);
     else if (k === 'team') { go('team'); openTeam(id); }

@@ -141,7 +141,7 @@ function bindPeopleSearch() { const qi = $('#pplQ'); if (!qi) return; qi.addEven
 function empSheet(id) {
   const e = empById(id), teams = approvedTeams();
   sheet(`${head(esc(e.name), `${esc(e.email)} · ${esc(e.dept)}`)}
-    <div class="facts"><div class="fact"><b>${e.status === 'invited' ? 'Invited' : 'Active'}</b><span>${e.status === 'invited' ? 'Hasn’t joined yet' : 'On LetsPlay'}</span></div><div class="fact"><b class="num">${e.games}</b><span>Games this month</span></div></div>
+    <div class="facts"><div class="fact"><b>${e.status === 'invited' ? 'Invited' : 'Active'}</b><span>${e.status === 'invited' ? 'Hasn’t joined yet' : 'On Splayer'}</span></div><div class="fact"><b class="num">${e.games}</b><span>Games this month</span></div></div>
     <div class="fgrp"><b>Teams</b><div class="chips wrap">${teams.map((t) => `<button class="chip" style="--c:${t.c}" data-act="empTeam" data-id="${e.id}" data-t="${t.id}" aria-pressed="${e.teams.includes(t.id)}">${esc(t.name)}</button>`).join('')}</div></div>
     ${e.teams.map((t) => W().caps[t] === e.id ? `<div class="okchip" style="justify-self:start">${ic('crown')}Captain of ${esc(teamById(t).name)}</div>` : `<button class="pill sm soft" style="justify-self:start" data-act="makeCap" data-id="${e.id}" data-t="${t}">${ic('crown')}Make captain of ${esc(teamById(t).name)}</button>`).join('')}
     ${e.status === 'invited' ? `<button class="pill block" data-act="resend" data-id="${e.id}">${ic('mail')}Resend invite</button>` : ''}
@@ -274,8 +274,8 @@ const audLabel = (a) => (a === 'all' ? 'Everyone' : a === 'captains' ? 'Team cap
 const audCount = (a) => { const act = emps().filter((e) => e.status === 'active'); return a === 'all' ? act.length : a === 'captains' ? Object.keys(W().caps).length : a.startsWith('dept:') ? act.filter((e) => e.dept === a.slice(5)).length : a.startsWith('team:') ? members(a.slice(5)).length : a === 'low' ? act.filter((e) => lowDepts().includes(e.dept)).length : 0; };
 const youIn = (a) => a === 'all' || (a === 'captains') || a === 'dept:' + you().dept || (a.startsWith('team:') && you().teams.includes(a.slice(5)));
 const lowDepts = () => { const act = emps().filter((e) => e.status === 'active'); return depts().filter((d) => { const de = act.filter((e) => e.dept === d); return de.length && de.filter((e) => e.games > 0).length / de.length < 0.5; }); };
-const tpl = (k) => { const R = W().reg; return ({ blank: ['', ''], reg: ['Team registration is open', `Register your team by ${dayLabel(R.deadline)} ${dateAt(R.deadline, '12:00').getDate()}: open LetsPlay → Company → Register a team. ${R.sports.map((s) => sp(s).name).join(', ')}, ${R.min}–${R.max} players.`],
-  rain: ['Rain delay', 'Tonight’s matches start 45 minutes late because of rain. Check the app for updated times.'], low: ['Your department needs you', 'Only a few of your team have played this month. There are games every evening this week, beginners welcome. Open LetsPlay to join one.'] })[k]; };
+const tpl = (k) => { const R = W().reg; return ({ blank: ['', ''], reg: ['Team registration is open', `Register your team by ${dayLabel(R.deadline)} ${dateAt(R.deadline, '12:00').getDate()}: open Splayer → Company → Register a team. ${R.sports.map((s) => sp(s).name).join(', ')}, ${R.min}–${R.max} players.`],
+  rain: ['Rain delay', 'Tonight’s matches start 45 minutes late because of rain. Check the app for updated times.'], low: ['Your department needs you', 'Only a few of your team have played this month. There are games every evening this week, beginners welcome. Open Splayer to join one.'] })[k]; };
 let ANN = null;
 function annSheet() {
   const A2 = ANN, ws = W(), n = audCount(A2.aud);
@@ -317,7 +317,7 @@ function tableHTML(st, mine = []) {
 }
 function cupsHTML(admin) {
   return `${admin ? `<button class="pill block" style="min-height:56px;margin-top:16px" data-act="tourNew">${ic('trophy')}Create a tournament</button>
-    <div class="faint" style="font-size:13px;margin-top:8px">Choose approved teams and a format. LetsPlay builds the groups, bracket and schedule, tells every player, and moves winners on as results come in.</div>` : ''}
+    <div class="faint" style="font-size:13px;margin-top:8px">Choose approved teams and a format. Splayer builds the groups, bracket and schedule, tells every player, and moves winners on as results come in.</div>` : ''}
     <div class="section"><div class="tcards">${tours().map((T) => { const st = tourStatus(T), pr = tourProgress(T), s = sp(T.sport), inIt = T.seeds.some((id) => myTeamIds().includes(id)); return `<button class="tcard" style="--c:${s.c}" data-act="tourOpen" data-id="${T.id}"><span class="crest lg" style="--c:${s.c}">${ic(s.icon)}</span><span class="ltext"><b>${esc(T.name)}${!admin && inIt ? ' <span class="okchip">Your team</span>' : ''}</b><small>${s.name} · ${T.seeds.length} teams · ${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'}</small><small class="tnext">${st.done ? ic('crown') : ic('timer')}${esc(st.text)}</small><span class="prog"><i style="width:${Math.round((pr.played / pr.total) * 100)}%"></i></span></span><span class="tyes num"><b>${pr.played}/${pr.total}</b><small>played</small></span></button>`; }).join('')}</div></div>`;
 }
 
@@ -361,7 +361,7 @@ const freshTD = () => ({ name: 'Diwali Cup', sport: 'football', format: 'groups'
 function genSheet() {
   const n = TD.teams.length, err = n < 4 ? 'Pick at least 4 teams.' : !TD.venues.length ? 'Pick at least one venue.' : !TD.name.trim() ? 'Name the tournament.' : '';
   const summary = !err ? (() => { const T = buildTournament(Object.assign({}, TD), rng(3)); return `${T.matches.filter((m) => !m.bye).length} matches over ${T.matchDays} match days, ${dayLabel(T.startDay)} to ${dayLabel(T.endDay)} ${dateAt(T.endDay, '12:00').getDate()}. ${TD.teams.reduce((k, id) => k + members(id).length, 0)} players will be notified.`; })() : '';
-  sheetUpdate(`${head('Create a tournament', 'LetsPlay builds the plan and schedule')}
+  sheetUpdate(`${head('Create a tournament', 'Splayer builds the plan and schedule')}
     <label class="fld"><span>Name</span><input id="tdName" value="${esc(TD.name)}"></label>
     <div class="fgrp"><b>Sport</b><div class="chips wrap">${TOUR_SPORTS.map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="tdSet" data-k="sport" data-id="${k}" aria-pressed="${TD.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}${newSportChip('tour')}</div></div>
     <div class="fgrp"><b>Format</b><div class="seg" role="group" aria-label="Format"><button data-act="tdSet" data-k="format" data-id="groups" aria-pressed="${TD.format === 'groups'}">Groups + knockout</button><button data-act="tdSet" data-k="format" data-id="knockout" aria-pressed="${TD.format === 'knockout'}">Knockout</button></div></div>
@@ -443,9 +443,9 @@ Object.assign(A, {
   makeCap: (el) => { W().caps[el.dataset.t] = el.dataset.id; save(); empSheet(el.dataset.id); toast(`${empById(el.dataset.id).name.split(' ')[0]} is now captain`, 'crown'); },
   resend: (el) => { closeSheet(); toast(`Invite sent again to ${empById(el.dataset.id).email}`, 'mail'); },
   empRemove: (el) => { const ws = W(), e = empById(el.dataset.id); ws.emps = ws.emps.filter((x) => x.id !== e.id); Object.keys(ws.caps).forEach((k) => { if (ws.caps[k] === e.id) delete ws.caps[k]; }); flowAfterTeamChange(); toast(`${e.name} removed. Their seat is free`, 'check'); },
-  inviteLink: () => shareAny(`Join ${ORG.name} on LetsPlay`, `Join ${ORG.name} sports on LetsPlay with your @${DOMAIN} email: leagues, tournaments and games after work.`, 'https://letsplay.app/c/halcyon'),
+  inviteLink: () => shareAny(`Join ${ORG.name} on Splayer`, `Join ${ORG.name} sports on Splayer with your @${DOMAIN} email: leagues, tournaments and games after work.`, 'https://splayer.app/c/halcyon'),
   importOpen: () => { IMP = { rows: null, invite: true, auto: true, file: '', error: '' }; importSheet(); },
-  tplDownload: async () => savedToast(await download('letsplay-employees-template.csv', TEMPLATE), 'Template'),
+  tplDownload: async () => savedToast(await download('splayer-employees-template.csv', TEMPLATE), 'Template'),
   impSample: () => { IMP.file = 'halcyon-new-joiners.csv'; const res = checkRows(parseCSV(SAMPLE_SHEET)); IMP.rows = res.rows; importSheet(); },
   impReset: () => { IMP = { rows: null, invite: IMP.invite, auto: IMP.auto, file: '', error: '' }; importSheet(); },
   impInvite: () => { IMP.invite = !IMP.invite; importSheet(); },
@@ -508,7 +508,7 @@ Object.assign(A, {
   integrations: () => integrationsSheet(),
   integr: (el) => { const I = W().integr, k = el.dataset.id; I[k] = !I[k]; save(); integrationsSheet(); renderCorp(); toast(I[k] ? `${k === 'slack' ? 'Slack' : 'Microsoft Teams'} connected` : 'Disconnected', I[k] ? 'check' : 'x'); },
   exportReport: async () => { const rows = [['Name', 'Email', 'Department', 'Teams', 'Status', 'Games this month']].concat(emps().map((e) => [e.name, e.email, e.dept, e.teams.map((t) => teamById(t).name).join('; '), e.status, e.games]));
-    savedToast(await download(`letsplay-participation-${new Date().toISOString().slice(0, 10)}.csv`, rows.map((r) => r.map(csvCell).join(',')).join('\n')), `Report for ${emps().length} people`); },
+    savedToast(await download(`splayer-participation-${new Date().toISOString().slice(0, 10)}.csv`, rows.map((r) => r.map(csvCell).join(',')).join('\n')), `Report for ${emps().length} people`); },
   /* Employee */
   rsvp: (el) => { const ws = W(); ws.rsvp[el.dataset.id] = ws.rsvp[el.dataset.id] === el.dataset.v ? null : el.dataset.v; save(); renderCorp(); if (ws.rsvp[el.dataset.id]) toast({ yes: 'You’re in. Your captain can see it', maybe: 'Marked as maybe', no: 'Your captain knows you can’t make it' }[el.dataset.v], 'check'); },
   empTeamOpen: (el) => { const t = teamById(el.dataset.id), m = members(t.id), capId = W().caps[t.id], fx = S.fixtures.filter((f) => f.a === t.id || f.b === t.id);
@@ -546,7 +546,7 @@ Object.assign(A, {
   tourOpen: (el) => { TOUR = el.dataset.id; tourTab = 'bracket'; PREV = null; renderTour(); $('#scr-team').scrollTop = 0; },
   tourBack: () => { TOUR = null; PREV = null; renderCorp(); },
   tourTab: (el) => { tourTab = el.dataset.id; renderTour(); },
-  shareTour: () => { const T = curTour(); shareAny(T.name, `${T.name} at ${ORG.name}: ${tourStatus(T).text}. Follow the bracket on LetsPlay.`, 'https://letsplay.app/t/' + T.id); },
+  shareTour: () => { const T = curTour(); shareAny(T.name, `${T.name} at ${ORG.name}: ${tourStatus(T).text}. Follow the bracket on Splayer.`, 'https://splayer.app/t/' + T.id); },
   tourSim: () => { const T = curTour(), r = rng(Date.now() % 100000), ms = nextRound(T); ms.forEach((m) => simulateMatch(T, m, r)); save(); renderTour(); if (T.champion) afterResult(T, ms[0]); else toast('Results in. Winners moved on', 'zap'); },
   tourMatch: (el) => { const T = curTour(), m = T.matches.find((x) => x.id === el.dataset.id), hi = scoreOf(T.sport)[1][1], big = hi > 10; RS = { id: m.id, sa: m.sa != null ? m.sa : big ? Math.round(hi * 0.8 / 5) * 5 : 0, sb: m.sb != null ? m.sb : big ? Math.round(hi * 0.7 / 5) * 5 : 0, tb: m.tb }; resultSheet(T, m); },
   rsN: (el) => { const T = curTour(), m = T.matches.find((x) => x.id === RS.id), step = scoreOf(T.sport)[1][1] > 50 ? 5 : 1; RS[el.dataset.k] = Math.max(0, RS[el.dataset.k] + +el.dataset.d * step); if (RS.sa !== RS.sb) RS.tb = null; resultSheet(T, m); },

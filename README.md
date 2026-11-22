@@ -16,7 +16,15 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 
 ## Design 2: Playground
 
-A second, engagement-first direction at `http://localhost:8080/design2.html`, built on the same data. It has every plan and feature of Design 1 (Lite, Pro and Corporate, with the same billing), in its own style. On a desktop, the side panel switches plans instantly for demos.
+A second, engagement-first direction, branded **Splayer**, at `http://localhost:8080/design2.html`, built on the same data. It has every plan and feature of Design 1 (Lite, Pro and Corporate, with the same billing), in its own style. On a desktop, the side panel switches plans instantly for demos.
+
+**Welcome flow (Splayer):**
+- **Intro:** a text-only motion piece. "ONE APP FOR" FOOTBALL → CRICKET → TENNIS → BADMINTON → MANY MORE on diagonal colour wipes. Then SPORTS drops in, P-O-R-T-S tumble away, the green S stays, and "player" hops in to spell Splayer, with a lime underline and "FIND YOUR GAME". It has a Skip button, respects reduced motion, and returning players see a short (about 2.5 s) wordmark splash instead.
+- **Onboarding:** three swipeable slides (PLAY, HOST, STREAK) with Skip, dots and Get started.
+- **Sign up / Log in:** Continue with Google (simulated account chooser, or "Use another account"), Continue with phone number (+91, a 6-digit code, a simulated text message you can tap to fill, paste support, wrong-code shake, resend after 30 s), or email and password with inline errors and Forgot password. Demo account: `arjun@splayer.app` / `play1234`, phone `98765 43210`.
+- **New players** set their name, area, sports and level before entering the app. Their name then shows on the Me banner.
+- **Me → Account** shows how you signed in and has Sign out. The desktop side panel has *Replay intro* and *Start as new player*.
+- Everything is stored on the device only. Nothing is sent anywhere.
 
 Tabs: **Play · Games · Team** (Company on Corporate) **· Shop · Me**.
 
@@ -112,7 +120,7 @@ app/
     tournament.js  tournament UI for Design 1 (Corporate)
     features.js    filters, registration steps, waitlist, family calendar, notifications, coach match day, venue booking
     icons.js       inlined Lucide icon paths (ISC licence); custom sport glyphs live in app.js
-  design2/src/     Design 2: shell.html, d2.css, d2.js (core) and d2-plans/lite/pro/corp.js (plan features)
+  design2/src/     Design 2: shell.html, d2.css, d2.js (core), d2-plans/lite/pro/corp.js (plan features) and d2-auth.js (intro, onboarding, sign-in)
   img/             optimised photos (Unsplash licence)
   index.html       built standalone PWA (generated)
   embed.html       built page fragment for hosted previews (generated)

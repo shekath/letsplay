@@ -133,7 +133,7 @@ let TV = null, teamTab = 'match';
 const teamOf = (id) => S.teams.find((t) => t.id === id);
 const tmOf = (t) => { if (!S.tm[t.id]) S.tm[t.id] = { lineup: {}, picks: [], cap: 0, vote: null, chat: [['Rohan Iyer', 'Nets at 6 before the match?'], ['Vikram Singh', 'I can bring the stumps and two balls.']] }; return S.tm[t.id]; };
 const teamCode = (t) => t.name.replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() + '-' + (1000 + (t.id.length * 7919 + t.name.length * 31) % 9000);
-const teamLink = (t) => 'https://letsplay.app/join/' + teamCode(t).toLowerCase();
+const teamLink = (t) => 'https://splayer.app/join/' + teamCode(t).toLowerCase();
 const crestTxt = (t) => t.name.split(' ').map((w) => w[0]).join('').slice(0, 2);
 /* Lite: one team you create yourself, in six popular sports. Pro and Corporate: any number, any sport. */
 const LITE_SPORTS = ['cricket', 'football', 'volleyball', 'cycling', 'badminton', 'tennis'];
@@ -210,7 +210,7 @@ function newTeamSheet() {
 }
 let NT = null;
 
-/* ── Add players: everyone on LetsPlay, nearest first, grouped by distance ── */
+/* ── Add players: everyone on Splayer, nearest first, grouped by distance ── */
 let AP = null;
 function apList() {
   const q = AP.q.trim().toLowerCase();
@@ -337,5 +337,5 @@ Object.assign(A, {
   apLft: () => { AP.lft = !AP.lft; apSheet(); },
   apAdd: () => { const t = teamOf(AP.tid), add = PLAYERS.filter((p) => AP.sel.includes(p.id)); add.forEach((p) => t.members.push({ name: p.name, role: 'Player', status: 'invited', pid: p.id }));
     const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); badgeCheck(); },
-  shareTeam: (el) => { const t = teamOf(el.dataset.id); shareAny(`Join ${t.name} on LetsPlay`, `Join my ${sp(t.sport).name.toLowerCase()} team ${t.name} on LetsPlay. Team code ${teamCode(t)}.`, teamLink(t)); },
+  shareTeam: (el) => { const t = teamOf(el.dataset.id); shareAny(`Join ${t.name} on Splayer`, `Join my ${sp(t.sport).name.toLowerCase()} team ${t.name} on Splayer. Team code ${teamCode(t)}.`, teamLink(t)); },
 });

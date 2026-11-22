@@ -88,7 +88,7 @@ function heroHTML() {
         <circle cx="50" cy="50" r="44" class="trk"/><circle cx="50" cy="50" r="44" class="val" stroke="url(#xpg)" filter="url(#xpf)" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}"/></svg>
         <span class="ava">AM</span>
         <span class="lvl" aria-label="Level ${lv}"><svg viewBox="0 0 40 44" aria-hidden="true"><path d="M20 2 L37 11 V31 L20 42 L3 31 V11 Z" fill="#0B0C13" stroke="url(#xpg)" stroke-width="2.5"/></svg><b class="num">${lv}</b></span></div>
-      <div class="hero-id"><span class="hero-title">${esc(title)}</span><h2>Arjun Mehta</h2>
+      <div class="hero-id"><span class="hero-title">${esc(title)}</span><h2>${esc(FAMILY[0].name)}</h2>
         <span class="xpt num"><b>${into}</b> / ${LV} XP <span>to level ${lv + 1}</span></span><span class="neonbar"><i style="width:${(pct * 100).toFixed(1)}%"></i></span></div>
     </div>
     <div class="hero-stats">
@@ -207,6 +207,6 @@ Object.assign(A, {
   badge: (el) => badgeSheet(BADGES[+el.dataset.i]),
   badgesAll: () => badgesAllSheet(),
   badgeId: (el) => badgeSheet(BADGES.find((b) => b.id === el.dataset.id), true),
-  shareBadge: (el) => { const b = BADGES.find((x) => x.id === el.dataset.id); shareAny(`${b.name} badge`, `I just earned the ${TIERS[b.tier].name.toLowerCase()} ${b.name} badge on LetsPlay. ${b.how}. Come play:`, 'https://letsplay.app/b/' + b.id); },
+  shareBadge: (el) => { const b = BADGES.find((x) => x.id === el.dataset.id); shareAny(`${b.name} badge`, `I just earned the ${TIERS[b.tier].name.toLowerCase()} ${b.name} badge on Splayer. ${b.how}. Come play:`, 'https://splayer.app/b/' + b.id); },
 });
 badgeCheck();

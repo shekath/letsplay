@@ -1,4 +1,4 @@
-/* LetsPlay Design 2 ("Playground"): engagement-first prototype sharing Design 1's data. */
+/* Splayer Design 2 ("Playground"): engagement-first prototype sharing Design 1's data. */
 (function () {
 'use strict';
 const $ = (s, r = document) => r.querySelector(s);
@@ -318,6 +318,7 @@ function renderMe() {
     ${badgesHTML()}
     ${planCardHTML()}
     ${meSettingsHTML()}
+    ${accountHTML()}
     <div class="section"><h2>Appearance</h2><div class="seg">${[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join('')}</div></div>
     <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks, people and prices are sample data.</div></div>`;
 }
@@ -361,6 +362,7 @@ const A = {
 /*@@d2-corp.js@@*/
 /*@@d2-badges.js@@*/
 /*@@d2-custom.js@@*/
+/*@@d2-auth.js@@*/
 
 document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
 document.addEventListener('keydown', (e) => {
@@ -373,4 +375,5 @@ applyPrefs();
 renderNote();
 go('play');
 requestAnimationFrame(() => focusMap(false));
+startWelcome();
 })();
