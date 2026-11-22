@@ -92,7 +92,8 @@ function streakWeeks() { let i = S.streak.length - 1, n = 0; if (!S.streak[i]) i
 function renderPlay() {
   const el = $('#scr-play');
   if (!$('#map')) {
-    el.innerHTML = `<div class="map" id="map" aria-label="Map of games near you"><div class="map-layer" id="mapLayer">${mapSVG()}<div id="pins"></div></div></div>
+    el.innerHTML = `<div class="map" id="map" aria-label="Map of games near you"><div class="map-layer" id="mapLayer">${mapSVG()}<div id="pins"></div></div>
+        <div class="mapctl" id="mapctl"><div class="zoomgrp"><button id="zoomIn" data-act="zoomIn" aria-label="Zoom in">${ic('plus')}</button><button id="zoomOut" data-act="zoomOut" aria-label="Zoom out">${ic('minus')}</button></div><button data-act="locate" aria-label="Centre on my location">${ic('locate-fixed')}</button></div></div>
       <div class="play-top top-safe" id="playTop"></div>
       <div class="lsheet" id="lsheet"><div class="lgrab" id="lgrab" aria-hidden="true"></div><div class="lhead" id="lhead"></div><div class="llist" id="llist"></div></div>`;
     bindMapDrag(); bindSheet();
@@ -137,20 +138,45 @@ function focusGame(id, scroll) {
   focusMap(true, ACTIVITIES.find((a) => a.id === id)); buzz(6);
 }
 let mapPos = { x: 0, y: 0 };
-function setMap(x, y, anim) { const l = $('#mapLayer'); if (!l) return; mapPos = { x, y }; l.classList.toggle('dragging', !anim); l.style.transform = `translate(${x}px,${y}px) scale(${MAP_S})`; }
+let mz = MAP_S;                       /* current zoom */
+const Z_MIN = 0.32, Z_MAX = 1.6;
+/* Pins and your location keep the same on-screen size at every zoom: --k counter-scales them. */
+function setMap(x, y, anim) {
+  const l = $('#mapLayer'); if (!l) return; mapPos = { x, y }; l.classList.toggle('dragging', !anim);
+  l.style.transform = `translate(${x}px,${y}px) scale(${mz})`; l.style.setProperty('--k', (0.85 / mz).toFixed(3));
+  const zi = $('#zoomIn'), zo = $('#zoomOut'); if (zi) zi.disabled = mz >= Z_MAX - 0.001; if (zo) zo.disabled = mz <= Z_MIN + 0.001;
+}
+/* Zoom around a screen point (the pinch centre, the cursor, or the middle of the visible map). */
+function zoomAt(f, cx, cy, anim) {
+  const n = Math.max(Z_MIN, Math.min(Z_MAX, mz * f)); if (n === mz) return; const r = n / mz;
+  const x = cx - (cx - mapPos.x) * r, y = cy - (cy - mapPos.y) * r; mz = n; setMap(x, y, anim);
+}
+function mapCentre() { const m = $('#map'), topH = ($('#playTop') || {}).offsetHeight || 200, sheetTop = m.clientHeight - (($('#lsheet') || {}).offsetHeight || 0); return [m.clientWidth / 2, topH + Math.max(40, (sheetTop - topH) / 2)]; }
 function focusMap(anim, a) {
   const m = $('#map'); if (!m) return; const target = a === undefined ? ACTIVITIES.find((x) => x.id === focused) : a; const p = target || ME;
-  const topH = ($('#playTop') || {}).offsetHeight || 200, sheetTop = m.clientHeight - (($('#lsheet') || {}).offsetHeight || m.clientHeight * 0.42);
-  const cy = topH + Math.max(40, (sheetTop - topH) / 2);
-  setMap(m.clientWidth / 2 - p.x * MAP_S, cy - p.y * MAP_S, anim);
+  const [cx, cy] = mapCentre();
+  setMap(cx - p.x * mz, cy - p.y * mz, anim);
   $$('.pin.on').forEach((e) => e.classList.remove('on'));
   if (target) { const pin = $('#pin-' + target.id); if (pin) { void pin.offsetWidth; pin.classList.add('on'); } }
+  placeMapControls();
 }
+function placeMapControls() { const c = $('#mapctl'), t = $('#playTop'); if (c && t) c.style.top = t.offsetHeight + 8 + 'px'; }
 function bindMapDrag() {
-  const m = $('#map'); let start = null;
-  m.addEventListener('pointerdown', (e) => { if (e.target.closest('.pin')) return; start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y }; m.setPointerCapture(e.pointerId); });
-  m.addEventListener('pointermove', (e) => { if (start) setMap(start.mx + e.clientX - start.x, start.my + e.clientY - start.y, false); });
-  const end = () => { start = null; }; m.addEventListener('pointerup', end); m.addEventListener('pointercancel', end);
+  const m = $('#map'); const pts = new Map(); let start = null, pinch = 0;
+  const rel = (e) => { const r = m.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  m.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.pin, #mapctl')) return; try { m.setPointerCapture(e.pointerId); } catch (err) { /* pointer not capturable */ } pts.set(e.pointerId, rel(e));
+    if (pts.size === 1) start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y };
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); start = null; }
+  });
+  m.addEventListener('pointermove', (e) => {
+    if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, rel(e));
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pinch) zoomAt(d / pinch, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, false); pinch = d; return; }
+    if (start) setMap(start.mx + e.clientX - start.x, start.my + e.clientY - start.y, false);
+  });
+  const end = (e) => { pts.delete(e.pointerId); pinch = 0; start = null; if (pts.size === 1) { const [p] = [...pts.values()]; const r = m.getBoundingClientRect(); start = { x: p[0] + r.left, y: p[1] + r.top, mx: mapPos.x, my: mapPos.y }; } };
+  m.addEventListener('pointerup', end); m.addEventListener('pointercancel', end);
+  m.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = rel(e); zoomAt(e.deltaY < 0 ? 1.12 : 1 / 1.12, x, y, false); }, { passive: false });
 }
 
 /* Join: confirm, celebrate, show progress */
@@ -298,6 +324,9 @@ const A = {
   pin: (el) => { if (sheetIdx) setSheet(0); focusGame(el.dataset.id, true); },
   join: (el) => { focusGame(el.dataset.id, false); joinSheet(el.dataset.id); },
   sheetToggle: () => setSheet(1 - sheetIdx),
+  zoomIn: () => { const [x, y] = mapCentre(); zoomAt(1.35, x, y, true); },
+  zoomOut: () => { const [x, y] = mapCentre(); zoomAt(1 / 1.35, x, y, true); },
+  locate: () => { $$('.pin.on').forEach((e) => e.classList.remove('on')); const [cx, cy] = mapCentre(); setMap(cx - ME.x * mz, cy - ME.y * mz, true); },
   confirmJoin: (el) => confirmJoin(el.dataset.id),
   cancelJoin: () => { closeSheet(); renderPlay(); },
   joinFromDetail: (el) => joinSheet(el.dataset.id),

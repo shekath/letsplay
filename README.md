@@ -18,7 +18,7 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 
 A second, engagement-first direction at `http://localhost:8080/design2.html`, built on the same data:
 
-- **Play:** a list of games in a bottom sheet over the live map (drag or tap to expand). Tap a game to move the map to its pin and open details; tap a pin to highlight its card; tap + to join. Full games say so instead of offering to join.
+- **Play:** a list of games in a bottom sheet over the live map (drag or tap to expand). Tap a game to move the map to its pin and open details; tap a pin to highlight its card; tap + to join. Full games say so instead of offering to join. Zoom with the + and − buttons, pinch or the scroll wheel; pins keep the same size at every zoom, and the locate button re-centres on you.
 - **Starting soon:** story rings for games today and tomorrow; a full-screen viewer that advances every 5 seconds (hold to pause, tap the sides to move; manual when reduced motion is on).
 - **Progress:** joining earns XP with a short celebration, levels with titles, a weekly goal ring you can adjust, a streak chart and earnable badges.
 - **Book:** pick a court from a photo carousel and drag a time window along the day. Booked hours are striped, peak hours tinted, clashes turn the window red. A slider splits the cost live.
