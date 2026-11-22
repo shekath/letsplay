@@ -67,9 +67,9 @@ function dayLabel(d) { if (d === 0) return 'Today'; if (d === 1) return 'Tomorro
 function when(a) { return `${dayLabel(a.d)} · ${timeFmt.format(dateAt(a.d, a.t))}`; }
 
 /* ───────── state ───────── */
-const KEY = 'letsplay-demo-in-v2';
+const KEY = 'letsplay-demo-in-v3';
 const fresh = () => ({
-  tier: 'lite', joined: ['a7'], cart: [], fav: [], filter: 'all', query: '',
+  tier: 'lite', joined: ['a7', 'a13', 'a16'], bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, waitlist: [], turf: [], mode: 'games', gamesView: 'list', cart: [], fav: [], filter: 'all', query: '',
   pins: COMMUNITY_SPOTS.slice(), hosted: [], teams: JSON.parse(JSON.stringify(SAMPLE_TEAMS)),
   fixtures: SAMPLE_FIXTURES.slice(), invited: [], spotsTaken: {}, entTab: 'overview', lbSport: 'all', schedDay: 1,
   shopCat: 'all', ackAlert: false,
@@ -259,7 +259,7 @@ const Map = (() => {
 /* ───────── EXPLORE ───────── */
 function visibleActs() {
   const q = S.query.trim().toLowerCase();
-  return allActs().filter((a) => (S.filter === 'all' || a.sport === S.filter) &&
+  return allActs().filter((a) => (S.filter === 'all' || a.sport === S.filter) && advPass(a) &&
     (!q || (a.title + ' ' + a.venue + ' ' + sp(a.sport).name).toLowerCase().includes(q)))
     .sort((a, b) => kmFrom(a.x, a.y) - kmFrom(b.x, b.y));
 }
@@ -272,7 +272,7 @@ function buildExplore() {
     <div class="map-top screen-top-pad">
       <div class="searchbar">
         <label class="search">${ic('search')}<input id="q" type="search" placeholder="Search sports, venues, clubs" autocomplete="off" aria-label="Search"></label>
-        <span id="tierSlot"></span>
+        <span id="bellSlot"></span><span id="tierSlot"></span>
       </div>
       <div class="chips" id="sportChips" role="toolbar" aria-label="Filter by sport"></div>
     </div>
@@ -303,12 +303,14 @@ function renderExplore() {
 }
 function renderExploreChrome() {
   $('#tierSlot').innerHTML = tierPill();
+  $('#bellSlot').innerHTML = bellHTML();
   const chips = [['all', null, 'All sports']].concat(Object.keys(SPORTS).map((k) => [k, SPORTS[k], SPORTS[k].name]));
-  $('#sportChips').innerHTML = chips.map(([k, s, n]) => `<button class="chip ${s ? 'sport' : ''}" style="${s ? '--c:' + s.c : ''}" data-act="filter" data-id="${k}" aria-pressed="${S.filter === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('');
+  $('#sportChips').innerHTML = filterChipHTML() + chips.map(([k, s, n]) => `<button class="chip ${s ? 'sport' : ''}" style="${s ? '--c:' + s.c : ''}" data-act="filter" data-id="${k}" aria-pressed="${S.filter === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('');
   $('#fab').innerHTML = can.pin() ? `${ic('map-pin-plus')}Add place` : `${ic('map-pin-plus')}Add place<span class="lockmark">${ic('lock')}</span>`;
   renderPinsAndList();
 }
 function renderPinsAndList() {
+  if (S.mode === 'venues') return renderVenues();
   const acts = visibleActs();
   const pins = acts.map((a) => {
     const s = sp(a.sport), live = a.d === 0;
@@ -321,9 +323,9 @@ function renderPinsAndList() {
   $('#pins').innerHTML = `<div class="me-dot" data-x="${ME.x}" data-y="${ME.y}"></div>` + stores.join('') + spots.join('') + pins.join('');
   Map.apply();
   $('#nearbyHead').innerHTML = `<div><div class="eyebrow">Within 4 km · live now</div><h2>${acts.length} game${acts.length === 1 ? '' : 's'} near you</h2></div>
-    <button class="btn btn-soft btn-sm" data-act="sheetToggle">${ic('list', 'ic-sm')}List</button>`;
-  $('#nearbyList').innerHTML = acts.length ? acts.map(actCard).join('') :
-    `<div class="empty">${ic('search')}<b>No games match</b><span>Try another sport or clear your search.</span><button class="btn btn-soft btn-sm" data-act="clearFilters">Clear filters</button></div>`;
+    ${modeSegHTML()}`;
+  $('#nearbyList').innerHTML = nextStripHTML() + (acts.length ? acts.map(actCard).join('') :
+    `<div class="empty">${ic('search')}<b>No games match</b><span>Try another sport or clear your search.</span><button class="btn btn-soft btn-sm" data-act="clearFilters">Clear filters</button></div>`);
 }
 function actCard(a) {
   const s = sp(a.sport), left = spotsLeft(a), pct = Math.round(((a.total - left) / a.total) * 100);
@@ -335,7 +337,7 @@ function actCard(a) {
       <div class="act-meta"><span>${ic('map-pin')}${esc(a.venue)}</span></div>
       <div class="act-foot">
         <div class="spots"><span class="num">${left} of ${a.total} spots left</span><div class="bar"><i style="width:${pct}%"></i></div></div>
-        ${isJoined(a) ? `<button class="btn btn-sm done" data-act="open" data-id="${a.id}">${ic('check', 'ic-sm')}Joined</button>` : `<button class="btn btn-primary btn-sm" data-act="join" data-id="${a.id}">Join · ${money(a.price)}</button>`}
+        ${isJoined(a) ? `<button class="btn btn-sm done" data-act="open" data-id="${a.id}">${ic('check', 'ic-sm')}Joined</button>` : `<button class="btn ${spotsLeft(a) ? 'btn-primary' : 'btn-soft'} btn-sm" data-act="join" data-id="${a.id}">${joinText(a)}</button>`}
       </div>
     </div></div>`;
 }
@@ -376,7 +378,7 @@ function selectAct(id) {
       <h3>${esc(a.title)}</h3>
       <div class="act-meta"><span>${ic('clock')}${when(a)}</span><span>${ic('navigation')}${fmtKm(kmFrom(a.x, a.y))}</span><span>${ic('users')}${spotsLeft(a)} spots left</span></div>
       <div class="preview-actions"><button class="btn btn-ghost" data-act="open" data-id="${a.id}">Details</button>
-      ${isJoined(a) ? `<button class="btn done">${ic('check')}You're in</button>` : `<button class="btn btn-primary" data-act="join" data-id="${a.id}">Join · ${money(a.price)}</button>`}</div>
+      ${isJoined(a) ? `<button class="btn done">${ic('check')}You're in</button>` : `<button class="btn ${spotsLeft(a) ? 'btn-primary' : 'btn-soft'}" data-act="join" data-id="${a.id}">${joinText(a)}</button>`}</div>
     </div>`;
   Sheet.updateFab();
   Map.center(a.x, a.y, true, 90);
@@ -599,6 +601,7 @@ function openAct(id) {
       <div class="rows">
         ${a.address ? `<div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Address</b><small>${esc(a.address)}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Opening directions in Maps" data-icon="navigation" aria-label="Directions">${ic('navigation')}</button></div>` : ''}
         <div class="row">${ic('shield-check', 'lead')}<div class="grow"><b>Hosted by ${a.hostedByMe ? 'you' : esc(a.host)}</b><small>${a.hostedByMe ? `${a.invitedCount || 0} invited · ${a.visibility === 'Invited only' ? 'invite only' : 'visible to everyone nearby'}` : 'Verified organiser · replies in about 1 hour'}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Message sent to ${esc(a.host)}" aria-label="Message host">${ic('message-circle')}</button></div>
+        ${COACH[a.id] ? `<div class="row">${ic('award', 'lead')}<div class="grow"><b>Coach: ${esc(COACH[a.id][0])}</b><small>${esc(COACH[a.id][1])} · capacity ${a.total} players</small></div></div>` : ''}
         <div class="row">${ic('layers', 'lead')}<div class="grow"><b>Surface</b><small>${esc(a.surface)}</small></div></div>
         <div class="row">${ic('dumbbell', 'lead')}<div class="grow"><b>What to bring</b><small>${esc(a.equipment)}</small></div></div>
         <div class="row">${ic('accessibility', 'lead')}<div class="grow"><b>Accessibility</b><small>${esc(a.access)}</small></div></div>
@@ -646,7 +649,7 @@ function renderGames() {
   const mine = allActs().filter(isJoined).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t));
   const next = mine[0];
   let html = `<div class="page-head"><h1>My games</h1><button class="icon-btn" data-act="toastMsg" data-msg="Calendar synced with your phone" aria-label="Sync calendar">${ic('calendar')}</button></div>`;
-  if (!S.ackAlert && mine.find((a) => a.id === 'a7')) {
+  if (false) {
     html += `<div class="alert" role="status">${ic('info')}<div class="grow"><b>Riverfront 5K: meeting point moved</b><span>Now starting at the promenade clock tower, 200 m east. Same time.</span><div style="display:flex;gap:8px"><button class="btn btn-sm btn-line" data-act="ackAlert">Got it</button><button class="btn btn-sm btn-ghost" data-act="open" data-id="a7">View game</button></div></div></div>`;
   }
   if (next) {
@@ -711,7 +714,7 @@ function openTeam(id) {
     <div class="view-body" style="padding-top:4px">
       <div class="card" style="padding:16px;display:grid;gap:14px">
         <div class="team-top"><span class="crest" style="--c:${t.color};width:64px;height:64px;font-size:26px">${esc(t.name.split(' ').map((w) => w[0]).join('').slice(0, 2))}</span><div class="grow"><div class="eyebrow">${s.name} · ${t.privacy}</div><h3 style="font-size:26px">${esc(t.name)}</h3></div></div>
-        <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" style="flex:1" data-act="invite" data-id="${t.id}">${ic('user-plus', 'ic-sm')}Invite</button><button class="btn btn-soft btn-sm" style="flex:1" data-act="scheduleMatch" data-id="${t.id}">${ic('calendar', 'ic-sm')}Schedule</button><button class="btn btn-ghost btn-sm" style="flex:1" data-act="toastMsg" data-msg="Team chat opened">${ic('message-circle', 'ic-sm')}Chat</button></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" style="flex:1" data-act="invite" data-id="${t.id}">${ic('user-plus', 'ic-sm')}Invite</button><button class="btn btn-soft btn-sm" style="flex:1" data-act="scheduleMatch" data-id="${t.id}">${ic('calendar', 'ic-sm')}Schedule</button><button class="btn btn-ghost btn-sm" style="flex:1" data-act="matchDay" data-id="${t.id}">${ic('list-checks', 'ic-sm')}Match day</button></div>
       </div>
       ${t.next ? `<div class="card" style="padding:14px;display:grid;gap:12px"><div class="eyebrow">Next match</div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><b style="font-size:17px">vs ${esc(t.next.vs)}</b><div class="muted" style="font-size:13.5px">${longFmt.format(dateAt(t.next.d, t.next.t))} · ${timeFmt.format(dateAt(t.next.d, t.next.t))}<br>${esc(t.next.venue)}</div></div></div>
         <div class="avail"><div><b style="color:var(--ok)">${cnt('yes')}</b><small>Playing</small></div><div><b style="color:var(--warn)">${cnt('maybe')}</b><small>Maybe</small></div><div><b style="color:var(--hot)">${cnt('no')}</b><small>Out</small></div></div></div>` : ''}
@@ -922,7 +925,7 @@ function renderPanel() {
   const P = PLANS[S.tier];
   $('#panelTier').innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" data-quiet="1" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
-  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Add place to see the Pro upsell'], pro: ['Add place → take a photo to save a new place', 'My games → Host a game → point the address', 'Teams → open a team → Invite'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
+  const tries = { lite: ['Tap a pin, then Join: step-by-step registration', 'Book venue → pick hours → split the cost', 'My games → Family calendar (see the clash)'], pro: ['Teams → open a team → Match day', 'My games → Host a game → point the address', 'Add place → take a photo of a new place'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
 }
 
@@ -1004,6 +1007,7 @@ const A = {
   reset: () => { S = fresh(); save(); selected = null; renderPanel(); go('explore'); toast('Demo reset', 'rotate-ccw'); },
 };
 /*@@TOURNAMENT@@*/
+/*@@FEATURES@@*/
 function selectText(id) { const r = document.createRange(); r.selectNodeContents($('#' + id)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]'); if (!el) return;

@@ -145,3 +145,58 @@ const PLANS = {
     feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };
+
+/* ── Upgrades data ── */
+ACTIVITIES.push({ id: 'a16', title: 'Kids Swim Lessons (6–12)', sport: 'swimming', venue: 'Westside Aquatic Centre · Learner pool', x: 480, y: 600, d: 6, t: '09:30', mins: 60, level: 'Beginner', ages: '6–12', spots: 4, total: 10, price: 300, host: 'Westside Swim School', img: 'swim', setting: 'Indoor', surface: 'Learner pool, 0.9 m deep', equipment: 'Swimsuit, cap, towel.', access: 'Pool hoist and family changing rooms.', cancel: 'Refund up to 24 hours before.' });
+ACTIVITIES.find((a) => a.id === 'a3').spots = 0; /* full: shows the waitlist */
+
+/* Coach and credential shown on game pages */
+const COACH = {
+  a1: ['Imran Shaikh', 'AIFF D licence'], a3: ['Neha Kulkarni', 'AITA certified coach'], a4: ['Sameer Patil', 'Badminton coach, Level 2'],
+  a5: ['Rahul Menon', 'BCCI Level 1'], a8: ['Divya Rao', 'RYT-500 yoga teacher'], a9: ['Arvind Pillai', 'Swim coach, Level 2'],
+  a12: ['Tenzing Dorje', 'Climbing instructor'], a13: ['Imran Shaikh', 'AIFF grassroots coach'], a15: ['Balwinder Singh', 'NIS kabaddi coach'], a16: ['Lakshmi Iyer', 'Swim instructor'],
+};
+
+FAMILY[0].age = 34; FAMILY[1].age = 11; FAMILY[2].age = 8;
+const FAMILY_COLORS = { f0: '#1D4FF2', f1: '#E3336A', f2: '#0E9FE0' };
+const PROFILES = {
+  f0: { phone: '98765 43210', ecName: 'Meera Mehta (spouse)', ecPhone: '98765 01234', medical: '' },
+  f1: { phone: '', ecName: 'Arjun Mehta (father)', ecPhone: '98765 43210', medical: 'Mild asthma, carries an inhaler' },
+  f2: { phone: '', ecName: 'Arjun Mehta (father)', ecPhone: '98765 43210', medical: '' },
+};
+
+/* Notifications: what changed, what it means, what to do. pri: urgent | action | info | promo; cat drives user controls. */
+const NOTE_SEED = [
+  { id: 'n1', pri: 'urgent', cat: 'change', icon: 'cloud-sun', when: '12 min ago', ref: 'a7', title: 'Rain alert for Riverfront 5K',
+    body: 'Light rain is forecast at 6 am tomorrow. The run goes ahead in drizzle and moves to Saturday if rain is heavy. You get a full refund if it is cancelled.',
+    actions: [['Keep my spot', 'keep'], ['Cancel my place', 'cancelSpot']] },
+  { id: 'n2', pri: 'urgent', cat: 'change', icon: 'map-pin', when: '1 hr ago', ref: 'a7', title: 'Riverfront 5K: meeting point moved',
+    body: 'Now starting at the promenade clock tower, 200 m east of the old spot. The start time is unchanged.',
+    actions: [['Got it', 'ack'], ['View game', 'view']] },
+  { id: 'n3', pri: 'action', cat: 'payment', icon: 'indian-rupee', when: '3 hr ago', ref: 'a16', title: 'Payment due: Aanya’s swim lessons',
+    body: 'Pay ₹300 by Friday 8 pm to keep Aanya’s place for Saturday. Unpaid places go to the waitlist.',
+    actions: [['Pay ₹300 via UPI', 'pay'], ['Remind me tomorrow', 'snooze']] },
+  { id: 'n4', pri: 'action', cat: 'team', icon: 'users', when: 'Yesterday', ref: 't1', title: 'Are you available on Wednesday?',
+    body: 'Riverfront Strikers v Oval Strikers CC, Wed 7 pm at Oval Cricket Ground. Rohan (vice-captain) needs 11 players by Tuesday.',
+    actions: [['I’m in', 'yes'], ['Can’t make it', 'no']] },
+  { id: 'n5', pri: 'info', cat: 'club', icon: 'list-checks', when: 'Yesterday', ref: 'a13', title: 'Coach Imran shared the kit list',
+    body: 'For Junior Futsal on Saturday, Vihaan needs non-marking shoes, shin pads and a water bottle.',
+    actions: [['View game', 'view']] },
+  { id: 'n6', pri: 'info', cat: 'recs', icon: 'sparkles', when: '2 days ago', ref: 'a15', title: 'New near you: Evening Kabaddi Practice',
+    body: 'Free, tomorrow at 5:30 pm at Hilltop Akhada Ground, 1.5 km away. Beginners welcome.',
+    actions: [['View game', 'view']] },
+  { id: 'n7', pri: 'promo', cat: 'promo', icon: 'tag', when: '2 days ago', title: 'Riverfront Sports Co.: flat 20% off cricket gear',
+    body: 'Bats, pads and helmets this week only. Click & collect in 2 hours.',
+    actions: [['Shop the deal', 'shop']] },
+];
+
+/* Turfs and courts that can be booked by the hour. price = off-peak per hour, peak = after 6 pm and weekends. */
+const VENUES_BOOK = [
+  { id: 'v1', name: 'Riverfront Maidan Turf', x: 690, y: 645, sports: ['football', 'cricket'], courts: ['Turf A · 5-a-side', 'Turf B · 7-a-side'], price: 1200, peak: 1600, img: 'field', setting: 'Outdoor', rating: 4.6, reviews: 812, amenities: ['Floodlights', 'Parking', 'Washrooms', 'Drinking water', 'Changing room'] },
+  { id: 'v2', name: 'Oval Box Cricket', x: 870, y: 1110, sports: ['cricket'], courts: ['Box 1', 'Box 2'], price: 1400, peak: 1800, img: 'cricket2', setting: 'Outdoor', rating: 4.5, reviews: 640, amenities: ['Floodlights', 'Bats & stumps', 'Parking', 'Washrooms'] },
+  { id: 'v3', name: 'Shuttle Zone Arena', x: 520, y: 905, sports: ['badminton'], courts: ['Court 1', 'Court 2', 'Court 3', 'Court 4'], price: 450, peak: 600, img: 'badminton', setting: 'Indoor', rating: 4.7, reviews: 1204, amenities: ['Air cooled', 'Racquet hire', 'Changing room', 'Lift access'] },
+  { id: 'v4', name: 'Northgate Courts', x: 935, y: 610, sports: ['basketball'], courts: ['Full court', 'Half court'], price: 800, peak: 1000, img: 'basketball', setting: 'Outdoor', rating: 4.3, reviews: 210, amenities: ['Floodlights', 'Drinking water', 'Seating'] },
+  { id: 'v5', name: 'Lake Road Pickleball', x: 1200, y: 760, sports: ['pickleball'], courts: ['Court 1', 'Court 2'], price: 500, peak: 700, img: 'pickle', setting: 'Indoor', rating: 4.8, reviews: 156, amenities: ['Paddle hire', 'Air cooled', 'Step-free'] },
+  { id: 'v6', name: 'Lakeside Sand Courts', x: 1105, y: 1030, sports: ['volleyball'], courts: ['Court 1', 'Court 2'], price: 600, peak: 800, img: 'volley', setting: 'Outdoor', rating: 4.4, reviews: 98, amenities: ['Floodlights', 'Showers', 'Ball hire'] },
+];
+const LINEUP_SIZE = { cricket: 11, football: 7, kabaddi: 7, basketball: 5, volleyball: 6, badminton: 4 };

@@ -31,6 +31,16 @@ Prices shown in the app (₹199/month for Pro, ₹149 per employee per month for
 
 Locked features stay visible to Lite users and lead to an upgrade sheet, so people can see what Pro adds.
 
+## Upgrades from the UX strategy
+
+- **Filters:** day, time, distance, fee, ability, age group, indoor/outdoor and step-free access, with a live "Show N games" count.
+- **Step-by-step registration:** who's playing (age eligibility checked per family member), saved details and emergency contacts, consent (guardian consent for under-18s), UPI payment and confirmation. Progress bar, plain-language errors, and nothing is lost if you close the sheet or a payment fails ("Test a failed payment" demonstrates this). Full games offer a **waitlist**.
+- **Family calendar:** My games → Family calendar shows everyone's games, venue bookings and team matches by day, filterable by family member, with **clash warnings** (for example two drop-offs at once) and quick fixes.
+- **Notification centre:** the bell on Explore and My games. Urgent changes, actions, updates and offers, each saying what changed and what to do, with one-tap actions. Cancellations, changes and payments are always on; club news, suggestions and offers can be turned off.
+- **What's next strip:** at the top of the nearby list: your next activity plus counts of changes and to-dos.
+- **Coach details** on game pages, and a Pro **Match day** screen per team: availability with nudges, attendance check-in, lineup builder with captain, quick team messages, share lineup.
+- **Turf and court booking:** Explore → Book venue. Pick court, date and hours (off-peak and peak pricing, booked slots shown), then pay in full or **split with players** over UPI with payment tracking and WhatsApp reminders. Pro users can post open spots as a hosted game.
+
 ## What you can try
 
 - **Explore (home):** pan, pinch or scroll to zoom the map; tap a sport chip to filter; tap a pin for a preview card; drag the "games near you" sheet up and down; tap **Join**.
@@ -55,6 +65,7 @@ app/
     data.js        sample sports, activities, teams, company league, products, plans
     app.js         navigation, map engine, tier gating, every screen and flow
     tournament.js  tournament generator, scheduler, bracket progression and UI (Enterprise)
+    features.js    filters, registration steps, waitlist, family calendar, notifications, coach match day, venue booking
     icons.js       inlined Lucide icon paths (ISC licence) + custom sport glyphs in app.js
   img/             optimised photos (Unsplash licence)
   index.html       built standalone PWA (generated)
