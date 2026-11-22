@@ -79,10 +79,13 @@ After editing anything in `app/src`, run `python3 scripts/build.py`.
 
 ## Design system
 
-- **Look:** clean and sporty. Condensed italic display type (Barlow Condensed) for headings and numbers, Barlow for body text.
-- **Colour:** cobalt blue for primary actions, a volt yellow-green highlight for live and deal states, and one colour per sport so pins, chips and badges read at a glance. Each tier has its own colour (Lite teal, Pro cobalt, Enterprise violet). Full dark mode.
-- **Mobile:** 44 px+ touch targets, safe-area insets for notches and home indicators, bottom tab bar, bottom sheets, and pointer events that work for both touch and mouse.
-- **Accessibility:** keyboard focus states, labelled controls, reduced-motion support, and status that never relies on colour alone. The WCAG 2.2 AA target from the strategy still needs a full audit.
+- **Design read:** consumer sports app for Indian amateur players, parents and company teams. Dials: energy 2, rhythm 2, motion 2 (transitions that explain where things came from, no endless loops).
+- **Type:** a "scoreboard" voice (Barlow Condensed, italic capitals) only on page titles and hero moments. Section headings, sheets and labels use sentence case without wide tracking. Barlow for body text.
+- **Colour:** ink neutrals and cobalt for every action. Volt yellow-green is the single accent and only marks "today", deals and the champion. Sport and plan colours are data encodings. No decorative gradients or glows. Full dark mode.
+- **Identity motif:** thin pitch markings (halfway line, centre circle, boxes) on solid hero cards: plan card, league and tournament heroes, match day, the Pro promo.
+- **Mobile:** 40 to 44 px touch targets, press feedback on every tappable item, safe-area insets, bottom tab bar with counts for things that need attention, bottom sheets, and toasts at the top so they never cover the main action.
+- **Accessibility:** secondary text measured at 5.3:1 (light) and 6.5:1 (dark), keyboard focus states, labelled controls, in-app larger text and reduce-motion settings, and status that never relies on colour alone. A full WCAG 2.2 AA audit with assistive technology is still to do.
+- **Honesty:** sample content is labelled as sample in the app, people show initials instead of stock photos, and features that are not built yet say "Coming soon" instead of pretending to work.
 
 ## From prototype to production
 

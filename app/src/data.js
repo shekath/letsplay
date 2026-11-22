@@ -1,4 +1,4 @@
-/* LetsPlay — sample data (India). Everything here is illustrative mock content for the prototype. */
+/* LetsPlay: sample data (India). Everything here is illustrative mock content for the prototype. */
 const CUR = '₹';
 const inr = (n) => '₹' + Math.round(Number(n)).toLocaleString('en-IN');
 
@@ -54,7 +54,8 @@ const COMMUNITY_SPOTS = [
   { id: 'c1', name: 'Open badminton court', sport: 'badminton', x: 1180, y: 610, by: 'Priya N.', setting: 'Outdoor', note: 'Public court in the colony park, lights until 10 pm.', visibility: 'Everyone' },
 ];
 
-const ME_USER = { name: 'Arjun Mehta', img: 'av3' };
+/* No profile photo: people show initials until they add their own picture. */
+const ME_USER = { name: 'Arjun Mehta' };
 
 const PEOPLE = [
   { id: 'u1', name: 'Rohan Iyer', sport: 'Football · Cricket', dist: '0.6 km' },
@@ -65,7 +66,7 @@ const PEOPLE = [
 ];
 
 const FAMILY = [
-  { id: 'f0', name: 'Arjun Mehta', note: 'You', img: 'av3' },
+  { id: 'f0', name: 'Arjun Mehta', note: 'You' },
   { id: 'f1', name: 'Aanya Mehta', note: 'Age 11 · consent on file' },
   { id: 'f2', name: 'Vihaan Mehta', note: 'Age 8 · consent on file' },
 ];
@@ -75,7 +76,7 @@ const TEAM_COLORS = ['#13A04B', '#1D4FF2', '#E3336A', '#E0611A', '#6A45F5', '#0E
 const SAMPLE_TEAMS = [
   { id: 't1', name: 'Riverfront Strikers', sport: 'cricket', color: '#D43B3B', privacy: 'Invite only',
     members: [
-      { name: 'Arjun Mehta', img: 'av3', role: 'Captain', status: 'yes' },
+      { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
       { name: 'Rohan Iyer', role: 'Vice-captain', status: 'yes' },
       { name: 'Vikram Singh', role: 'Player', status: 'maybe' },
       { name: 'Sameer Khan', role: 'Player', status: 'yes' },
@@ -85,7 +86,7 @@ const SAMPLE_TEAMS = [
     next: { vs: 'Oval Strikers CC', d: 3, t: '19:00', venue: 'Oval Cricket Ground' } },
   { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0E9FE0', privacy: 'Public',
     members: [
-      { name: 'Arjun Mehta', img: 'av3', role: 'Captain', status: 'yes' },
+      { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
       { name: 'Kavya Nair', role: 'Player', status: 'yes' },
       { name: 'Ravi Shah', role: 'Player', status: 'maybe' },
       { name: 'Pooja Desai', role: 'Player', status: 'yes' },
@@ -182,7 +183,7 @@ const NOTE_SEED = [
   { id: 'n5', pri: 'info', cat: 'club', icon: 'list-checks', when: 'Yesterday', ref: 'a13', title: 'Coach Imran shared the kit list',
     body: 'For Junior Futsal on Saturday, Vihaan needs non-marking shoes, shin pads and a water bottle.',
     actions: [['View game', 'view']] },
-  { id: 'n6', pri: 'info', cat: 'recs', icon: 'sparkles', when: '2 days ago', ref: 'a15', title: 'New near you: Evening Kabaddi Practice',
+  { id: 'n6', pri: 'info', cat: 'recs', icon: 'compass', when: '2 days ago', ref: 'a15', title: 'New near you: Evening Kabaddi Practice',
     body: 'Free, tomorrow at 5:30 pm at Hilltop Akhada Ground, 1.5 km away. Beginners welcome.',
     actions: [['View game', 'view']] },
   { id: 'n7', pri: 'promo', cat: 'promo', icon: 'tag', when: '2 days ago', title: 'Riverfront Sports Co.: flat 20% off cricket gear',

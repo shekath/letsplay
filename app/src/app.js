@@ -1,4 +1,4 @@
-/* LetsPlay — interactive prototype
+/* LetsPlay: interactive prototype
    Tiers: lite (browse + join), pro (+ pin places, teams, invites), enterprise (+ company league, schedule, leaderboards). */
 (function () {
 'use strict';
@@ -143,7 +143,8 @@ function renderTabbar() {
   $('#tabbar').innerHTML = items.map(([id, icon, label]) => `
     <button class="tab" data-act="tab" data-id="${id}" ${tab === id ? 'aria-current="page"' : ''}>
       ${ic(icon)}<span>${label}</span>
-      ${id === 'shop' && cartN ? `<span class="dot num">${cartN}</span>` : ''}
+      ${id === 'shop' && cartN ? `<span class="dot num" aria-label="${cartN} in bag">${cartN}</span>` : ''}
+      ${id === 'games' && todoCount() ? `<span class="dot num" aria-label="${todoCount()} need attention">${todoCount()}</span>` : ''}
       ${id === 'teams' && S.tier === 'lite' ? `<span class="dot lock">${ic('lock')}</span>` : ''}
     </button>`).join('');
 }
@@ -304,7 +305,7 @@ function renderExplore() {
 function renderExploreChrome() {
   $('#tierSlot').innerHTML = tierPill();
   $('#bellSlot').innerHTML = bellHTML();
-  const chips = [['all', null, 'All sports']].concat(Object.keys(SPORTS).map((k) => [k, SPORTS[k], SPORTS[k].name]));
+  const chips = [['all', null, 'All sports']].concat(sportsByPreference().map((k) => [k, SPORTS[k], SPORTS[k].name]));
   $('#sportChips').innerHTML = filterChipHTML() + chips.map(([k, s, n]) => `<button class="chip ${s ? 'sport' : ''}" style="${s ? '--c:' + s.c : ''}" data-act="filter" data-id="${k}" aria-pressed="${S.filter === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('');
   $('#fab').innerHTML = can.pin() ? `${ic('map-pin-plus')}Add place` : `${ic('map-pin-plus')}Add place<span class="lockmark">${ic('lock')}</span>`;
   renderPinsAndList();
@@ -599,8 +600,8 @@ function openAct(id) {
       </div>
       <div class="mini-map" id="miniMap"></div>
       <div class="rows">
-        ${a.address ? `<div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Address</b><small>${esc(a.address)}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Opening directions in Maps" data-icon="navigation" aria-label="Directions">${ic('navigation')}</button></div>` : ''}
-        <div class="row">${ic('shield-check', 'lead')}<div class="grow"><b>Hosted by ${a.hostedByMe ? 'you' : esc(a.host)}</b><small>${a.hostedByMe ? `${a.invitedCount || 0} invited · ${a.visibility === 'Invited only' ? 'invite only' : 'visible to everyone nearby'}` : 'Verified organiser · replies in about 1 hour'}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Message sent to ${esc(a.host)}" aria-label="Message host">${ic('message-circle')}</button></div>
+        ${a.address ? `<div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Address</b><small>${esc(a.address)}</small></div></div>` : ''}
+        <div class="row">${ic('users', 'lead')}<div class="grow"><b>Hosted by ${a.hostedByMe ? 'you' : esc(a.host)}</b><small>${a.hostedByMe ? `${a.invitedCount || 0} invited · ${a.visibility === 'Invited only' ? 'invite only' : 'visible to everyone nearby'}` : 'Message the host in the game chat once you have joined'}</small></div></div>
         ${COACH[a.id] ? `<div class="row">${ic('award', 'lead')}<div class="grow"><b>Coach: ${esc(COACH[a.id][0])}</b><small>${esc(COACH[a.id][1])} · capacity ${a.total} players</small></div></div>` : ''}
         <div class="row">${ic('layers', 'lead')}<div class="grow"><b>Surface</b><small>${esc(a.surface)}</small></div></div>
         <div class="row">${ic('dumbbell', 'lead')}<div class="grow"><b>What to bring</b><small>${esc(a.equipment)}</small></div></div>
@@ -617,41 +618,13 @@ function openAct(id) {
   mm.querySelector('.me-dot').outerHTML = `<div class="pin" style="--c:${s.c};transform:translate(${mm.clientWidth / 2}px,65px)"><span class="pin-body"><span class="glyph">${ic(s.icon)}</span><span class="pin-label">${esc(a.venue.split(' · ')[0])}</span></span></div>`;
 }
 
-function joinFlow(id) {
-  const a = allActs().find((x) => x.id === id); const s = sp(a.sport);
-  const kids = a.ages === '8–11';
-  const who = FAMILY.map((f, i) => `<button class="opt" data-act="pickMany" data-id="${f.id}" aria-pressed="${kids ? i === 1 : i === 0}">${avatar(f, 40)}<div><b>${f.name}</b><div class="faint" style="font-size:13px">${f.note}</div></div><span class="tick">${ic('check')}</span></button>`).join('');
-  openSheet(`${sheetHead('Join game', `${esc(a.title)} · ${when(a)}`)}
-    <div class="field"><span class="lbl">Who's playing?</span><div class="pick" id="joinWho">${who}</div></div>
-    ${a.price ? `<div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="payApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="payApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
-    <div class="rows"><div class="row">${ic('indian-rupee', 'lead')}<div class="grow"><b>Total</b><small>Refunds go back to your UPI account</small></div><b class="num" id="joinTotal">${money(a.price)}</b></div></div>` : `<div class="rows"><div class="row">${ic('gift', 'lead')}<div class="grow"><b>Free game</b><small>No payment needed</small></div></div></div>`}
-    <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px" class="muted"><input type="checkbox" id="consent" checked style="width:20px;height:20px;margin:0;accent-color:var(--brand)"> I agree to the host's code of conduct and the cancellation policy. Emergency contacts are shared with the host.</label>
-    <button class="btn btn-primary btn-block" data-act="confirmJoin" data-id="${a.id}" style="min-height:54px">${a.price ? `${ic('smartphone')}Pay via UPI` : `${ic('check')}Confirm`}</button>`,
-  { onMount: () => updateJoinTotal(a) });
-}
-function updateJoinTotal(a) { const n = $$('#joinWho [aria-pressed="true"]').length; const t = $('#joinTotal'); if (t) t.textContent = money(a.price * Math.max(1, n)); }
-function confirmJoin(id) {
-  const a = allActs().find((x) => x.id === id); const n = Math.max(1, $$('#joinWho [aria-pressed="true"]').length);
-  if (!$('#consent').checked) { toast('Please accept the code of conduct to join', 'info'); return; }
-  if (!S.joined.includes(id)) S.joined.push(id); S.spotsTaken[id] = (S.spotsTaken[id] || 0) + n; save();
-  openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>You're in!</h2>
-    <div class="muted">${esc(a.title)}<br>${longFmt.format(dateAt(a.d, a.t))} at ${timeFmt.format(dateAt(a.d, a.t))}</div></div>
-    <div class="rows"><div class="row">${ic('calendar-days', 'lead')}<div class="grow"><b>Added to My games</b><small>Reminder 2 hours before</small></div></div>
-    <div class="row">${ic('message-circle', 'lead')}<div class="grow"><b>Game chat unlocked</b><small>Say hi to ${a.total - spotsLeft(a)} players</small></div></div></div>
-    <button class="btn btn-primary btn-block" data-act="gotoGames">See My games</button>
-    <button class="btn btn-ghost btn-block" data-act="closeSheet">Keep exploring</button>`);
-  if (tab === 'explore') { renderPinsAndList(); if (selected) selectAct(selected); }
-  $$('#stack .view').forEach((v) => v.remove());
-}
+/* Joining runs through the step-by-step registration in features.js (regStart). */
 
 /* ───────── MY GAMES ───────── */
 function renderGames() {
   const mine = allActs().filter(isJoined).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t));
   const next = mine[0];
-  let html = `<div class="page-head"><h1>My games</h1><button class="icon-btn" data-act="toastMsg" data-msg="Calendar synced with your phone" aria-label="Sync calendar">${ic('calendar')}</button></div>`;
-  if (false) {
-    html += `<div class="alert" role="status">${ic('info')}<div class="grow"><b>Riverfront 5K: meeting point moved</b><span>Now starting at the promenade clock tower, 200 m east. Same time.</span><div style="display:flex;gap:8px"><button class="btn btn-sm btn-line" data-act="ackAlert">Got it</button><button class="btn btn-sm btn-ghost" data-act="open" data-id="a7">View game</button></div></div></div>`;
-  }
+  let html = `<div class="page-head"><h1>My games</h1>${bellHTML()}</div>`;
   if (next) {
     const ms = dateAt(next.d, next.t) - Date.now(); const h = Math.max(0, Math.floor(ms / 3.6e6)); const m = Math.max(0, Math.floor((ms % 3.6e6) / 6e4));
     html += `<div class="section"><div class="eyebrow">Up next</div>
@@ -659,7 +632,7 @@ function renderGames() {
         <span class="badge" style="background:${sp(next.sport).c};color:#fff;justify-self:start">${ic(sp(next.sport).icon)}${sp(next.sport).name}</span>
         <h3>${esc(next.title)}</h3><div style="opacity:.9">${when(next)} · ${esc(next.venue)}</div>
         <div class="countdown num"><div><b>${Math.floor(h / 24)}</b><small>days</small></div><div><b>${h % 24}</b><small>hrs</small></div><div><b>${m}</b><small>min</small></div></div>
-        <div style="display:flex;gap:8px"><button class="btn btn-volt btn-sm" data-act="toastMsg" data-msg="Opening directions in Maps" data-icon="navigation">${ic('navigation', 'ic-sm')}Directions</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="open" data-id="${next.id}">Details</button></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-sm" style="background:#fff;color:#0D1530" data-act="open" data-id="${next.id}">${ic('map-pin', 'ic-sm')}Venue and details</button></div>
       </div></div></div>`;
     const groups = {};
     mine.forEach((a) => { (groups[a.d] = groups[a.d] || []).push(a); });
@@ -680,9 +653,8 @@ function renderTeams() {
   if (S.tier === 'lite') {
     el.innerHTML = `<div class="page-head"><h1>Teams</h1>${tierPill()}</div>
       <div class="locked"><img src="${IMG}field.jpg" alt=""><div class="inner"><span class="tier t-pro" style="justify-self:start">${ic('zap')}Pro feature</span><h2>Build your squad</h2><span style="opacity:.9">Create teams, invite players and schedule matches.</span></div></div>
-      <div class="perk-grid section">
-        ${[['users', 'Create teams', 'Rosters, roles and team colours.'], ['user-plus', 'Invite players', 'By link, code or from people nearby.'], ['camera', 'Snap new places', 'Photograph a ground to add it for everyone.'], ['calendar-days', 'Schedule matches', 'Availability and reminders built in.']]
-          .map(([i, t, d]) => `<div class="card perk">${ic(i)}<b>${t}</b><span>${d}</span></div>`).join('')}
+      <div class="section"><div class="section-head"><h2>What Pro adds</h2></div>
+        <ul class="feat-list card" style="padding:16px;gap:12px;font-size:15px">${PLANS.pro.feats.slice(1).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
       </div>
       <div class="section"><button class="btn btn-primary btn-block" data-act="setTier" data-id="pro" style="min-height:54px">${ic('zap')}Try Pro · ${PLANS.pro.price}${PLANS.pro.per}</button><div class="faint" style="text-align:center;font-size:13px">Example pricing for the prototype</div></div>`;
     return;
@@ -773,7 +745,7 @@ function renderLeague(el) {
     const st = standings();
     body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-enterprise" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
         <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · cricket, football, kabaddi and more</div>
-        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
+        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-sm" style="background:#fff;color:#0D1530" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
       <div class="stats section" style="margin-top:12px">
         <div class="card stat"><span>Active players</span><b class="num">248</b><span class="delta">${ic('trending-up', 'ic-sm')}+18 this month</span></div>
         <div class="card stat"><span>Participation</span><b class="num">60%</b><span class="delta">${ic('trending-up', 'ic-sm')}+7 pts</span></div>
@@ -801,7 +773,7 @@ function renderLeague(el) {
       <tbody>${st.map((t, i) => `<tr class="${t.id === 'e1' ? 'mine' : ''}"><td>${i + 1}</td><td class="team"><div><span class="crest sm" style="--c:${t.c}">${t.ab}</span>${t.name}</div></td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td class="pts">${t.pts}</td><td><span class="form">${t.form.slice(-3).split('').map((r) => `<i class="${r}">${r}</i>`).join('')}</span></td></tr>`).join('')}</tbody></table></div>
       <div class="faint" style="font-size:12.5px">3 points for a win, 1 for a draw. Your team is highlighted. ${S.lbSport !== 'all' ? 'Per-sport tables use the same sample data in this prototype.' : ''}</div>`;
   } else {
-    body = `<div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" style="flex:1" data-act="autoBalance">${ic('shuffle', 'ic-sm')}Auto-balance teams</button><button class="btn btn-soft btn-sm" style="flex:1" data-act="toastMsg" data-msg="Invite sent to all employees">${ic('send', 'ic-sm')}Invite employees</button></div>
+    body = `<button class="btn btn-primary btn-block" data-act="shareLeague">${ic('share-2', 'ic-sm')}Invite employees to the league</button>
       <div style="display:grid;gap:10px" class="section">${ORG.teams.map((t) => `<div class="card team-card"><div class="team-top"><span class="crest" style="--c:${t.c}">${t.ab}</span><div class="grow"><h3>${t.name}</h3><div class="muted" style="font-size:13.5px">${t.dept} · ${t.players} players</div></div><span class="badge ent num">${t.w * 3 + t.d} pts</span></div></div>`).join('')}</div>`;
   }
   el.innerHTML = `<div class="page-head"><h1>League</h1>${tierPill()}</div>
@@ -831,28 +803,32 @@ function addFixtureSheet() {
 /* ───────── SHOP ───────── */
 function renderShop() {
   const cats = [['all', 'All', 'layers'], ['equipment', 'Equipment', 'dumbbell'], ['footwear', 'Footwear', 'footprints'], ['apparel', 'Outfits', 'shirt'], ['accessories', 'Accessories', 'package'], ['deals', 'Deals', 'percent']];
-  const list = PRODUCTS.filter((p) => S.shopCat === 'all' || p.cat === S.shopCat || (S.shopCat === 'deals' && p.was));
+  const q = (S.shopQ || '').trim().toLowerCase();
+  const list = PRODUCTS.filter((p) => (S.shopCat === 'all' || p.cat === S.shopCat || (S.shopCat === 'deals' && p.was)) && (!q || (p.name + ' ' + p.brand + ' ' + p.cat).toLowerCase().includes(q)));
   const cartN = S.cart.reduce((n, c) => n + c.qty, 0);
   const memberOff = S.tier !== 'lite';
   $('#scr-shop').innerHTML = `
-    <div class="page-head"><h1>Shop</h1><div style="display:flex;gap:8px"><button class="icon-btn" data-act="toastMsg" data-msg="Search coming soon in the prototype" data-icon="search" aria-label="Search shop">${ic('search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
+    <div class="page-head"><h1>Shop</h1><div style="display:flex;gap:8px"><button class="icon-btn" data-act="shopSearch" aria-label="Search the shop" aria-expanded="${S.shopSearch ? 'true' : 'false'}">${ic(S.shopSearch ? 'x' : 'search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
+    ${S.shopSearch ? `<label class="search" style="box-shadow:none;margin-bottom:14px">${ic('search')}<input id="shopQ" type="search" placeholder="Search balls, shoes, jerseys" value="${esc(S.shopQ || '')}" aria-label="Search products"></label>` : ''}
     <div class="promos">
       <button class="promo" data-act="shopCat" data-id="apparel"><img src="${IMG}gym.jpg" alt=""><span class="badge volt" style="align-self:flex-start">Up to 30% off</span><h3>Monsoon kit drop</h3><p>Quick-dry jerseys and training outfits.</p></button>
-      <button class="promo" data-act="toastMsg" data-msg="Registration form opened" data-icon="trophy"><img src="${IMG}football.jpg" alt=""><span class="sponsor">Sponsored</span><span class="badge" style="align-self:flex-start;background:#fff;color:#0D1530">City Futsal League</span><h3>Team entries open</h3><p>8-week monsoon season. Register by Friday.</p></button>
+      <button class="promo" data-act="promoFootball"><img src="${IMG}football.jpg" alt=""><span class="sponsor">Sponsored</span><span class="badge" style="align-self:flex-start;background:#fff;color:#0D1530">City Futsal League</span><h3>Find a team to join</h3><p>See football games near you this week.</p></button>
       <button class="promo brandy" data-act="plans"><span class="tier t-pro" style="align-self:flex-start;background:rgba(255,255,255,.2)">${ic('zap')}Members</span><h3>Pro saves 10%</h3><p>On every order, plus free delivery over ${inr(FREE_DELIVERY)}.</p></button>
     </div>
     <div class="chips" style="margin-top:16px">${cats.map(([k, n, i]) => `<button class="chip" data-act="shopCat" data-id="${k}" aria-pressed="${S.shopCat === k}">${ic(i)}${n}</button>`).join('')}</div>
-    <div class="section"><div class="section-head"><h2>${S.shopCat === 'all' ? 'Trending near you' : cats.find((c) => c[0] === S.shopCat)[1]}</h2><span class="faint num">${list.length} items</span></div>
-      <div class="grid2">${list.map((p) => prodCard(p, memberOff)).join('')}</div></div>
-    ${S.tier === 'enterprise' ? `<div class="section"><button class="biz" style="background:var(--ent);color:#fff" data-act="toastMsg" data-msg="Bulk kit request sent to your account manager" data-icon="package">${ic('shirt')}<div class="grow"><b>Team kits for ${ORG.name}</b><small>Bulk-order printed jerseys for all ${ORG.teams.length} teams.</small></div>${ic('chevron-right')}</button></div>` : ''}
+    <div class="section"><div class="section-head"><h2>${S.shopCat === 'all' ? 'All gear' : cats.find((c) => c[0] === S.shopCat)[1]}</h2><span class="faint num">${list.length} item${list.length === 1 ? '' : 's'}</span></div>
+      ${list.length ? `<div class="grid2">${list.map((p) => prodCard(p, memberOff)).join('')}</div>` : `<div class="empty card">${ic('search')}<b>No gear matches “${esc(S.shopQ || '')}”</b><span>Try a sport or a product type, like ball or shoes.</span><button class="btn btn-soft btn-sm" data-act="shopClear">Clear search</button></div>`}
+      <div class="faint" style="font-size:12.5px">Sample products, sellers, prices and ratings for the prototype.</div></div>
+    ${S.tier === 'enterprise' ? `<div class="section"><div class="biz" style="background:var(--ent-deep);color:#fff" aria-disabled="true">${ic('shirt')}<div class="grow"><b>Team kits for ${ORG.name}</b><small>Bulk-order printed jerseys for all ${ORG.teams.length} teams.</small></div><span class="soon">Coming soon</span></div></div>` : ''}
     <div class="section"><button class="biz" data-act="promote">${ic('megaphone')}<div class="grow"><b>Promote your business</b><small>Featured map pins, shop banners and event sponsorship for local sports businesses.</small></div>${ic('chevron-right')}</button></div>`;
+  bindShopSearch(false);
 }
 function prodCard(p, memberOff) {
   const fav = S.fav.includes(p.id);
   return `<div class="prod"><div class="prod-img"><button data-act="product" data-id="${p.id}" style="display:block;width:100%;height:100%" aria-label="${esc(p.name)}"><img src="${IMG + p.img}.jpg" alt="" loading="lazy"></button>
     <div class="badges">${p.was ? `<span class="badge volt">-${Math.round((1 - p.price / p.was) * 100)}%</span>` : ''}${memberOff ? '<span class="badge brand">-10% Pro</span>' : ''}</div>
     <button class="fav ${fav ? 'on' : ''}" data-act="fav" data-id="${p.id}" aria-label="${fav ? 'Remove from' : 'Save to'} favourites" aria-pressed="${fav}">${ic('heart', 'ic-sm')}</button></div>
-    <button data-act="product" data-id="${p.id}" style="text-align:left;display:grid;gap:4px"><span class="faint" style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase">${p.brand}</span><span class="prod-name">${esc(p.name)}</span>
+    <button data-act="product" data-id="${p.id}" style="text-align:left;display:grid;gap:4px"><span class="faint" style="font-size:12.5px;font-weight:600">${p.brand}</span><span class="prod-name">${esc(p.name)}</span>
     <span class="prod-price"><b class="num">${inr(p.price)}</b>${p.was ? `<s class="num">${inr(p.was)}</s>` : ''}</span><span class="rating">${ic('star')}<span class="num">${p.rating} (${p.reviews})</span></span></button></div>`;
 }
 function openProduct(id) {
@@ -894,18 +870,21 @@ function promoteSheet() {
 function renderMe() {
   const P = PLANS[S.tier];
   $('#scr-me').innerHTML = `
-    <div class="me-head"><img src="${IMG}av3.jpg" alt=""><div style="flex:1;min-width:0"><h1>Arjun Mehta</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}Riverfront · plays cricket, football</div></div><button class="icon-btn" data-act="toastMsg" data-msg="Settings are not part of the prototype yet" data-icon="settings" aria-label="Settings">${ic('settings')}</button></div>
-    <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">24</b><span>Games played</span></div><div class="card"><b class="num">31h</b><span>Active this year</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
-    <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.75)">Your plan</div><h2>${P.name}</h2><div style="opacity:.9;max-width:30ch;position:relative;z-index:1">${P.blurb}</div><button class="btn btn-sm" data-act="plans">${S.tier === 'enterprise' ? 'Manage plan' : 'Compare plans'}</button></div>
-    <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="toastMsg" data-msg="Add a family member form opens here">Add</button></div>
-      <div class="rows">${FAMILY.map((f, i) => `<div class="row"><div class="avatars">${avatar(f)}</div><div class="grow"><b>${f.name}</b><small>${f.note}</small></div>${ic('chevron-right')}</div>`).join('')}</div></div>
+    <div class="me-head">${avatar(ME_USER, 72)}<div style="flex:1;min-width:0"><h1>${esc(ME_USER.name)}</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}${AREA} · ${esc((S.favSports || ['cricket', 'football']).map((k) => SPORTS[k].name.toLowerCase()).join(', '))}</div></div></div>
+    <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">${S.joined.length}</b><span>Games booked</span></div><div class="card"><b class="num">${(S.hosted || []).length}</b><span>Games hosted</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
+    <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Your plan</div><h2>${P.name}</h2><div style="opacity:.92;max-width:30ch;position:relative;z-index:1">${P.blurb}</div><button class="btn btn-sm" data-act="plans">${S.tier === 'enterprise' ? 'Manage plan' : 'Compare plans'}</button></div>
+    <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="addFamily">${ic('plus', 'ic-sm')}Add</button></div>
+      <div class="rows">${FAMILY.map((f) => `<div class="row"><div class="avatars">${avatar(f)}</div><div class="grow"><b>${esc(f.name)}</b><small>${esc(f.note)}</small></div></div>`).join('')}</div></div>
     <div class="section"><div class="section-head"><h2>Settings</h2></div>
       <div class="rows">
-        ${[['bell', 'Notifications', 'Cancellations and venue changes always on'], ['wallet', 'Payment methods', 'UPI · arjun.m@upi · RuPay •• 4242'], ['accessibility', 'Accessibility', 'Text size, reduced motion, venue needs'], ['globe', 'Language & region', 'English, हिन्दी · India · km'], ['shield-check', 'Privacy & safety', 'Who can invite you and see your games']]
-          .map(([i, t, d]) => `<button class="row" data-act="toastMsg" data-msg="${t} settings open here">${ic(i, 'lead')}<div class="grow"><b>${t}</b><small>${d}</small></div>${ic('chevron-right')}</button>`).join('')}
+        <button class="row" data-act="notePrefs">${ic('bell', 'lead')}<div class="grow"><b>Notifications</b><small>Changes and payments always on, the rest is your choice</small></div>${ic('chevron-right')}</button>
+        <button class="row" data-act="payPrefs">${ic('wallet', 'lead')}<div class="grow"><b>Default UPI app</b><small>${esc(S.payDefault || UPI_APPS[0])}</small></div>${ic('chevron-right')}</button>
+        <button class="row" data-act="a11yPrefs">${ic('accessibility', 'lead')}<div class="grow"><b>Accessibility</b><small>${S.bigText ? 'Larger text on' : 'Standard text'}${S.calm ? ' · reduced motion' : ''}</small></div>${ic('chevron-right')}</button>
+        <div class="row" aria-disabled="true">${ic('globe', 'lead')}<div class="grow"><b>Language</b><small>English. Hindi and regional languages planned</small></div><span class="soon">Coming soon</span></div>
+        <div class="row" aria-disabled="true">${ic('shield-check', 'lead')}<div class="grow"><b>Privacy and safety</b><small>Who can invite you and see your games</small></div><span class="soon">Coming soon</span></div>
         <button class="row" data-act="reset">${ic('rotate-ccw', 'lead')}<div class="grow"><b>Reset demo data</b><small>Start the prototype over</small></div></button>
       </div></div>
-    <div class="faint" style="text-align:center;font-size:12.5px;margin-top:18px">LetsPlay prototype · sample data only</div>`;
+    <div class="faint" style="text-align:center;font-size:12.5px;margin-top:18px">LetsPlay prototype. Games, people, venues and prices are sample data.</div>`;
 }
 function plansSheet() {
   openSheet(`${sheetHead('Choose your plan', 'Switch any time. Example pricing.')}
@@ -949,13 +928,10 @@ const A = {
       <button class="btn btn-primary btn-block" data-act="gotoShop">${ic('shopping-bag')}Shop the deal</button>`); },
   gotoShop: () => { S.shopCat = 'all'; go('shop'); },
   open: (el) => { closeSheet(true); openAct(el.dataset.id); },
-  join: (el) => joinFlow(el.dataset.id),
-  pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); const id = $('.sheet [data-act="confirmJoin"]'); if (id) updateJoinTotal(allActs().find((a) => a.id === id.dataset.id)); },
+  pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); },
   pickOne: (el) => { pickOne(el); if (el.dataset.tg && TD) { TD[el.dataset.tg] = el.dataset.id; renderGen(); return; } if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
-  confirmJoin: (el) => confirmJoin(el.dataset.id),
   gotoGames: () => go('games'),
   back: () => pop(),
-  share: () => toast('Link copied. Share it with friends', 'share-2'),
   closeSheet: () => closeSheet(),
   sheetToggle: () => Sheet.toggle(),
   locate: () => { deselect(); Map.center(ME.x, ME.y, true, 45); },
@@ -969,12 +945,10 @@ const A = {
   hostToggle: (el) => { const arr = Host.draft[el.dataset.kind]; const i = arr.indexOf(el.dataset.id); if (i >= 0) arr.splice(i, 1); else arr.push(el.dataset.id); el.setAttribute('aria-pressed', i < 0); $('#hostView .view-cta .faint').textContent = hostInviteCount() + ' invited'; },
   hostPublish: () => publishHost(),
   viewHosted: (el) => { closeSheet(true); go('explore'); setTimeout(() => selectAct(el.dataset.id), 60); },
-  shareGame: () => toast('Invite link copied. Share it on WhatsApp or anywhere', 'share-2'),
   plans: () => plansSheet(),
   setTier: (el) => { const t = el.dataset.id; closeSheet(true); setTier(t); if (!el.dataset.quiet) toast(`You're on ${PLANS[t].name}`, PLANS[t].icon); },
   toastMsg: (el) => toast(el.dataset.msg, el.dataset.icon || 'circle-check'),
   toastClose: (el) => { closeSheet(); toast(el.dataset.msg, el.dataset.icon || 'circle-check'); },
-  ackAlert: () => { S.ackAlert = true; save(); renderGames(); toast('Thanks. We will remind you on the day', 'bell'); },
   hostGame: () => { closeSheet(true); openHost(); },
   newTeam: () => (can.teams() ? newTeamSheet() : upsell('teams')),
   openTeam: (el) => openTeam(el.dataset.id),
@@ -995,8 +969,10 @@ const A = {
     const d = +$('#fxDay [aria-pressed="true"]').dataset.id;
     S.fixtures.push({ id: 'x' + Date.now(), a, b, sport: $('#fxSport [aria-pressed="true"]').dataset.id, d, t: $('#fxTime').value || '12:30', venue: $('#fxVenue').value });
     S.fixtures.sort((x, y) => x.d - y.d || x.t.localeCompare(y.t)); S.schedDay = d; S.entTab = 'schedule'; save(); closeSheet(); renderTeams(); toast('Fixture added. Squads notified', 'calendar-days'); },
-  autoBalance: () => toast('Teams balanced by skill and department mix', 'shuffle'),
   shopCat: (el) => { S.shopCat = el.dataset.id; save(); renderShop(); },
+  shopSearch: () => { S.shopSearch = !S.shopSearch; if (!S.shopSearch) S.shopQ = ''; renderShop(); bindShopSearch(true); },
+  shopClear: () => { S.shopQ = ''; renderShop(); bindShopSearch(true); },
+  promoFootball: () => { S.filter = 'football'; S.mode = 'games'; save(); go('explore'); toast('Showing football games near you', 'search'); },
   fav: (el) => { const id = el.dataset.id; S.fav = S.fav.includes(id) ? S.fav.filter((x) => x !== id) : S.fav.concat(id); save(); renderShop(); },
   product: (el) => openProduct(el.dataset.id),
   addCart: (el) => { const id = el.dataset.id; const sz = $('#pSize [aria-pressed="true"]'); const size = sz ? sz.dataset.id : null;
@@ -1023,6 +999,8 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('.
 $('#sbIcons').innerHTML = ic('signal') + ic('wifi') + ic('battery-full');
 $('#clock').textContent = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', hour12: false }).format(new Date());
 $('#logoMark').innerHTML = ic('map-pin', 'ic-lg');
+applyPrefs();
 renderPanel();
 go('explore');
+if (!S.onboarded) setTimeout(onboardSheet, 500);
 })();

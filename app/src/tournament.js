@@ -153,7 +153,7 @@ function tours() { if (!S.tournaments) { S.tournaments = [sampleTournament()]; s
 const crestOf = (id, cls = 'sm') => { const t = teamById(id); return `<span class="crest ${cls}" style="--c:${t.c}">${t.ab}</span>`; };
 function cupsBody() {
   const list = tours();
-  return `<button class="biz" style="background:linear-gradient(120deg,var(--ent),#2B1C7A);color:#fff" data-act="tourNew">${ic('trophy')}<div class="grow"><b>Create a tournament</b><small>Pick teams and dates. LetsPlay generates groups, brackets and the full schedule.</small></div>${ic('chevron-right')}</button>
+  return `<button class="biz" style="background:var(--ent-deep);color:#fff" data-act="tourNew">${ic('trophy')}<div class="grow"><b>Create a tournament</b><small>Pick teams and dates. LetsPlay generates groups, brackets and the full schedule.</small></div>${ic('chevron-right')}</button>
     <div style="display:grid;gap:12px" class="section">${list.map((T) => { const st = tourStatus(T), pr = tourProgress(T), s2 = sp(T.sport);
       const nxt = T.matches.filter((m) => ready(m)).sort((a, b) => a.d - b.d || a.t.localeCompare(b.t))[0];
       return `<button class="card team-card" data-act="tourOpen" data-id="${T.id}">
@@ -186,7 +186,7 @@ function genSummary() {
   const el = $('#genSum'); if (!el) return; const err = tdError();
   if (err) { el.innerHTML = `${ic('info', 'ic-sm')}${err}`; return; }
   const T = buildTournament(tdConfig(), rng(1)); const n = T.matches.filter((m) => !m.bye).length, byes = T.matches.filter((m) => m.bye).length;
-  el.innerHTML = `${ic('sparkles', 'ic-sm')}<span><b class="num">${n} matches</b> over ${T.matchDays} match days${byes ? ` · ${byes} bye${byes > 1 ? 's' : ''}` : ''} · Final on ${longFmt.format(dateAt(T.endDay, '12:00'))}</span>`;
+  el.innerHTML = `${ic('calendar-days', 'ic-sm')}<span><b class="num">${n} matches</b> over ${T.matchDays} match days${byes ? ` · ${byes} bye${byes > 1 ? 's' : ''}` : ''} · Final on ${longFmt.format(dateAt(T.endDay, '12:00'))}</span>`;
 }
 function renderGen() {
   const v = $('#genView'); if (!v) return; const top = v.scrollTop; const st = standings();
@@ -214,7 +214,7 @@ function renderGen() {
       <label class="row card" style="gap:12px;cursor:pointer"><input type="checkbox" id="tdThird" data-t="thirdPlace" ${TD.thirdPlace ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--ent)"><div class="grow"><b>Third-place match</b><small>Semifinal losers play before the final</small></div></label>
       <div class="gen-sum" id="genSum"></div>
     </div>
-    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('sparkles')}Generate tournament plan</button></div>`;
+    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('trophy')}Generate tournament plan</button></div>`;
   v.scrollTop = top; genSummary();
 }
 
@@ -265,7 +265,7 @@ function renderTour() {
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="badge" style="background:rgba(255,255,255,.18);color:#fff">${ic(s2.icon)}${s2.name} · ${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'}</span><span style="font-size:12.5px;opacity:.85" class="num">${pr.played}/${pr.total} played</span></div>
         <h2>${esc(T.name)}</h2>
         <div style="font-size:13.5px;opacity:.9">${T.teams.length} teams · ${T.matchDays} match days · ${longFmt.format(dateAt(T.startDay, '12:00'))} to ${longFmt.format(dateAt(T.endDay, '12:00'))}<br>${T.venues.map(esc).join(' · ')}</div>
-        ${T.champion ? `<div class="champ-banner">${ic('trophy')}<b>${teamById(T.champion).name}</b> are champions</div>` : `<span class="badge volt" style="justify-self:start">${ic('flame')}${esc(st.text)}</span>`}
+        ${T.champion ? `<div class="champ-banner">${ic('trophy')}<b>${teamById(T.champion).name}</b> are champions</div>` : `<span class="badge" style="justify-self:start;background:#fff;color:var(--ent-deep)">${ic('flame')}${esc(st.text)}</span>`}
       </div>
       ${!preview && nr.length ? `<button class="btn btn-soft btn-block" data-act="tourSim">${ic('shuffle')}Simulate ${esc(nr[0].stage === 'group' ? 'next matchday' : nr[0].round)} (demo)</button>` : ''}
       <div class="seg" role="group" aria-label="Tournament view">${tabs.map(([k, n]) => `<button data-act="tourTab" data-id="${k}" aria-pressed="${tourTab === k}">${n}</button>`).join('')}</div>

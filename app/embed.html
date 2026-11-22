@@ -4,7 +4,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-/* LetsPlay — design tokens & components
+/* LetsPlay design tokens and components.
+   Design read: consumer sports app for Indian amateur players, parents and company teams.
+   Scoreboard voice (condensed italic caps) on page titles and hero moments only; everything else is calm.
+   Dials: ENERGY 2 / RHYTHM 2 / MOTION 2 (transitions that explain where things came from; no endless loops).
+   Colour roles: ink neutrals + cobalt for every action; volt is the single accent and only marks
+   "happening today", deals and the champion. Sport and plan colours are data encodings, not decoration.
+   Identity motif: thin pitch markings (halfway line + centre circle) on hero cards.
    Layout: map-first mobile app; on wide screens a device frame sits beside a demo panel. */
 :root {
   --bg: #F3F5F9;
@@ -12,13 +18,15 @@
   --surface-2: #EDF0F6;
   --ink: #0D1530;
   --ink-2: #47506E;
-  --ink-3: #8790AB;
+  --ink-3: #626B87;          /* secondary text: 5.2:1 on white, 4.8:1 on --bg */
   --line: #E1E5EE;
-  --brand: #1D4FF2;          /* cobalt — primary actions */
+  --brand: #1D4FF2;          /* cobalt: primary actions */
   --brand-soft: #E5ECFF;
   --brand-ink: #FFFFFF;
-  --volt: #D6F23A;           /* highlight — live, deals */
+  --volt: #D6F23A;           /* the one accent: today, deals, champion */
   --volt-ink: #1A2200;
+  --ent-deep: #2E1F7A;       /* solid ground for Enterprise hero cards */
+  --motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160' viewBox='0 0 240 160' fill='none' stroke='white' stroke-opacity='.14' stroke-width='2'%3E%3Crect x='1' y='1' width='238' height='158' rx='6'/%3E%3Cpath d='M120 1v158'/%3E%3Ccircle cx='120' cy='80' r='30'/%3E%3Cpath d='M1 45h34v70H1M239 45h-34v70h34'/%3E%3C/svg%3E");
   --hot: #FF4F2B;            /* urgent, live now */
   --ok: #0F9D63;
   --warn: #D98E04;
@@ -49,9 +57,9 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #080C18; --surface: #111829; --surface-2: #19223A; --ink: #EEF2FF; --ink-2: #ADB6D2; --ink-3: #6F7995;
+    --bg: #080C18; --surface: #111829; --surface-2: #19223A; --ink: #EEF2FF; --ink-2: #ADB6D2; --ink-3: #939CB8;
     --line: #232D49; --brand: #4E7CFF; --brand-soft: #1A2650; --brand-ink: #FFFFFF; --volt: #D6F23A; --volt-ink: #1A2200;
-    --hot: #FF6B4A; --ok: #2BC584; --warn: #F2B33D; --lite: #2CC9B9; --pro: #4E7CFF; --ent: #8C6CFF;
+    --hot: #FF6B4A; --ok: #2BC584; --warn: #F2B33D; --lite: #2CC9B9; --pro: #4E7CFF; --ent: #8C6CFF; --ent-deep: #241760;
     --shadow: 0 10px 30px rgba(0,0,0,.5); --shadow-sm: 0 2px 10px rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6); --frame: #000;
     --map-land: #141B2C; --map-block: #1A2236; --map-park: #15301F; --map-park-ink: #6FCB8A; --map-water: #0F2B45;
     --map-road: #253049; --map-major: #3A3A2A; --map-casing: #0E1422; --map-label: #8C96B3; --map-halo: #141B2C;
@@ -59,9 +67,9 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #080C18; --surface: #111829; --surface-2: #19223A; --ink: #EEF2FF; --ink-2: #ADB6D2; --ink-3: #6F7995;
+  --bg: #080C18; --surface: #111829; --surface-2: #19223A; --ink: #EEF2FF; --ink-2: #ADB6D2; --ink-3: #939CB8;
   --line: #232D49; --brand: #4E7CFF; --brand-soft: #1A2650; --brand-ink: #FFFFFF; --volt: #D6F23A; --volt-ink: #1A2200;
-  --hot: #FF6B4A; --ok: #2BC584; --warn: #F2B33D; --lite: #2CC9B9; --pro: #4E7CFF; --ent: #8C6CFF;
+  --hot: #FF6B4A; --ok: #2BC584; --warn: #F2B33D; --lite: #2CC9B9; --pro: #4E7CFF; --ent: #8C6CFF; --ent-deep: #241760;
   --shadow: 0 10px 30px rgba(0,0,0,.5); --shadow-sm: 0 2px 10px rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6); --frame: #000;
   --map-land: #141B2C; --map-block: #1A2236; --map-park: #15301F; --map-park-ink: #6FCB8A; --map-water: #0F2B45;
   --map-road: #253049; --map-major: #3A3A2A; --map-casing: #0E1422; --map-label: #8C96B3; --map-halo: #141B2C;
@@ -82,7 +90,18 @@ input, select, textarea { font: inherit; color: inherit; }
 .muted { color: var(--ink-2); }
 .faint { color: var(--ink-3); }
 h1, h2, h3, .display { font-family: var(--f-display); font-weight: 700; letter-spacing: .005em; text-wrap: balance; margin: 0; }
-.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+/* Small labels stay in sentence case: tracked capitals are reserved for the scoreboard titles. */
+.eyebrow { font-size: 13px; font-weight: 600; color: var(--ink-3); }
+/* Press feedback on everything tappable, hover tint only where a real pointer exists. */
+.row, .chip, .opt, .act, .team-card, .loc-opt, .slot, .bmatch, .cal-ev, .plan, .biz, .prod, .share-app { transition: transform .12s ease, background-color .15s ease; }
+.row:active, .chip:active, .opt:active, .team-card:active, .loc-opt:active, .slot:active, .bmatch:active, .cal-ev:active, .plan:active, .biz:active, .share-app:active { transform: scale(.985); }
+@media (hover: hover) and (pointer: fine) {
+  button.row:hover, .chip:hover, .opt:hover, .loc-opt:hover, .cal-ev:hover, .bmatch:hover { background-color: color-mix(in srgb, var(--brand) 5%, var(--surface)); }
+}
+button:disabled, [aria-disabled="true"] { cursor: not-allowed; }
+.soon { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--ink-3); white-space: nowrap; }
+/* Identity motif: pitch markings on solid hero grounds (no gradients, no decorative rings). */
+.motif { background-image: var(--motif); background-repeat: no-repeat; background-position: right -40px center; background-size: auto 130%; }
 
 /* ───────── Stage & device ───────── */
 .stage { height: 100%; display: flex; justify-content: center; align-items: center; gap: 48px; }
@@ -92,7 +111,6 @@ h1, h2, h3, .display { font-family: var(--f-display); font-weight: 700; letter-s
 .statusbar { display: none; }
 
 @media (min-width: 900px) and (min-height: 640px) {
-  body { background: radial-gradient(1200px 700px at 70% 20%, var(--brand-soft), transparent 60%), var(--bg); }
   .stage { padding-inline: max(24px, env(safe-area-inset-left, 0px)); }
   .panel { display: flex; flex-direction: column; gap: 22px; width: 360px; max-height: calc(100% - 48px); overflow: auto; padding: 4px 4px 4px 0; }
   .device { width: 393px; height: min(852px, calc(100% - 40px)); flex: none; border-radius: 54px; padding: 11px; background: var(--frame);
@@ -133,19 +151,19 @@ h1, h2, h3, .display { font-family: var(--f-display); font-weight: 700; letter-s
 .tabbar { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line);
   padding: 6px max(6px, env(safe-area-inset-left, 0px)) 6px max(6px, env(safe-area-inset-right, 0px)); position: relative; z-index: 30; }
 .framed .tabbar { padding-bottom: 22px; }
-.tab { display: grid; justify-items: center; gap: 3px; padding: 6px 0; min-height: 52px; color: var(--ink-3); font-size: 11.5px; font-weight: 600; position: relative; border-radius: 12px; }
+.tab { display: grid; justify-items: center; gap: 3px; padding: 6px 0; min-height: 52px; color: var(--ink-3); font-size: 12px; font-weight: 600; position: relative; border-radius: 12px; }
 .tab .ic { width: 23px; height: 23px; }
 .tab[aria-current="page"] { color: var(--brand); }
 .tab[aria-current="page"]::before { content: ""; position: absolute; top: -7px; width: 28px; height: 3px; border-radius: 3px; background: var(--brand); }
 .tab .dot.lock { background: var(--ink-3); min-width: 16px; width: 16px; height: 16px; padding: 0; margin-left: 5px; top: 1px; }
 .tab .dot.lock .ic { width: 10px; height: 10px; }
-.tab .dot { position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hot); color: #fff; font-size: 11px; display: grid; place-items: center; }
+.tab .dot { position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hot); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .page-head h1 { font-size: 32px; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: 1; }
 .icon-btn { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); position: relative; flex: none; }
 .icon-btn .badge-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; border-radius: 50%; background: var(--hot); border: 2px solid var(--surface); }
-.icon-btn .count { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 5px; background: var(--hot); color: #fff; font-size: 11.5px; font-weight: 700; display: grid; place-items: center; }
+.icon-btn .count { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 5px; background: var(--hot); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 
 /* ───────── Controls ───────── */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 18px; border-radius: 14px; font-weight: 600; font-size: 15px; white-space: nowrap; transition: transform .12s, background .2s; }
@@ -155,14 +173,14 @@ h1, h2, h3, .display { font-family: var(--f-display); font-weight: 700; letter-s
 .btn-soft { background: var(--brand-soft); color: var(--brand); }
 .btn-ghost { background: var(--surface-2); color: var(--ink); }
 .btn-line { border: 1.5px solid var(--line); background: var(--surface); }
-.btn-sm { min-height: 36px; padding: 0 14px; font-size: 14px; border-radius: 11px; }
+.btn-sm { min-height: 40px; padding: 0 14px; font-size: 14px; border-radius: 11px; }
 .btn-block { width: 100%; }
 .btn[disabled] { opacity: .5; pointer-events: none; }
 .btn.done { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: var(--ok); }
 
 .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 0; }
 .chips::-webkit-scrollbar { display: none; }
-.chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; font-size: 14px; white-space: nowrap; flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; font-size: 14px; white-space: nowrap; flex: none; }
 .chip .ic { width: 17px; height: 17px; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
 .chip.sport .ic { color: var(--c); }
@@ -170,7 +188,7 @@ h1, h2, h3, .display { font-family: var(--f-display); font-weight: 700; letter-s
 .chip.sport[aria-pressed="true"] .ic { color: #fff; }
 
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--surface-2); padding: 4px; border-radius: 14px; gap: 4px; }
-.seg button { min-height: 38px; border-radius: 10px; font-weight: 600; font-size: 14px; color: var(--ink-2); }
+.seg button { min-height: 40px; border-radius: 10px; font-weight: 600; font-size: 14px; color: var(--ink-2); }
 .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
 
 .field { display: grid; gap: 6px; min-width: 0; }
@@ -181,7 +199,7 @@ h1, h2, h3, .display { font-family: var(--f-display); font-weight: 700; letter-s
 .input:focus { border-color: var(--brand); }
 textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 
-.tier { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 8px; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--tc); }
+.tier { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #fff; background: var(--tc); }
 .tier .ic { width: 13px; height: 13px; }
 .t-lite { --tc: var(--lite); } .t-pro { --tc: var(--pro); } .t-enterprise { --tc: var(--ent); }
 
@@ -194,7 +212,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .badge.ent { background: color-mix(in srgb, var(--ent) 15%, transparent); color: var(--ent); }
 
 .avatars { display: flex; }
-.avatars img, .avatars span { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -8px; object-fit: cover; background: var(--surface-2); font-size: 11px; font-weight: 700; display: grid; place-items: center; color: var(--ink-2); }
+.avatars img, .avatars span { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -8px; object-fit: cover; background: var(--surface-2); font-size: 12px; font-weight: 700; display: grid; place-items: center; color: var(--ink-2); }
 .avatars > :first-child { margin-left: 0; }
 .bar { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
 .bar > i { display: block; height: 100%; border-radius: 3px; background: var(--c, var(--brand)); }
@@ -202,7 +220,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
 .section { display: grid; gap: 12px; margin-top: 22px; }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.section-head h2 { font-size: 22px; font-weight: 700; text-transform: uppercase; font-style: italic; }
+.section-head h2 { font-size: 22px; font-weight: 700; }
 .link { color: var(--brand); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 
 .sport-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: var(--c); flex: none; }
@@ -236,16 +254,16 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .pin.sel { z-index: 5; }
 .pin.sel .pin-body { transform: translate(-50%, -2px) scale(1.18); background: var(--ink); color: var(--surface); }
 .pin.sel .pin-body::after { background: var(--ink); }
-.pin.joined .glyph { box-shadow: 0 0 0 3px var(--volt); }
-.pin .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hot); box-shadow: 0 0 0 0 var(--hot); animation: ping 1.6s infinite; }
-.pin.store .glyph { background: #0D1530; box-shadow: 0 0 0 2px var(--volt); }
+.pin.joined .glyph { box-shadow: 0 0 0 3px var(--ok); }
+/* "Today" marker: a real state, shown once, no pulse (R-19, R-31). */
+.pin .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hot); }
+.pin.store .glyph { background: #0D1530; }
 .pin.spot .glyph { background: var(--surface); color: var(--c); border: 2px dashed var(--c); }
 .pin[hidden] { display: none; }
 .me-dot { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }
-.me-dot::before { content: ""; position: absolute; width: 18px; height: 18px; margin: -9px; border-radius: 50%; background: var(--brand); border: 3px solid #fff; box-shadow: 0 2px 8px rgba(29,79,242,.5); }
-.me-dot::after { content: ""; position: absolute; width: 70px; height: 70px; margin: -35px; border-radius: 50%; background: color-mix(in srgb, var(--brand) 25%, transparent); animation: pulse 2.2s infinite; }
-@keyframes pulse { from { transform: scale(.3); opacity: 1; } to { transform: scale(1); opacity: 0; } }
-@keyframes ping { 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+/* Your location: a static accuracy halo, like native map apps, without a looping pulse. */
+.me-dot::before { content: ""; position: absolute; width: 18px; height: 18px; margin: -9px; border-radius: 50%; background: var(--brand); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(13,21,48,.35); z-index: 1; }
+.me-dot::after { content: ""; position: absolute; width: 56px; height: 56px; margin: -28px; border-radius: 50%; background: color-mix(in srgb, var(--brand) 16%, transparent); border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent); }
 
 .map-top { position: absolute; left: 0; right: 0; top: 0; z-index: 10; padding: 12px max(14px, env(safe-area-inset-left, 0px)) 6px max(14px, env(safe-area-inset-right, 0px)); display: grid; gap: 10px;
   background: linear-gradient(var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 70%, transparent); }
@@ -253,7 +271,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 48px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-sm); padding: 0 8px 0 14px; border: 1px solid var(--line); }
 .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; height: 100%; font-size: 15px; }
 .search .ic { color: var(--ink-3); }
-.tier-pill { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border-radius: 11px; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--tc); }
+.tier-pill { display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px; border-radius: 14px; font-size: 13px; font-weight: 700; color: #fff; background: var(--tc); }
 .tier-pill .ic { width: 14px; height: 14px; }
 
 .map-ctrls { position: absolute; right: max(14px, env(safe-area-inset-right, 0px)); top: 132px; z-index: 9; display: grid; gap: 8px; }
@@ -262,7 +280,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .map-ctrls .zoomgrp button { border-radius: 0; box-shadow: none; border: 0; }
 .map-ctrls .zoomgrp button + button { border-top: 1px solid var(--line); }
 
-.fab { position: absolute; right: max(14px, env(safe-area-inset-right, 0px)); z-index: 12; height: 54px; padding: 0 18px 0 14px; border-radius: 18px; background: var(--brand); color: #fff; display: flex; align-items: center; gap: 8px; font-weight: 700; box-shadow: 0 10px 24px rgba(29,79,242,.4); transition: bottom .3s, opacity .2s; }
+.fab { position: absolute; right: max(14px, env(safe-area-inset-right, 0px)); z-index: 12; height: 54px; padding: 0 18px 0 14px; border-radius: 18px; background: var(--brand); color: #fff; display: flex; align-items: center; gap: 8px; font-weight: 700; box-shadow: var(--shadow); transition: bottom .3s, opacity .2s; }
 .fab .lockmark { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; }
 .fab .lockmark .ic { width: 13px; height: 13px; }
 
@@ -271,7 +289,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .grab { flex: none; height: 26px; display: grid; place-items: center; cursor: grab; touch-action: none; }
 .grab::before { content: ""; width: 42px; height: 5px; border-radius: 3px; background: var(--line); }
 .nearby-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 18px 10px; touch-action: none; }
-.nearby-head h2 { font-size: 22px; font-style: italic; text-transform: uppercase; font-weight: 800; }
+.nearby-head h2 { font-size: 23px; font-weight: 700; }
 .nearby-list { flex: 1; overflow-y: auto; padding: 0 14px 16px; display: grid; gap: 10px; align-content: start; overscroll-behavior: contain; }
 
 .act { display: grid; grid-template-columns: 84px 1fr; gap: 12px; padding: 8px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); text-align: left; width: 100%; }
@@ -318,7 +336,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .view-hero .hero-cap { position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 1; color: #fff; display: grid; gap: 6px; }
 .view-hero h1 { font-size: 34px; font-style: italic; text-transform: uppercase; font-weight: 800; line-height: .98; }
 .view-nav { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; justify-content: space-between; padding: 12px 14px; }
-.view-nav button { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.92); color: #0D1530; display: grid; place-items: center; box-shadow: var(--shadow-sm); }
+.view-nav button { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.92); color: #0D1530; display: grid; place-items: center; box-shadow: var(--shadow-sm); }
 .view-bar { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .view-bar h2 { font-size: 22px; font-style: italic; text-transform: uppercase; font-weight: 800; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .view-body > * { min-width: 0; }
@@ -352,10 +370,10 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 @keyframes sheetup { from { transform: translateY(100%); } }
 @keyframes sheetdown { to { transform: translateY(100%); } }
 .sheet .grab { margin: 0 -18px; }
-.sheet h2 { font-size: 26px; font-style: italic; text-transform: uppercase; font-weight: 800; }
+.sheet h2 { font-size: 26px; font-weight: 700; line-height: 1.05; }
 .sheet-body { display: grid; gap: 16px; }
 .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.close { width: 38px; height: 38px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; flex: none; }
+.close { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; flex: none; }
 .pick { display: grid; gap: 8px; }
 .opt { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; border: 1.5px solid var(--line); text-align: left; width: 100%; }
 .opt[aria-pressed="true"] { border-color: var(--brand); background: var(--brand-soft); }
@@ -364,7 +382,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .opt[aria-pressed="true"] .tick { background: var(--brand); border-color: var(--brand); color: #fff; }
 .opt .tick .ic { width: 14px; height: 14px; }
 .success { display: grid; justify-items: center; text-align: center; gap: 10px; padding: 12px 0 4px; }
-.success .burst { width: 76px; height: 76px; border-radius: 50%; background: var(--volt); color: var(--volt-ink); display: grid; place-items: center; animation: pop .4s cubic-bezier(.3,1.6,.5,1); }
+.success .burst { width: 76px; height: 76px; border-radius: 50%; background: var(--ok); color: #fff; display: grid; place-items: center; animation: pop .4s cubic-bezier(.3,1.6,.5,1); }
 .success .burst .ic { width: 38px; height: 38px; }
 @keyframes pop { from { transform: scale(.3); } }
 .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -381,7 +399,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .plan-price small { font-family: var(--f-body); font-size: 13px; font-weight: 500; color: var(--ink-3); }
 .plan .feat-list { font-size: 13.5px; }
 .plan .feat-list .ic { color: var(--tc); }
-.plan .current { position: absolute; top: -11px; right: 14px; background: var(--tc); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 7px; }
+.plan .current { position: absolute; top: -11px; right: 14px; background: var(--tc); color: #fff; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 7px; }
 
 /* ───────── My games ───────── */
 .next-card { position: relative; border-radius: var(--r-lg); overflow: hidden; color: #fff; min-height: 220px; display: flex; flex-direction: column; justify-content: flex-end; }
@@ -392,16 +410,15 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .countdown { display: flex; gap: 8px; }
 .countdown div { background: rgba(255,255,255,.16); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 10px; padding: 6px 10px; text-align: center; min-width: 54px; }
 .countdown b { display: block; font-family: var(--f-display); font-size: 24px; line-height: 1; }
-.countdown small { font-size: 11px; opacity: .8; text-transform: uppercase; letter-spacing: .06em; }
+.countdown small { font-size: 12px; opacity: .85; }
 .alert { display: flex; gap: 12px; padding: 14px; border-radius: var(--r); background: color-mix(in srgb, var(--warn) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); }
 .alert .ic { color: var(--warn); }
 .alert .grow { flex: 1; display: grid; gap: 6px; font-size: 14px; }
 .day-group { display: grid; gap: 10px; }
-.day-label { font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.day-label { font-weight: 700; font-size: 14px; color: var(--ink-2); }
 
 /* ───────── Teams ───────── */
 .crest { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; color: #fff; background: var(--c); font-family: var(--f-display); font-weight: 800; font-style: italic; font-size: 20px; flex: none; position: relative; overflow: hidden; }
-.crest::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.25), transparent 50%); }
 .crest.sm { width: 34px; height: 34px; border-radius: 10px; font-size: 14px; }
 .team-card { display: grid; gap: 12px; padding: 14px; text-align: left; width: 100%; }
 .team-top { display: flex; gap: 12px; align-items: center; }
@@ -413,19 +430,13 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .locked::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(5,10,30,.9)); }
 .locked .inner { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 16px; display: grid; gap: 6px; }
 .locked h2 { font-size: 30px; font-style: italic; text-transform: uppercase; font-weight: 800; line-height: .95; }
-.perk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.perk { padding: 14px; display: grid; gap: 8px; }
-.perk .ic { color: var(--pro); width: 24px; height: 24px; }
-.perk b { font-size: 15px; }
-.perk span { font-size: 13px; color: var(--ink-2); }
 .avail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
 .avail div { border-radius: 12px; padding: 10px 6px; background: var(--surface-2); }
 .avail b { font-family: var(--f-display); font-size: 26px; display: block; line-height: 1; }
 .avail small { font-size: 12px; color: var(--ink-2); }
 
 /* Enterprise */
-.org-hero { border-radius: var(--r-lg); padding: 18px; color: #fff; background: linear-gradient(135deg, var(--ent), #2B1C7A); position: relative; overflow: hidden; display: grid; gap: 12px; }
-.org-hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 200px; height: 200px; border-radius: 50%; border: 28px solid rgba(255,255,255,.08); }
+.org-hero { border-radius: var(--r-lg); padding: 18px; color: #fff; background-color: var(--ent-deep); background-image: var(--motif); background-repeat: no-repeat; background-position: right -50px center; background-size: auto 125%; position: relative; overflow: hidden; display: grid; gap: 12px; }
 .org-hero h2 { font-size: 30px; font-style: italic; text-transform: uppercase; font-weight: 800; line-height: .95; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .stat { padding: 14px; display: grid; gap: 2px; }
@@ -438,7 +449,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .weekstrip button[aria-pressed="true"] { background: var(--ent); border-color: var(--ent); color: rgba(255,255,255,.8); }
 .weekstrip button[aria-pressed="true"] b { color: #fff; }
 .weekstrip i { width: 5px; height: 5px; border-radius: 50%; background: var(--ent); }
-.weekstrip button[aria-pressed="true"] i { background: var(--volt); }
+.weekstrip button[aria-pressed="true"] i { background: #fff; }
 .fixture { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 14px; }
 .fixture .side { display: grid; justify-items: center; gap: 6px; text-align: center; font-weight: 600; font-size: 13.5px; line-height: 1.15; min-width: 0; }
 .fixture .mid { display: grid; justify-items: center; gap: 2px; text-align: center; }
@@ -449,21 +460,21 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .podium { display: grid; grid-template-columns: 1fr 1.1fr 1fr; align-items: end; gap: 8px; text-align: center; }
 .podium > div { display: grid; justify-items: center; gap: 6px; }
 .podium .step { width: 100%; border-radius: 14px 14px 6px 6px; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: 30px; color: #fff; }
-.podium .p1 .step { height: 96px; background: linear-gradient(var(--ent), #3B24A8); }
-.podium .p2 .step { height: 72px; background: linear-gradient(#7C8AB0, #4D5980); }
-.podium .p3 .step { height: 56px; background: linear-gradient(#C08552, #8A5630); }
+.podium .p1 .step { height: 96px; background: var(--ent); }
+.podium .p2 .step { height: 72px; background: #5E6A8E; }
+.podium .p3 .step { height: 56px; background: #9A6236; }
 .podium .nm { font-size: 13px; font-weight: 700; line-height: 1.1; }
 .podium .pts { font-size: 12px; color: var(--ink-3); }
 .table-wrap { overflow-x: auto; }
 table.lb { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
-table.lb th { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; text-align: center; padding: 10px 6px; }
+table.lb th { font-size: 12.5px; color: var(--ink-3); font-weight: 600; text-align: center; padding: 10px 6px; }
 table.lb td { text-align: center; padding: 10px 6px; border-top: 1px solid var(--line); }
 table.lb td.team { text-align: left; }
 table.lb td.team div { display: flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; }
 table.lb td.pts { font-weight: 800; }
 table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent); }
 .form { display: inline-flex; gap: 3px; }
-.form i { width: 16px; height: 16px; border-radius: 4px; font-size: 10px; font-style: normal; font-weight: 800; color: #fff; display: grid; place-items: center; }
+.form i { width: 18px; height: 18px; border-radius: 4px; font-size: 11px; font-style: normal; font-weight: 800; color: #fff; display: grid; place-items: center; }
 .form .W { background: var(--ok); } .form .D { background: var(--ink-3); } .form .L { background: var(--hot); }
 .dept-bars { display: grid; gap: 10px; }
 .dept-bars .r { display: grid; grid-template-columns: 96px 1fr 40px; gap: 10px; align-items: center; font-size: 13.5px; }
@@ -479,15 +490,15 @@ table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent)
 .promo > * { position: relative; z-index: 2; }
 .promo h3 { font-size: 30px; font-style: italic; text-transform: uppercase; font-weight: 800; line-height: .92; max-width: 70%; }
 .promo p { margin: 0; font-size: 13.5px; opacity: .9; max-width: 70%; }
-.promo.brandy { background: linear-gradient(120deg, var(--brand), #0B2A99); }
+.promo.brandy { background-color: var(--brand); background-image: var(--motif); background-repeat: no-repeat; background-position: right -60px center; background-size: auto 130%; }
 .promo.brandy::before { display: none; }
-.promo .sponsor { position: absolute; top: 12px; right: 12px; z-index: 2; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: rgba(255,255,255,.2); padding: 3px 8px; border-radius: 6px; }
+.promo .sponsor { position: absolute; top: 12px; right: 12px; z-index: 2; font-size: 12px; font-weight: 700; background: rgba(255,255,255,.2); padding: 3px 8px; border-radius: 6px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .prod { display: grid; gap: 8px; text-align: left; min-width: 0; }
 .prod-img { position: relative; aspect-ratio: 1; max-width: 100%; border-radius: 18px; overflow: hidden; background: var(--surface-2); }
 .prod-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .prod-img .badges { position: absolute; left: 8px; top: 8px; display: flex; gap: 4px; }
-.prod-img .fav { position: absolute; right: 8px; top: 8px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.9); color: #0D1530; display: grid; place-items: center; }
+.prod-img .fav { position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.9); color: #0D1530; display: grid; place-items: center; }
 .prod-img .fav.on { color: var(--hot); }
 .prod-img .fav.on svg { fill: currentColor; }
 .prod-name { font-weight: 600; font-size: 14.5px; line-height: 1.2; }
@@ -497,7 +508,7 @@ table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent)
 .rating { display: inline-flex; align-items: center; gap: 3px; font-size: 12.5px; color: var(--ink-2); }
 .rating .ic { width: 13px; height: 13px; color: var(--warn); fill: var(--warn); }
 .biz { display: flex; gap: 14px; align-items: center; padding: 16px; background: var(--ink); color: var(--surface); border-radius: var(--r-lg); text-align: left; width: 100%; }
-.biz .ic { width: 28px; height: 28px; color: var(--volt); }
+.biz .ic { width: 28px; height: 28px; }
 .biz .grow { flex: 1; display: grid; gap: 2px; }
 .biz small { opacity: .75; }
 .sizes { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -506,7 +517,7 @@ table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent)
 .cart-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; }
 .cart-item img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
 .stepper { display: flex; align-items: center; gap: 4px; background: var(--surface-2); border-radius: 12px; padding: 3px; }
-.stepper button { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; }
+.stepper button { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; }
 .stepper b { min-width: 20px; text-align: center; }
 .sum { display: grid; gap: 8px; font-size: 14.5px; }
 .sum div { display: flex; justify-content: space-between; }
@@ -514,10 +525,9 @@ table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent)
 
 /* ───────── Profile ───────── */
 .me-head { display: flex; gap: 14px; align-items: center; }
-.me-head img { width: 72px; height: 72px; border-radius: 22px; object-fit: cover; }
+.me-head .av { border-radius: 22px; font-family: var(--f-display); font-style: italic; }
 .me-head h1 { font-size: 30px; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 1; }
-.plan-card { border-radius: var(--r-lg); padding: 18px; color: #fff; display: grid; gap: 12px; background: linear-gradient(130deg, var(--tc), color-mix(in srgb, var(--tc) 50%, #000)); position: relative; overflow: hidden; }
-.plan-card::after { content: ""; position: absolute; right: -30px; bottom: -60px; width: 180px; height: 180px; border-radius: 50%; border: 26px solid rgba(255,255,255,.1); }
+.plan-card { border-radius: var(--r-lg); padding: 18px; color: #fff; display: grid; gap: 12px; background-color: color-mix(in srgb, var(--tc) 82%, #000); background-image: var(--motif); background-repeat: no-repeat; background-position: right -60px center; background-size: auto 130%; position: relative; overflow: hidden; }
 .plan-card h2 { font-size: 32px; font-style: italic; text-transform: uppercase; font-weight: 800; line-height: .95; }
 .plan-card .btn { background: #fff; color: #0D1530; justify-self: start; position: relative; z-index: 1; }
 .me-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
@@ -525,21 +535,27 @@ table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent)
 .me-stats b { font-family: var(--f-display); font-size: 28px; font-weight: 800; display: block; line-height: 1; }
 .me-stats span { font-size: 12px; color: var(--ink-2); }
 
-.toast { position: absolute; left: 50%; bottom: 92px; z-index: 90; transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 12px 16px; border-radius: 14px; font-weight: 600; font-size: 14px; display: flex; gap: 8px; align-items: center; box-shadow: var(--shadow); max-width: calc(100% - 32px); animation: up .25s; }
-.toast .ic { color: var(--volt); }
+/* Toasts sit at the top so they never cover the primary action at the bottom of the screen. */
+.toast { position: absolute; left: 50%; top: calc(12px + env(safe-area-inset-top, 0px)); z-index: 90; transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 12px 16px; border-radius: 14px; font-weight: 600; font-size: 14px; display: flex; gap: 8px; align-items: center; box-shadow: var(--shadow); width: max-content; max-width: calc(100% - 32px); animation: down .25s; }
+.framed .toast { top: 52px; }
+.toast .ic { color: var(--ok); }
+@keyframes down { from { transform: translate(-50%, -12px); opacity: 0; } }
 .empty { text-align: center; padding: 30px 16px; color: var(--ink-2); display: grid; gap: 8px; justify-items: center; }
 .empty .ic { width: 36px; height: 36px; color: var(--ink-3); }
 
+/* In-app accessibility settings (Profile > Accessibility). The map keeps its own scale so pins stay aligned. */
+.app.big-text .screen.pad, .app.big-text .view, .app.big-text .sheet, .app.big-text .nearby-list { zoom: 1.12; }
+.app.calm *, .app.calm *::before, .app.calm *::after { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
 /* ───────── Places, photos & hosting ───────── */
-.av { width: 28px; height: 28px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 11px; flex: none; }
+.av { width: 28px; height: 28px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; flex: none; }
 .avatars .av { color: #fff; }
 .pin .glyph.photo { background-size: cover; background-position: center; border: 2px solid var(--surface); box-shadow: 0 0 0 2px var(--c); }
-.pin.mine .pin-body { background: var(--volt); color: var(--volt-ink); }
-.pin.mine .pin-body::after { background: var(--volt); }
+.pin.mine .pin-body { background: var(--brand); color: #fff; }
+.pin.mine .pin-body::after { background: var(--brand); }
 label.opt, label.loc-opt { cursor: pointer; }
 .photo-slot { position: relative; border-radius: var(--r); overflow: hidden; background: var(--surface-2); }
 .photo-slot img { display: block; width: 100%; aspect-ratio: 16 / 10; max-width: 100%; object-fit: cover; }
@@ -568,13 +584,13 @@ label.opt, label.loc-opt { cursor: pointer; }
 .gen-sum .ic { color: var(--ent); margin-top: 2px; }
 .bracket { display: grid; grid-auto-flow: column; grid-auto-columns: 196px; gap: 22px; overflow-x: auto; margin: 0 -16px; padding: 4px 16px 12px; scroll-snap-type: x proximity; scroll-padding-inline: 16px; }
 .bcol { display: flex; flex-direction: column; gap: 8px; scroll-snap-align: start; min-width: 0; }
-.bcol h4 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; text-transform: uppercase; font-size: 17px; color: var(--ent); }
+.bcol h4 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 18px; color: var(--ent); }
 .bstack { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 12px; }
 .bmatch { position: relative; display: block; width: 100%; text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px; padding: 8px 10px; }
 .bmatch.live { border-color: var(--ent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ent) 18%, transparent); }
 .bmatch.wide { max-width: 320px; }
 .bcol:not(:last-child) .bmatch::after { content: ""; position: absolute; right: -24px; top: 50%; width: 22px; border-top: 2px solid var(--line); }
-.bmatch .bl { position: absolute; top: -9px; left: 10px; background: var(--surface); padding: 0 5px; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: var(--ink-3); text-transform: uppercase; }
+.bmatch .bl { position: absolute; top: -9px; left: 10px; background: var(--surface); padding: 0 5px; font-size: 12px; font-weight: 700; color: var(--ink-3); }
 .bmatch .tm { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13.5px; min-width: 0; }
 .bmatch .tm .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bmatch .tm.win { font-weight: 800; }
@@ -582,26 +598,26 @@ label.opt, label.loc-opt { cursor: pointer; }
 .bmatch .tm .sc { margin-left: auto; font-weight: 800; }
 .bmatch .tm .ph { font-style: italic; color: var(--ink-3); font-size: 13px; }
 .ph-crest { --c: var(--surface-2); color: var(--ink-3) !important; }
-.bmatch .meta { font-size: 11.5px; color: var(--ink-3); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 3px; }
-.champ { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 18px 10px; border-radius: 18px; background: linear-gradient(160deg, var(--volt), color-mix(in srgb, var(--volt) 55%, var(--ok))); color: var(--volt-ink); }
+.bmatch .meta { font-size: 12px; color: var(--ink-3); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 3px; }
+.champ { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 18px 10px; border-radius: 18px; background: var(--volt); color: var(--volt-ink); }
 .champ b { font-family: var(--f-display); font-size: 20px; font-style: italic; text-transform: uppercase; line-height: 1; }
 .champ-banner { display: flex; align-items: center; gap: 8px; background: var(--volt); color: var(--volt-ink); border-radius: 12px; padding: 10px 12px; font-size: 14px; justify-self: start; position: relative; z-index: 1; }
 .sched-row { align-items: center; }
 .sched-time { display: grid; min-width: 72px; line-height: 1.15; }
-.sched-time small { font-size: 11.5px; color: var(--ink-3); }
+.sched-time small { font-size: 12px; color: var(--ink-3); }
 .sched-teams { font-weight: 600; font-size: 14px; }
 .sched-teams i { font-weight: 500; color: var(--ink-3); }
 .score-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
 .score-side { display: grid; justify-items: center; gap: 8px; text-align: center; min-width: 0; }
 .score-side b { font-size: 14px; line-height: 1.15; }
 .score-side .input { text-align: center; font-family: var(--f-display); font-size: 28px; font-weight: 800; min-height: 60px; }
-.score-vs { padding-bottom: 20px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.score-vs { padding-bottom: 20px; font-size: 13px; font-weight: 700; color: var(--ink-3); }
 
 /* ───────── Upgrades ───────── */
 .chip-on { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
-.chip-count { min-width: 20px; height: 20px; border-radius: 10px; background: var(--brand); color: #fff; font-size: 11.5px; display: grid; place-items: center; padding: 0 5px; }
+.chip-count { min-width: 20px; height: 20px; border-radius: 10px; background: var(--brand); color: #fff; font-size: 12px; display: grid; place-items: center; padding: 0 5px; }
 .seg-sm { padding: 3px; border-radius: 12px; }
-.seg-sm button { min-height: 32px; font-size: 13px; padding: 0 10px; white-space: nowrap; }
+.seg-sm button { min-height: 38px; font-size: 13px; padding: 0 10px; white-space: nowrap; }
 .ellip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hotc { color: var(--hot) !important; }
 .dotc { width: 10px; height: 10px; border-radius: 50%; flex: none; }
@@ -611,7 +627,7 @@ label.opt, label.loc-opt { cursor: pointer; }
 .ns-main b { font-size: 14.5px; }
 .ns-main small { font-size: 12.5px; }
 .ns-side { display: grid; gap: 6px; flex: none; }
-.ns-pill { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 9px; border-radius: 9px; font-size: 12.5px; font-weight: 700; background: color-mix(in srgb, var(--warn) 18%, var(--surface)); color: color-mix(in srgb, var(--warn) 70%, var(--ink)); white-space: nowrap; }
+.ns-pill { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 9px; border-radius: 9px; font-size: 12.5px; font-weight: 700; background: color-mix(in srgb, var(--warn) 18%, var(--surface)); color: color-mix(in srgb, var(--warn) 70%, var(--ink)); white-space: nowrap; }
 .ns-pill.hot { background: color-mix(in srgb, var(--hot) 15%, var(--surface)); color: var(--hot); }
 
 .steps { display: grid; grid-auto-flow: column; gap: 6px; }
@@ -641,19 +657,18 @@ label.opt, label.loc-opt { cursor: pointer; }
 .note { display: flex; gap: 12px; padding: 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--pc, var(--line)); }
 .note.unread { background: color-mix(in srgb, var(--brand) 5%, var(--surface)); }
 .note.done { opacity: .75; }
-.pri-urgent { --pc: var(--hot); } .pri-action { --pc: var(--warn); } .pri-info { --pc: var(--brand); } .pri-promo { --pc: var(--volt); }
+/* The left edge encodes priority (urgent / action / update / offer), so it carries information. */
+.pri-urgent { --pc: var(--hot); } .pri-action { --pc: var(--warn); } .pri-info { --pc: var(--brand); } .pri-promo { --pc: var(--ink-3); }
 .note-ic { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--pc) 16%, var(--surface)); color: var(--pc); }
-.pri-promo .note-ic { color: var(--volt-ink); background: var(--volt); }
 .note-done { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--ok); }
 
 .att { display: flex; gap: 4px; flex: none; }
-.att button { height: 32px; padding: 0 9px; border-radius: 9px; font-size: 12.5px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); }
+.att button { height: 40px; padding: 0 10px; border-radius: 9px; font-size: 12.5px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); }
 .att .att-present[aria-pressed="true"] { background: var(--ok); color: #fff; }
 .att .att-late[aria-pressed="true"] { background: var(--warn); color: #fff; }
 .att .att-absent[aria-pressed="true"] { background: var(--hot); color: #fff; }
 .lineup-no { width: 28px; height: 28px; border-radius: 9px; background: var(--surface-2); display: grid; place-items: center; font-weight: 800; flex: none; }
-.icon-btn[aria-pressed="true"] { color: var(--volt-ink); background: var(--volt); border-color: var(--volt); }
-.mdv .row { gap: 8px; }
+.icon-btn[aria-pressed="true"] { color: #fff; background: var(--brand); border-color: var(--brand); }
 
 .pin.venue .pin-body { border: 2px solid var(--c); }
 .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: var(--ink-2); }
@@ -720,7 +735,7 @@ const ICONS={"map-pin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0
 
 </script>
 <script>
-/* LetsPlay — sample data (India). Everything here is illustrative mock content for the prototype. */
+/* LetsPlay: sample data (India). Everything here is illustrative mock content for the prototype. */
 const CUR = '₹';
 const inr = (n) => '₹' + Math.round(Number(n)).toLocaleString('en-IN');
 
@@ -776,7 +791,8 @@ const COMMUNITY_SPOTS = [
   { id: 'c1', name: 'Open badminton court', sport: 'badminton', x: 1180, y: 610, by: 'Priya N.', setting: 'Outdoor', note: 'Public court in the colony park, lights until 10 pm.', visibility: 'Everyone' },
 ];
 
-const ME_USER = { name: 'Arjun Mehta', img: 'av3' };
+/* No profile photo: people show initials until they add their own picture. */
+const ME_USER = { name: 'Arjun Mehta' };
 
 const PEOPLE = [
   { id: 'u1', name: 'Rohan Iyer', sport: 'Football · Cricket', dist: '0.6 km' },
@@ -787,7 +803,7 @@ const PEOPLE = [
 ];
 
 const FAMILY = [
-  { id: 'f0', name: 'Arjun Mehta', note: 'You', img: 'av3' },
+  { id: 'f0', name: 'Arjun Mehta', note: 'You' },
   { id: 'f1', name: 'Aanya Mehta', note: 'Age 11 · consent on file' },
   { id: 'f2', name: 'Vihaan Mehta', note: 'Age 8 · consent on file' },
 ];
@@ -797,7 +813,7 @@ const TEAM_COLORS = ['#13A04B', '#1D4FF2', '#E3336A', '#E0611A', '#6A45F5', '#0E
 const SAMPLE_TEAMS = [
   { id: 't1', name: 'Riverfront Strikers', sport: 'cricket', color: '#D43B3B', privacy: 'Invite only',
     members: [
-      { name: 'Arjun Mehta', img: 'av3', role: 'Captain', status: 'yes' },
+      { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
       { name: 'Rohan Iyer', role: 'Vice-captain', status: 'yes' },
       { name: 'Vikram Singh', role: 'Player', status: 'maybe' },
       { name: 'Sameer Khan', role: 'Player', status: 'yes' },
@@ -807,7 +823,7 @@ const SAMPLE_TEAMS = [
     next: { vs: 'Oval Strikers CC', d: 3, t: '19:00', venue: 'Oval Cricket Ground' } },
   { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0E9FE0', privacy: 'Public',
     members: [
-      { name: 'Arjun Mehta', img: 'av3', role: 'Captain', status: 'yes' },
+      { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
       { name: 'Kavya Nair', role: 'Player', status: 'yes' },
       { name: 'Ravi Shah', role: 'Player', status: 'maybe' },
       { name: 'Pooja Desai', role: 'Player', status: 'yes' },
@@ -904,7 +920,7 @@ const NOTE_SEED = [
   { id: 'n5', pri: 'info', cat: 'club', icon: 'list-checks', when: 'Yesterday', ref: 'a13', title: 'Coach Imran shared the kit list',
     body: 'For Junior Futsal on Saturday, Vihaan needs non-marking shoes, shin pads and a water bottle.',
     actions: [['View game', 'view']] },
-  { id: 'n6', pri: 'info', cat: 'recs', icon: 'sparkles', when: '2 days ago', ref: 'a15', title: 'New near you: Evening Kabaddi Practice',
+  { id: 'n6', pri: 'info', cat: 'recs', icon: 'compass', when: '2 days ago', ref: 'a15', title: 'New near you: Evening Kabaddi Practice',
     body: 'Free, tomorrow at 5:30 pm at Hilltop Akhada Ground, 1.5 km away. Beginners welcome.',
     actions: [['View game', 'view']] },
   { id: 'n7', pri: 'promo', cat: 'promo', icon: 'tag', when: '2 days ago', title: 'Riverfront Sports Co.: flat 20% off cricket gear',
@@ -944,7 +960,7 @@ const PLAYERS = [
 
 </script>
 <script>
-/* LetsPlay — interactive prototype
+/* LetsPlay: interactive prototype
    Tiers: lite (browse + join), pro (+ pin places, teams, invites), enterprise (+ company league, schedule, leaderboards). */
 (function () {
 'use strict';
@@ -1089,7 +1105,8 @@ function renderTabbar() {
   $('#tabbar').innerHTML = items.map(([id, icon, label]) => `
     <button class="tab" data-act="tab" data-id="${id}" ${tab === id ? 'aria-current="page"' : ''}>
       ${ic(icon)}<span>${label}</span>
-      ${id === 'shop' && cartN ? `<span class="dot num">${cartN}</span>` : ''}
+      ${id === 'shop' && cartN ? `<span class="dot num" aria-label="${cartN} in bag">${cartN}</span>` : ''}
+      ${id === 'games' && todoCount() ? `<span class="dot num" aria-label="${todoCount()} need attention">${todoCount()}</span>` : ''}
       ${id === 'teams' && S.tier === 'lite' ? `<span class="dot lock">${ic('lock')}</span>` : ''}
     </button>`).join('');
 }
@@ -1250,7 +1267,7 @@ function renderExplore() {
 function renderExploreChrome() {
   $('#tierSlot').innerHTML = tierPill();
   $('#bellSlot').innerHTML = bellHTML();
-  const chips = [['all', null, 'All sports']].concat(Object.keys(SPORTS).map((k) => [k, SPORTS[k], SPORTS[k].name]));
+  const chips = [['all', null, 'All sports']].concat(sportsByPreference().map((k) => [k, SPORTS[k], SPORTS[k].name]));
   $('#sportChips').innerHTML = filterChipHTML() + chips.map(([k, s, n]) => `<button class="chip ${s ? 'sport' : ''}" style="${s ? '--c:' + s.c : ''}" data-act="filter" data-id="${k}" aria-pressed="${S.filter === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('');
   $('#fab').innerHTML = can.pin() ? `${ic('map-pin-plus')}Add place` : `${ic('map-pin-plus')}Add place<span class="lockmark">${ic('lock')}</span>`;
   renderPinsAndList();
@@ -1545,8 +1562,8 @@ function openAct(id) {
       </div>
       <div class="mini-map" id="miniMap"></div>
       <div class="rows">
-        ${a.address ? `<div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Address</b><small>${esc(a.address)}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Opening directions in Maps" data-icon="navigation" aria-label="Directions">${ic('navigation')}</button></div>` : ''}
-        <div class="row">${ic('shield-check', 'lead')}<div class="grow"><b>Hosted by ${a.hostedByMe ? 'you' : esc(a.host)}</b><small>${a.hostedByMe ? `${a.invitedCount || 0} invited · ${a.visibility === 'Invited only' ? 'invite only' : 'visible to everyone nearby'}` : 'Verified organiser · replies in about 1 hour'}</small></div><button class="icon-btn" data-act="toastMsg" data-msg="Message sent to ${esc(a.host)}" aria-label="Message host">${ic('message-circle')}</button></div>
+        ${a.address ? `<div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Address</b><small>${esc(a.address)}</small></div></div>` : ''}
+        <div class="row">${ic('users', 'lead')}<div class="grow"><b>Hosted by ${a.hostedByMe ? 'you' : esc(a.host)}</b><small>${a.hostedByMe ? `${a.invitedCount || 0} invited · ${a.visibility === 'Invited only' ? 'invite only' : 'visible to everyone nearby'}` : 'Message the host in the game chat once you have joined'}</small></div></div>
         ${COACH[a.id] ? `<div class="row">${ic('award', 'lead')}<div class="grow"><b>Coach: ${esc(COACH[a.id][0])}</b><small>${esc(COACH[a.id][1])} · capacity ${a.total} players</small></div></div>` : ''}
         <div class="row">${ic('layers', 'lead')}<div class="grow"><b>Surface</b><small>${esc(a.surface)}</small></div></div>
         <div class="row">${ic('dumbbell', 'lead')}<div class="grow"><b>What to bring</b><small>${esc(a.equipment)}</small></div></div>
@@ -1563,41 +1580,13 @@ function openAct(id) {
   mm.querySelector('.me-dot').outerHTML = `<div class="pin" style="--c:${s.c};transform:translate(${mm.clientWidth / 2}px,65px)"><span class="pin-body"><span class="glyph">${ic(s.icon)}</span><span class="pin-label">${esc(a.venue.split(' · ')[0])}</span></span></div>`;
 }
 
-function joinFlow(id) {
-  const a = allActs().find((x) => x.id === id); const s = sp(a.sport);
-  const kids = a.ages === '8–11';
-  const who = FAMILY.map((f, i) => `<button class="opt" data-act="pickMany" data-id="${f.id}" aria-pressed="${kids ? i === 1 : i === 0}">${avatar(f, 40)}<div><b>${f.name}</b><div class="faint" style="font-size:13px">${f.note}</div></div><span class="tick">${ic('check')}</span></button>`).join('');
-  openSheet(`${sheetHead('Join game', `${esc(a.title)} · ${when(a)}`)}
-    <div class="field"><span class="lbl">Who's playing?</span><div class="pick" id="joinWho">${who}</div></div>
-    ${a.price ? `<div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="payApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="payApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
-    <div class="rows"><div class="row">${ic('indian-rupee', 'lead')}<div class="grow"><b>Total</b><small>Refunds go back to your UPI account</small></div><b class="num" id="joinTotal">${money(a.price)}</b></div></div>` : `<div class="rows"><div class="row">${ic('gift', 'lead')}<div class="grow"><b>Free game</b><small>No payment needed</small></div></div></div>`}
-    <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px" class="muted"><input type="checkbox" id="consent" checked style="width:20px;height:20px;margin:0;accent-color:var(--brand)"> I agree to the host's code of conduct and the cancellation policy. Emergency contacts are shared with the host.</label>
-    <button class="btn btn-primary btn-block" data-act="confirmJoin" data-id="${a.id}" style="min-height:54px">${a.price ? `${ic('smartphone')}Pay via UPI` : `${ic('check')}Confirm`}</button>`,
-  { onMount: () => updateJoinTotal(a) });
-}
-function updateJoinTotal(a) { const n = $$('#joinWho [aria-pressed="true"]').length; const t = $('#joinTotal'); if (t) t.textContent = money(a.price * Math.max(1, n)); }
-function confirmJoin(id) {
-  const a = allActs().find((x) => x.id === id); const n = Math.max(1, $$('#joinWho [aria-pressed="true"]').length);
-  if (!$('#consent').checked) { toast('Please accept the code of conduct to join', 'info'); return; }
-  if (!S.joined.includes(id)) S.joined.push(id); S.spotsTaken[id] = (S.spotsTaken[id] || 0) + n; save();
-  openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>You're in!</h2>
-    <div class="muted">${esc(a.title)}<br>${longFmt.format(dateAt(a.d, a.t))} at ${timeFmt.format(dateAt(a.d, a.t))}</div></div>
-    <div class="rows"><div class="row">${ic('calendar-days', 'lead')}<div class="grow"><b>Added to My games</b><small>Reminder 2 hours before</small></div></div>
-    <div class="row">${ic('message-circle', 'lead')}<div class="grow"><b>Game chat unlocked</b><small>Say hi to ${a.total - spotsLeft(a)} players</small></div></div></div>
-    <button class="btn btn-primary btn-block" data-act="gotoGames">See My games</button>
-    <button class="btn btn-ghost btn-block" data-act="closeSheet">Keep exploring</button>`);
-  if (tab === 'explore') { renderPinsAndList(); if (selected) selectAct(selected); }
-  $$('#stack .view').forEach((v) => v.remove());
-}
+/* Joining runs through the step-by-step registration in features.js (regStart). */
 
 /* ───────── MY GAMES ───────── */
 function renderGames() {
   const mine = allActs().filter(isJoined).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t));
   const next = mine[0];
-  let html = `<div class="page-head"><h1>My games</h1><button class="icon-btn" data-act="toastMsg" data-msg="Calendar synced with your phone" aria-label="Sync calendar">${ic('calendar')}</button></div>`;
-  if (false) {
-    html += `<div class="alert" role="status">${ic('info')}<div class="grow"><b>Riverfront 5K: meeting point moved</b><span>Now starting at the promenade clock tower, 200 m east. Same time.</span><div style="display:flex;gap:8px"><button class="btn btn-sm btn-line" data-act="ackAlert">Got it</button><button class="btn btn-sm btn-ghost" data-act="open" data-id="a7">View game</button></div></div></div>`;
-  }
+  let html = `<div class="page-head"><h1>My games</h1>${bellHTML()}</div>`;
   if (next) {
     const ms = dateAt(next.d, next.t) - Date.now(); const h = Math.max(0, Math.floor(ms / 3.6e6)); const m = Math.max(0, Math.floor((ms % 3.6e6) / 6e4));
     html += `<div class="section"><div class="eyebrow">Up next</div>
@@ -1605,7 +1594,7 @@ function renderGames() {
         <span class="badge" style="background:${sp(next.sport).c};color:#fff;justify-self:start">${ic(sp(next.sport).icon)}${sp(next.sport).name}</span>
         <h3>${esc(next.title)}</h3><div style="opacity:.9">${when(next)} · ${esc(next.venue)}</div>
         <div class="countdown num"><div><b>${Math.floor(h / 24)}</b><small>days</small></div><div><b>${h % 24}</b><small>hrs</small></div><div><b>${m}</b><small>min</small></div></div>
-        <div style="display:flex;gap:8px"><button class="btn btn-volt btn-sm" data-act="toastMsg" data-msg="Opening directions in Maps" data-icon="navigation">${ic('navigation', 'ic-sm')}Directions</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="open" data-id="${next.id}">Details</button></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-sm" style="background:#fff;color:#0D1530" data-act="open" data-id="${next.id}">${ic('map-pin', 'ic-sm')}Venue and details</button></div>
       </div></div></div>`;
     const groups = {};
     mine.forEach((a) => { (groups[a.d] = groups[a.d] || []).push(a); });
@@ -1626,9 +1615,8 @@ function renderTeams() {
   if (S.tier === 'lite') {
     el.innerHTML = `<div class="page-head"><h1>Teams</h1>${tierPill()}</div>
       <div class="locked"><img src="${IMG}field.jpg" alt=""><div class="inner"><span class="tier t-pro" style="justify-self:start">${ic('zap')}Pro feature</span><h2>Build your squad</h2><span style="opacity:.9">Create teams, invite players and schedule matches.</span></div></div>
-      <div class="perk-grid section">
-        ${[['users', 'Create teams', 'Rosters, roles and team colours.'], ['user-plus', 'Invite players', 'By link, code or from people nearby.'], ['camera', 'Snap new places', 'Photograph a ground to add it for everyone.'], ['calendar-days', 'Schedule matches', 'Availability and reminders built in.']]
-          .map(([i, t, d]) => `<div class="card perk">${ic(i)}<b>${t}</b><span>${d}</span></div>`).join('')}
+      <div class="section"><div class="section-head"><h2>What Pro adds</h2></div>
+        <ul class="feat-list card" style="padding:16px;gap:12px;font-size:15px">${PLANS.pro.feats.slice(1).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
       </div>
       <div class="section"><button class="btn btn-primary btn-block" data-act="setTier" data-id="pro" style="min-height:54px">${ic('zap')}Try Pro · ${PLANS.pro.price}${PLANS.pro.per}</button><div class="faint" style="text-align:center;font-size:13px">Example pricing for the prototype</div></div>`;
     return;
@@ -1719,7 +1707,7 @@ function renderLeague(el) {
     const st = standings();
     body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-enterprise" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
         <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · cricket, football, kabaddi and more</div>
-        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
+        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-sm" style="background:#fff;color:#0D1530" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
       <div class="stats section" style="margin-top:12px">
         <div class="card stat"><span>Active players</span><b class="num">248</b><span class="delta">${ic('trending-up', 'ic-sm')}+18 this month</span></div>
         <div class="card stat"><span>Participation</span><b class="num">60%</b><span class="delta">${ic('trending-up', 'ic-sm')}+7 pts</span></div>
@@ -1747,7 +1735,7 @@ function renderLeague(el) {
       <tbody>${st.map((t, i) => `<tr class="${t.id === 'e1' ? 'mine' : ''}"><td>${i + 1}</td><td class="team"><div><span class="crest sm" style="--c:${t.c}">${t.ab}</span>${t.name}</div></td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td class="pts">${t.pts}</td><td><span class="form">${t.form.slice(-3).split('').map((r) => `<i class="${r}">${r}</i>`).join('')}</span></td></tr>`).join('')}</tbody></table></div>
       <div class="faint" style="font-size:12.5px">3 points for a win, 1 for a draw. Your team is highlighted. ${S.lbSport !== 'all' ? 'Per-sport tables use the same sample data in this prototype.' : ''}</div>`;
   } else {
-    body = `<div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" style="flex:1" data-act="autoBalance">${ic('shuffle', 'ic-sm')}Auto-balance teams</button><button class="btn btn-soft btn-sm" style="flex:1" data-act="toastMsg" data-msg="Invite sent to all employees">${ic('send', 'ic-sm')}Invite employees</button></div>
+    body = `<button class="btn btn-primary btn-block" data-act="shareLeague">${ic('share-2', 'ic-sm')}Invite employees to the league</button>
       <div style="display:grid;gap:10px" class="section">${ORG.teams.map((t) => `<div class="card team-card"><div class="team-top"><span class="crest" style="--c:${t.c}">${t.ab}</span><div class="grow"><h3>${t.name}</h3><div class="muted" style="font-size:13.5px">${t.dept} · ${t.players} players</div></div><span class="badge ent num">${t.w * 3 + t.d} pts</span></div></div>`).join('')}</div>`;
   }
   el.innerHTML = `<div class="page-head"><h1>League</h1>${tierPill()}</div>
@@ -1777,28 +1765,32 @@ function addFixtureSheet() {
 /* ───────── SHOP ───────── */
 function renderShop() {
   const cats = [['all', 'All', 'layers'], ['equipment', 'Equipment', 'dumbbell'], ['footwear', 'Footwear', 'footprints'], ['apparel', 'Outfits', 'shirt'], ['accessories', 'Accessories', 'package'], ['deals', 'Deals', 'percent']];
-  const list = PRODUCTS.filter((p) => S.shopCat === 'all' || p.cat === S.shopCat || (S.shopCat === 'deals' && p.was));
+  const q = (S.shopQ || '').trim().toLowerCase();
+  const list = PRODUCTS.filter((p) => (S.shopCat === 'all' || p.cat === S.shopCat || (S.shopCat === 'deals' && p.was)) && (!q || (p.name + ' ' + p.brand + ' ' + p.cat).toLowerCase().includes(q)));
   const cartN = S.cart.reduce((n, c) => n + c.qty, 0);
   const memberOff = S.tier !== 'lite';
   $('#scr-shop').innerHTML = `
-    <div class="page-head"><h1>Shop</h1><div style="display:flex;gap:8px"><button class="icon-btn" data-act="toastMsg" data-msg="Search coming soon in the prototype" data-icon="search" aria-label="Search shop">${ic('search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
+    <div class="page-head"><h1>Shop</h1><div style="display:flex;gap:8px"><button class="icon-btn" data-act="shopSearch" aria-label="Search the shop" aria-expanded="${S.shopSearch ? 'true' : 'false'}">${ic(S.shopSearch ? 'x' : 'search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
+    ${S.shopSearch ? `<label class="search" style="box-shadow:none;margin-bottom:14px">${ic('search')}<input id="shopQ" type="search" placeholder="Search balls, shoes, jerseys" value="${esc(S.shopQ || '')}" aria-label="Search products"></label>` : ''}
     <div class="promos">
       <button class="promo" data-act="shopCat" data-id="apparel"><img src="${IMG}gym.jpg" alt=""><span class="badge volt" style="align-self:flex-start">Up to 30% off</span><h3>Monsoon kit drop</h3><p>Quick-dry jerseys and training outfits.</p></button>
-      <button class="promo" data-act="toastMsg" data-msg="Registration form opened" data-icon="trophy"><img src="${IMG}football.jpg" alt=""><span class="sponsor">Sponsored</span><span class="badge" style="align-self:flex-start;background:#fff;color:#0D1530">City Futsal League</span><h3>Team entries open</h3><p>8-week monsoon season. Register by Friday.</p></button>
+      <button class="promo" data-act="promoFootball"><img src="${IMG}football.jpg" alt=""><span class="sponsor">Sponsored</span><span class="badge" style="align-self:flex-start;background:#fff;color:#0D1530">City Futsal League</span><h3>Find a team to join</h3><p>See football games near you this week.</p></button>
       <button class="promo brandy" data-act="plans"><span class="tier t-pro" style="align-self:flex-start;background:rgba(255,255,255,.2)">${ic('zap')}Members</span><h3>Pro saves 10%</h3><p>On every order, plus free delivery over ${inr(FREE_DELIVERY)}.</p></button>
     </div>
     <div class="chips" style="margin-top:16px">${cats.map(([k, n, i]) => `<button class="chip" data-act="shopCat" data-id="${k}" aria-pressed="${S.shopCat === k}">${ic(i)}${n}</button>`).join('')}</div>
-    <div class="section"><div class="section-head"><h2>${S.shopCat === 'all' ? 'Trending near you' : cats.find((c) => c[0] === S.shopCat)[1]}</h2><span class="faint num">${list.length} items</span></div>
-      <div class="grid2">${list.map((p) => prodCard(p, memberOff)).join('')}</div></div>
-    ${S.tier === 'enterprise' ? `<div class="section"><button class="biz" style="background:var(--ent);color:#fff" data-act="toastMsg" data-msg="Bulk kit request sent to your account manager" data-icon="package">${ic('shirt')}<div class="grow"><b>Team kits for ${ORG.name}</b><small>Bulk-order printed jerseys for all ${ORG.teams.length} teams.</small></div>${ic('chevron-right')}</button></div>` : ''}
+    <div class="section"><div class="section-head"><h2>${S.shopCat === 'all' ? 'All gear' : cats.find((c) => c[0] === S.shopCat)[1]}</h2><span class="faint num">${list.length} item${list.length === 1 ? '' : 's'}</span></div>
+      ${list.length ? `<div class="grid2">${list.map((p) => prodCard(p, memberOff)).join('')}</div>` : `<div class="empty card">${ic('search')}<b>No gear matches “${esc(S.shopQ || '')}”</b><span>Try a sport or a product type, like ball or shoes.</span><button class="btn btn-soft btn-sm" data-act="shopClear">Clear search</button></div>`}
+      <div class="faint" style="font-size:12.5px">Sample products, sellers, prices and ratings for the prototype.</div></div>
+    ${S.tier === 'enterprise' ? `<div class="section"><div class="biz" style="background:var(--ent-deep);color:#fff" aria-disabled="true">${ic('shirt')}<div class="grow"><b>Team kits for ${ORG.name}</b><small>Bulk-order printed jerseys for all ${ORG.teams.length} teams.</small></div><span class="soon">Coming soon</span></div></div>` : ''}
     <div class="section"><button class="biz" data-act="promote">${ic('megaphone')}<div class="grow"><b>Promote your business</b><small>Featured map pins, shop banners and event sponsorship for local sports businesses.</small></div>${ic('chevron-right')}</button></div>`;
+  bindShopSearch(false);
 }
 function prodCard(p, memberOff) {
   const fav = S.fav.includes(p.id);
   return `<div class="prod"><div class="prod-img"><button data-act="product" data-id="${p.id}" style="display:block;width:100%;height:100%" aria-label="${esc(p.name)}"><img src="${IMG + p.img}.jpg" alt="" loading="lazy"></button>
     <div class="badges">${p.was ? `<span class="badge volt">-${Math.round((1 - p.price / p.was) * 100)}%</span>` : ''}${memberOff ? '<span class="badge brand">-10% Pro</span>' : ''}</div>
     <button class="fav ${fav ? 'on' : ''}" data-act="fav" data-id="${p.id}" aria-label="${fav ? 'Remove from' : 'Save to'} favourites" aria-pressed="${fav}">${ic('heart', 'ic-sm')}</button></div>
-    <button data-act="product" data-id="${p.id}" style="text-align:left;display:grid;gap:4px"><span class="faint" style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase">${p.brand}</span><span class="prod-name">${esc(p.name)}</span>
+    <button data-act="product" data-id="${p.id}" style="text-align:left;display:grid;gap:4px"><span class="faint" style="font-size:12.5px;font-weight:600">${p.brand}</span><span class="prod-name">${esc(p.name)}</span>
     <span class="prod-price"><b class="num">${inr(p.price)}</b>${p.was ? `<s class="num">${inr(p.was)}</s>` : ''}</span><span class="rating">${ic('star')}<span class="num">${p.rating} (${p.reviews})</span></span></button></div>`;
 }
 function openProduct(id) {
@@ -1840,18 +1832,21 @@ function promoteSheet() {
 function renderMe() {
   const P = PLANS[S.tier];
   $('#scr-me').innerHTML = `
-    <div class="me-head"><img src="${IMG}av3.jpg" alt=""><div style="flex:1;min-width:0"><h1>Arjun Mehta</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}Riverfront · plays cricket, football</div></div><button class="icon-btn" data-act="toastMsg" data-msg="Settings are not part of the prototype yet" data-icon="settings" aria-label="Settings">${ic('settings')}</button></div>
-    <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">24</b><span>Games played</span></div><div class="card"><b class="num">31h</b><span>Active this year</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
-    <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.75)">Your plan</div><h2>${P.name}</h2><div style="opacity:.9;max-width:30ch;position:relative;z-index:1">${P.blurb}</div><button class="btn btn-sm" data-act="plans">${S.tier === 'enterprise' ? 'Manage plan' : 'Compare plans'}</button></div>
-    <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="toastMsg" data-msg="Add a family member form opens here">Add</button></div>
-      <div class="rows">${FAMILY.map((f, i) => `<div class="row"><div class="avatars">${avatar(f)}</div><div class="grow"><b>${f.name}</b><small>${f.note}</small></div>${ic('chevron-right')}</div>`).join('')}</div></div>
+    <div class="me-head">${avatar(ME_USER, 72)}<div style="flex:1;min-width:0"><h1>${esc(ME_USER.name)}</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}${AREA} · ${esc((S.favSports || ['cricket', 'football']).map((k) => SPORTS[k].name.toLowerCase()).join(', '))}</div></div></div>
+    <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">${S.joined.length}</b><span>Games booked</span></div><div class="card"><b class="num">${(S.hosted || []).length}</b><span>Games hosted</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
+    <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Your plan</div><h2>${P.name}</h2><div style="opacity:.92;max-width:30ch;position:relative;z-index:1">${P.blurb}</div><button class="btn btn-sm" data-act="plans">${S.tier === 'enterprise' ? 'Manage plan' : 'Compare plans'}</button></div>
+    <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="addFamily">${ic('plus', 'ic-sm')}Add</button></div>
+      <div class="rows">${FAMILY.map((f) => `<div class="row"><div class="avatars">${avatar(f)}</div><div class="grow"><b>${esc(f.name)}</b><small>${esc(f.note)}</small></div></div>`).join('')}</div></div>
     <div class="section"><div class="section-head"><h2>Settings</h2></div>
       <div class="rows">
-        ${[['bell', 'Notifications', 'Cancellations and venue changes always on'], ['wallet', 'Payment methods', 'UPI · arjun.m@upi · RuPay •• 4242'], ['accessibility', 'Accessibility', 'Text size, reduced motion, venue needs'], ['globe', 'Language & region', 'English, हिन्दी · India · km'], ['shield-check', 'Privacy & safety', 'Who can invite you and see your games']]
-          .map(([i, t, d]) => `<button class="row" data-act="toastMsg" data-msg="${t} settings open here">${ic(i, 'lead')}<div class="grow"><b>${t}</b><small>${d}</small></div>${ic('chevron-right')}</button>`).join('')}
+        <button class="row" data-act="notePrefs">${ic('bell', 'lead')}<div class="grow"><b>Notifications</b><small>Changes and payments always on, the rest is your choice</small></div>${ic('chevron-right')}</button>
+        <button class="row" data-act="payPrefs">${ic('wallet', 'lead')}<div class="grow"><b>Default UPI app</b><small>${esc(S.payDefault || UPI_APPS[0])}</small></div>${ic('chevron-right')}</button>
+        <button class="row" data-act="a11yPrefs">${ic('accessibility', 'lead')}<div class="grow"><b>Accessibility</b><small>${S.bigText ? 'Larger text on' : 'Standard text'}${S.calm ? ' · reduced motion' : ''}</small></div>${ic('chevron-right')}</button>
+        <div class="row" aria-disabled="true">${ic('globe', 'lead')}<div class="grow"><b>Language</b><small>English. Hindi and regional languages planned</small></div><span class="soon">Coming soon</span></div>
+        <div class="row" aria-disabled="true">${ic('shield-check', 'lead')}<div class="grow"><b>Privacy and safety</b><small>Who can invite you and see your games</small></div><span class="soon">Coming soon</span></div>
         <button class="row" data-act="reset">${ic('rotate-ccw', 'lead')}<div class="grow"><b>Reset demo data</b><small>Start the prototype over</small></div></button>
       </div></div>
-    <div class="faint" style="text-align:center;font-size:12.5px;margin-top:18px">LetsPlay prototype · sample data only</div>`;
+    <div class="faint" style="text-align:center;font-size:12.5px;margin-top:18px">LetsPlay prototype. Games, people, venues and prices are sample data.</div>`;
 }
 function plansSheet() {
   openSheet(`${sheetHead('Choose your plan', 'Switch any time. Example pricing.')}
@@ -1895,13 +1890,10 @@ const A = {
       <button class="btn btn-primary btn-block" data-act="gotoShop">${ic('shopping-bag')}Shop the deal</button>`); },
   gotoShop: () => { S.shopCat = 'all'; go('shop'); },
   open: (el) => { closeSheet(true); openAct(el.dataset.id); },
-  join: (el) => joinFlow(el.dataset.id),
-  pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); const id = $('.sheet [data-act="confirmJoin"]'); if (id) updateJoinTotal(allActs().find((a) => a.id === id.dataset.id)); },
+  pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); },
   pickOne: (el) => { pickOne(el); if (el.dataset.tg && TD) { TD[el.dataset.tg] = el.dataset.id; renderGen(); return; } if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
-  confirmJoin: (el) => confirmJoin(el.dataset.id),
   gotoGames: () => go('games'),
   back: () => pop(),
-  share: () => toast('Link copied. Share it with friends', 'share-2'),
   closeSheet: () => closeSheet(),
   sheetToggle: () => Sheet.toggle(),
   locate: () => { deselect(); Map.center(ME.x, ME.y, true, 45); },
@@ -1915,12 +1907,10 @@ const A = {
   hostToggle: (el) => { const arr = Host.draft[el.dataset.kind]; const i = arr.indexOf(el.dataset.id); if (i >= 0) arr.splice(i, 1); else arr.push(el.dataset.id); el.setAttribute('aria-pressed', i < 0); $('#hostView .view-cta .faint').textContent = hostInviteCount() + ' invited'; },
   hostPublish: () => publishHost(),
   viewHosted: (el) => { closeSheet(true); go('explore'); setTimeout(() => selectAct(el.dataset.id), 60); },
-  shareGame: () => toast('Invite link copied. Share it on WhatsApp or anywhere', 'share-2'),
   plans: () => plansSheet(),
   setTier: (el) => { const t = el.dataset.id; closeSheet(true); setTier(t); if (!el.dataset.quiet) toast(`You're on ${PLANS[t].name}`, PLANS[t].icon); },
   toastMsg: (el) => toast(el.dataset.msg, el.dataset.icon || 'circle-check'),
   toastClose: (el) => { closeSheet(); toast(el.dataset.msg, el.dataset.icon || 'circle-check'); },
-  ackAlert: () => { S.ackAlert = true; save(); renderGames(); toast('Thanks. We will remind you on the day', 'bell'); },
   hostGame: () => { closeSheet(true); openHost(); },
   newTeam: () => (can.teams() ? newTeamSheet() : upsell('teams')),
   openTeam: (el) => openTeam(el.dataset.id),
@@ -1941,8 +1931,10 @@ const A = {
     const d = +$('#fxDay [aria-pressed="true"]').dataset.id;
     S.fixtures.push({ id: 'x' + Date.now(), a, b, sport: $('#fxSport [aria-pressed="true"]').dataset.id, d, t: $('#fxTime').value || '12:30', venue: $('#fxVenue').value });
     S.fixtures.sort((x, y) => x.d - y.d || x.t.localeCompare(y.t)); S.schedDay = d; S.entTab = 'schedule'; save(); closeSheet(); renderTeams(); toast('Fixture added. Squads notified', 'calendar-days'); },
-  autoBalance: () => toast('Teams balanced by skill and department mix', 'shuffle'),
   shopCat: (el) => { S.shopCat = el.dataset.id; save(); renderShop(); },
+  shopSearch: () => { S.shopSearch = !S.shopSearch; if (!S.shopSearch) S.shopQ = ''; renderShop(); bindShopSearch(true); },
+  shopClear: () => { S.shopQ = ''; renderShop(); bindShopSearch(true); },
+  promoFootball: () => { S.filter = 'football'; S.mode = 'games'; save(); go('explore'); toast('Showing football games near you', 'search'); },
   fav: (el) => { const id = el.dataset.id; S.fav = S.fav.includes(id) ? S.fav.filter((x) => x !== id) : S.fav.concat(id); save(); renderShop(); },
   product: (el) => openProduct(el.dataset.id),
   addCart: (el) => { const id = el.dataset.id; const sz = $('#pSize [aria-pressed="true"]'); const size = sz ? sz.dataset.id : null;
@@ -2109,7 +2101,7 @@ function tours() { if (!S.tournaments) { S.tournaments = [sampleTournament()]; s
 const crestOf = (id, cls = 'sm') => { const t = teamById(id); return `<span class="crest ${cls}" style="--c:${t.c}">${t.ab}</span>`; };
 function cupsBody() {
   const list = tours();
-  return `<button class="biz" style="background:linear-gradient(120deg,var(--ent),#2B1C7A);color:#fff" data-act="tourNew">${ic('trophy')}<div class="grow"><b>Create a tournament</b><small>Pick teams and dates. LetsPlay generates groups, brackets and the full schedule.</small></div>${ic('chevron-right')}</button>
+  return `<button class="biz" style="background:var(--ent-deep);color:#fff" data-act="tourNew">${ic('trophy')}<div class="grow"><b>Create a tournament</b><small>Pick teams and dates. LetsPlay generates groups, brackets and the full schedule.</small></div>${ic('chevron-right')}</button>
     <div style="display:grid;gap:12px" class="section">${list.map((T) => { const st = tourStatus(T), pr = tourProgress(T), s2 = sp(T.sport);
       const nxt = T.matches.filter((m) => ready(m)).sort((a, b) => a.d - b.d || a.t.localeCompare(b.t))[0];
       return `<button class="card team-card" data-act="tourOpen" data-id="${T.id}">
@@ -2142,7 +2134,7 @@ function genSummary() {
   const el = $('#genSum'); if (!el) return; const err = tdError();
   if (err) { el.innerHTML = `${ic('info', 'ic-sm')}${err}`; return; }
   const T = buildTournament(tdConfig(), rng(1)); const n = T.matches.filter((m) => !m.bye).length, byes = T.matches.filter((m) => m.bye).length;
-  el.innerHTML = `${ic('sparkles', 'ic-sm')}<span><b class="num">${n} matches</b> over ${T.matchDays} match days${byes ? ` · ${byes} bye${byes > 1 ? 's' : ''}` : ''} · Final on ${longFmt.format(dateAt(T.endDay, '12:00'))}</span>`;
+  el.innerHTML = `${ic('calendar-days', 'ic-sm')}<span><b class="num">${n} matches</b> over ${T.matchDays} match days${byes ? ` · ${byes} bye${byes > 1 ? 's' : ''}` : ''} · Final on ${longFmt.format(dateAt(T.endDay, '12:00'))}</span>`;
 }
 function renderGen() {
   const v = $('#genView'); if (!v) return; const top = v.scrollTop; const st = standings();
@@ -2170,7 +2162,7 @@ function renderGen() {
       <label class="row card" style="gap:12px;cursor:pointer"><input type="checkbox" id="tdThird" data-t="thirdPlace" ${TD.thirdPlace ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--ent)"><div class="grow"><b>Third-place match</b><small>Semifinal losers play before the final</small></div></label>
       <div class="gen-sum" id="genSum"></div>
     </div>
-    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('sparkles')}Generate tournament plan</button></div>`;
+    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('trophy')}Generate tournament plan</button></div>`;
   v.scrollTop = top; genSummary();
 }
 
@@ -2221,7 +2213,7 @@ function renderTour() {
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="badge" style="background:rgba(255,255,255,.18);color:#fff">${ic(s2.icon)}${s2.name} · ${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'}</span><span style="font-size:12.5px;opacity:.85" class="num">${pr.played}/${pr.total} played</span></div>
         <h2>${esc(T.name)}</h2>
         <div style="font-size:13.5px;opacity:.9">${T.teams.length} teams · ${T.matchDays} match days · ${longFmt.format(dateAt(T.startDay, '12:00'))} to ${longFmt.format(dateAt(T.endDay, '12:00'))}<br>${T.venues.map(esc).join(' · ')}</div>
-        ${T.champion ? `<div class="champ-banner">${ic('trophy')}<b>${teamById(T.champion).name}</b> are champions</div>` : `<span class="badge volt" style="justify-self:start">${ic('flame')}${esc(st.text)}</span>`}
+        ${T.champion ? `<div class="champ-banner">${ic('trophy')}<b>${teamById(T.champion).name}</b> are champions</div>` : `<span class="badge" style="justify-self:start;background:#fff;color:var(--ent-deep)">${ic('flame')}${esc(st.text)}</span>`}
       </div>
       ${!preview && nr.length ? `<button class="btn btn-soft btn-block" data-act="tourSim">${ic('shuffle')}Simulate ${esc(nr[0].stage === 'group' ? 'next matchday' : nr[0].round)} (demo)</button>` : ''}
       <div class="seg" role="group" aria-label="Tournament view">${tabs.map(([k, n]) => `<button data-act="tourTab" data-id="${k}" aria-pressed="${tourTab === k}">${n}</button>`).join('')}</div>
@@ -2364,7 +2356,7 @@ function regRender() {
   let body = '';
   if (st === 'who') {
     body = `<div class="pick">${FAMILY.map((f) => { const ok = ageOk(a, f); return `<button class="opt" data-act="regWho" data-id="${f.id}" aria-pressed="${REG.who.includes(f.id)}" ${ok ? '' : 'aria-disabled="true" disabled'}>${avatar(f, 40)}<div><b>${f.name}</b><div class="faint" style="font-size:13px">${ok ? f.note : `Not eligible · ages ${a.ages} only`}</div></div><span class="tick">${ic('check')}</span></button>`; }).join('')}</div>
-      <button class="link" style="justify-self:start" data-act="toastMsg" data-msg="Add a family member from Profile → Family">${ic('plus', 'ic-sm')} Add family member</button>`;
+      <button class="link" style="justify-self:start;min-height:44px" data-act="addFamily" data-return="reg">${ic('plus', 'ic-sm')} Add family member</button>`;
   } else if (st === 'details') {
     body = REG.who.map((id) => { const f = famById(id), p = REG.d[id]; return `<div class="card reg-card"><div style="display:flex;gap:10px;align-items:center">${avatar(f, 36)}<b>${f.name}</b><span class="badge free" style="margin-left:auto">${ic('check')}Saved details</span></div>
       ${f.age >= 18 ? `<div class="field"><label for="rp-${id}">Mobile number</label><input class="input" id="rp-${id}" inputmode="tel" data-r="d.${id}.phone" value="${esc(p.phone)}" placeholder="10-digit mobile"></div>` : ''}
@@ -2382,7 +2374,7 @@ function regRender() {
     body = `${REG.failed ? `<div class="err-box" role="alert">${ic('info')}<div><b>Payment didn’t go through</b><br>No money was taken. Your details are saved, so you can try again or pick another UPI app.</div></div>` : ''}
       <div class="rows"><div class="row"><div class="grow"><b>${esc(a.title)}</b><small>${money(a.price)} × ${n} player${n > 1 ? 's' : ''}</small></div><b class="num">${money(a.price * n)}</b></div>
       <div class="row"><div class="grow"><b>Booking fee</b><small>Free during the pilot</small></div><b class="num">₹0</b></div></div>
-      <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="regApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="regApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="regApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="regApp" data-id="${u}" aria-pressed="${u === payApp()}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
       <button class="link faint" style="justify-self:start;font-size:13px" data-act="regFail">Test a failed payment</button>`;
   }
   const last = REG.step === steps.length - 1;
@@ -2430,7 +2422,7 @@ function regFinish() {
   S.bookings = S.bookings || {}; S.bookings[a.id] = Array.from(new Set((S.bookings[a.id] || []).concat(who)));
   S.spotsTaken[a.id] = (S.spotsTaken[a.id] || 0) + who.length;
   notes().unshift({ id: 'n' + Date.now(), pri: 'info', cat: 'booking', icon: 'circle-check', when: 'Just now', ref: a.id, title: `Booked: ${a.title}`, body: `${who.map(firstName).join(' and ')} ${who.length > 1 ? 'are' : 'is'} in for ${when(a)}. A reminder comes 2 hours before.`, actions: [['View game', 'view']], read: false });
-  REG = null; save();
+  REG = null; save(); buzz(); renderTabbar();
   openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>You’re in!</h2>
     <div class="muted">${esc(a.title)}<br>${longFmt.format(dateAt(a.d, a.t))} at ${timeFmt.format(dateAt(a.d, a.t))}<br>Playing: ${who.map(firstName).join(', ')}</div></div>
     <div class="rows"><div class="row">${ic('calendar-days', 'lead')}<div class="grow"><b>Added to the family calendar</b><small>Reminder 2 hours before</small></div></div>
@@ -2473,7 +2465,7 @@ function clashCard(c) {
   const wa = c.a.who.map(firstName).join(' & '), wb = c.b.who.map(firstName).join(' & ');
   return `<div class="clash" role="status">${ic('info')}<div class="grow"><b>Clash on ${dayLabel(c.a.d)}, ${fmtT(c.a.d, c.from)}–${fmtT(c.a.d, c.to)}</b>
     <span>${c.samePerson ? `${wa} is booked in two places at once.` : `${wa} at ${esc(c.a.venue.split(' · ')[0])} and ${wb} at ${esc(c.b.venue.split(' · ')[0])}. One adult can’t do both drop-offs.`}</span>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-line" data-act="clashSlot" data-sport="${c.b.sport}">Find another slot</button><button class="btn btn-sm btn-ghost" data-act="toastMsg" data-msg="Carpool request sent to 3 parents in the group" data-icon="send">Ask for a carpool</button></div></div></div>`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-line" data-act="clashSlot" data-sport="${c.b.sport}">Find another slot</button><button class="btn btn-sm btn-ghost" data-act="carpool" data-day="${c.a.d}" data-t="${c.a.t}" data-venue="${esc(c.a.venue.split(' · ')[0])}">${ic('share-2', 'ic-sm')}Ask for a carpool</button></div></div></div>`;
 }
 function renderFamilyCal() {
   const ev = famEvents(), who = S.calWho || 'all', day = S.calDay || 0;
@@ -2491,7 +2483,7 @@ function renderFamilyCal() {
         <div class="grow" style="min-width:0"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>${esc(e.title)}</b>${e.kind === 'turf' ? '<span class="badge brand">Venue booking</span>' : e.kind === 'team' ? '<span class="badge ent">Team match</span>' : ''}${inClash(e) ? '<span class="badge live">Clash</span>' : ''}</div><small>${esc(e.venue)}</small></div>
         <div class="avatars">${e.who.map((w) => avatar(famById(w))).join('')}</div></button>`).join('') : `<div class="empty card">${ic('calendar-days')}<b>Nothing on ${dayLabel(day).toLowerCase() === 'today' ? 'today' : dayLabel(day)}</b><button class="btn btn-soft btn-sm" data-act="tab" data-id="explore">Find something to play</button></div>`}
     </div>
-    <div class="section"><button class="btn btn-ghost btn-block" data-act="toastMsg" data-msg="Family calendar synced to your phone calendar" data-icon="calendar">${ic('calendar')}Sync to phone calendar</button></div>`;
+    <div class="section"><button class="btn btn-ghost btn-block" disabled aria-disabled="true">${ic('calendar')}Sync to phone calendar <span class="soon">Coming soon</span></button></div>`;
 }
 function gamesSegHTML() { const v = S.gamesView || 'list'; return `<div class="seg" role="group" aria-label="View"><button data-act="gamesView" data-id="list" aria-pressed="${v === 'list'}">Upcoming</button><button data-act="gamesView" data-id="calendar" aria-pressed="${v === 'calendar'}">Family calendar</button></div>`; }
 function attentionHTML() {
@@ -2544,7 +2536,7 @@ function noteAct(id, k) {
   if (k === 'shop') { go('shop'); return; }
   if (k === 'cancelSpot') { S.joined = S.joined.filter((x) => x !== n.ref); if (S.bookings) delete S.bookings[n.ref]; }
   if (k === 'yes' || k === 'no') { const t = S.teams.find((x) => x.id === n.ref); if (t) t.members[0].status = k === 'yes' ? 'yes' : 'no'; }
-  n.done = res[k] || 'Done'; n.read = true; save(); renderNotes(); toast(n.done, 'check');
+  n.done = res[k] || 'Done'; n.read = true; save(); renderNotes(); renderTabbar(); toast(n.done, 'check');
 }
 
 /* ═════ 5. WHAT'S NEXT strip ═════ */
@@ -2574,7 +2566,7 @@ function renderMD() {
   const present = Object.values(M.att).filter((x) => x === 'present' || x === 'late').length;
   v.innerHTML = `<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>Match day</h2></div>
     <div class="view-body" style="padding-top:4px">
-      <div class="org-hero" style="background:linear-gradient(135deg, ${t.color}, #0D1530)">
+      <div class="org-hero" style="background-color:color-mix(in srgb, ${t.color} 75%, #000)">
         <span class="badge" style="background:rgba(255,255,255,.18);color:#fff;justify-self:start">${ic(s2.icon)}${esc(t.name)}</span>
         <h2>${t.next ? 'v ' + esc(t.next.vs) : 'Training session'}</h2>
         <div style="opacity:.9;font-size:14px">${t.next ? `${longFmt.format(dateAt(t.next.d, t.next.t))} · ${fmtT(t.next.d, t.next.t)} · ${esc(t.next.venue)}` : 'No match scheduled yet'}<br>Report 30 min early · Forecast 28°, clear</div>
@@ -2637,10 +2629,10 @@ function renderVenueView() {
       <div class="field"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span class="lbl">Pick your hours</span><span class="faint" style="font-size:12px">Up to 4 in a row</span></div>
         <div class="legend"><span><i class="lg-free"></i>Free</span><span><i class="lg-peak"></i>Peak</span><span><i class="lg-booked"></i>Booked</span><span><i class="lg-sel"></i>Selected</span></div>
         <div class="slots">${hrs.map((h) => { const st = slotState(v, TB.court, TB.d, h), sel = TB.hours.includes(h), pk = isPeak(TB.d, h);
-          return `<button class="slot s-${st} ${pk ? 'peak' : ''} ${sel ? 'sel' : ''}" data-act="turfSlot" data-h="${h}" ${st === 'free' ? '' : 'disabled'} aria-pressed="${sel}" aria-label="${hourLabel(h)} to ${hourLabel(h + 1)}, ${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st}"><b>${hourLabel(h)}</b><small class="num">${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st === 'mine' ? 'Yours' : st === 'past' ? '—' : 'Booked'}</small></button>`; }).join('')}</div>
+          return `<button class="slot s-${st} ${pk ? 'peak' : ''} ${sel ? 'sel' : ''}" data-act="turfSlot" data-h="${h}" ${st === 'free' ? '' : 'disabled'} aria-pressed="${sel}" aria-label="${hourLabel(h)} to ${hourLabel(h + 1)}, ${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st}"><b>${hourLabel(h)}</b><small class="num">${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st === 'mine' ? 'Yours' : st === 'past' ? 'Passed' : 'Booked'}</small></button>`; }).join('')}</div>
         <div class="faint" style="font-size:12.5px">Off-peak ${inr(v.price)}/hr. Peak ${inr(v.peak)}/hr after 6 pm and at weekends. Free cancellation up to 6 hours before.</div></div>
     </div>
-    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${TB.hours.length ? `${TB.hours.length} hr · ${hourLabel(TB.hours[0])}–${hourLabel(TB.hours[TB.hours.length - 1] + 1)}` : 'No slot selected'}</span><b class="num">${TB.hours.length ? inr(total) : '—'}</b></div>
+    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${TB.hours.length ? `${TB.hours.length} hr · ${hourLabel(TB.hours[0])}–${hourLabel(TB.hours[TB.hours.length - 1] + 1)}` : 'No slot selected'}</span><b class="num">${TB.hours.length ? inr(total) : inr(0)}</b></div>
       <button class="btn btn-primary" data-act="turfNext" ${TB.hours.length ? '' : 'disabled'}>Continue</button></div>`;
   view.scrollTop = top;
 }
@@ -2659,7 +2651,7 @@ function turfCheckout() {
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b>Players sharing</b><div class="faint" style="font-size:13px">Including you</div></div><div class="stepper"><button data-act="tcPlayers" data-d="-1" aria-label="Fewer players">${ic('minus', 'ic-sm')}</button><b class="num">${TC.players}</b><button data-act="tcPlayers" data-d="1" aria-label="More players">${ic('plus', 'ic-sm')}</button></div></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="muted">Each pays</span><b class="num" style="font-family:var(--f-display);font-size:28px">${inr(share)}</b></div>
         <div class="faint" style="font-size:12.5px">You pay your share now to lock the slot. The others get a UPI payment request and a WhatsApp reminder. Unpaid shares are charged to you 2 hours before the game.</div></div>` : ''}
-    <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="tcApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="tcApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="tcApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="tcApp" data-id="${u}" aria-pressed="${u === payApp()}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
     <button class="btn btn-primary btn-block" style="min-height:54px" data-act="turfPay" id="tcGo">${ic('smartphone')}Pay ${inr(TC.split ? share : total)} via UPI</button>`, 'turf');
 }
 function turfPay() {
@@ -2671,14 +2663,14 @@ function turfPay() {
     const b = { id: 'LP' + String(Date.now()).slice(-6), vid: v.id, court: TB.court, d: TB.d, hours: TB.hours.slice(), total, split: TC.split, share, players: names };
     S.turf = S.turf || []; S.turf.push(b);
     notes().unshift({ id: 'n' + Date.now(), pri: 'info', cat: 'booking', icon: 'circle-check', when: 'Just now', title: `Venue booked: ${v.name}`, body: `${v.courts[b.court]}, ${dayLabel(b.d)} ${hourLabel(b.hours[0])}–${hourLabel(b.hours[b.hours.length - 1] + 1)}. Booking ${b.id}.${b.split ? ` ${names.length} payment requests sent.` : ''}`, actions: [['Open My games', 'games']], read: false });
-    save(); TC = null; popAll();
+    save(); buzz(); TC = null; popAll();
     openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>Slot booked</h2>
       <div class="muted">${esc(v.name)} · ${esc(v.courts[b.court])}<br>${longFmt.format(dateAt(b.d, '12:00'))}, ${hourLabel(b.hours[0])}–${hourLabel(b.hours[b.hours.length - 1] + 1)}<br><span class="num">Booking ${b.id}</span></div></div>
       ${b.split ? `<div class="field"><span class="lbl">Split payment · 1 of ${names.length + 1} paid</span><div class="rows">
         <div class="row">${avatar(ME_USER, 32)}<div class="grow"><b>You</b></div><span class="badge free num">Paid ${inr(share)}</span></div>
         ${names.slice(0, 4).map((n) => `<div class="row">${avatar({ name: n }, 32)}<div class="grow"><b>${esc(n)}</b></div><span class="badge num">Requested ${inr(share)}</span></div>`).join('')}
         ${names.length > 4 ? `<div class="row"><div class="grow"><small>+${names.length - 4} more requested</small></div></div>` : ''}</div></div>
-        <button class="btn btn-soft btn-block" data-act="toastMsg" data-msg="Reminder sent on WhatsApp to ${names.length} players" data-icon="send">${ic('send')}Remind unpaid players</button>` : ''}
+        <button class="btn btn-soft btn-block" data-act="remindSplit" data-id="${b.id}">${ic('share-2')}Send a payment reminder</button>` : ''}
       <button class="btn btn-primary btn-block" data-act="turfPost" data-id="${v.id}">${ic('megaphone')}Post open spots as a game</button>
       <button class="btn btn-ghost btn-block" data-act="gotoGames">See it in My games</button>`);
   }, 1100);
@@ -2688,7 +2680,7 @@ function turfListHTML() {
   return `<div class="section"><div class="section-head"><h2>Venue bookings</h2><button class="link" data-act="mode" data-id="venues">${ic('plus', 'ic-sm')} Book</button></div>
     ${list.length ? list.map((b) => { const v = VB(b.vid); return `<div class="card" style="padding:10px;display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center"><img src="${IMG + v.img}.jpg" alt="" style="width:64px;height:64px;border-radius:12px;object-fit:cover">
       <div style="min-width:0;display:grid;gap:3px"><b>${esc(v.name)}</b><small class="faint">${esc(v.courts[b.court])} · ${dayLabel(b.d)} ${hourLabel(b.hours[0])}–${hourLabel(b.hours[b.hours.length - 1] + 1)} · <span class="num">${b.id}</span></small>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge free num">${inr(b.total)}</span>${b.split ? `<span class="badge num">1 of ${b.players.length + 1} paid</span><button class="link" style="font-size:13px" data-act="toastMsg" data-msg="Reminder sent on WhatsApp" data-icon="send">Remind</button>` : '<span class="badge">Paid in full</span>'}</div></div></div>`; }).join('')
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge free num">${inr(b.total)}</span>${b.split ? `<span class="badge num">1 of ${b.players.length + 1} paid</span><button class="link" style="font-size:13px;min-height:40px" data-act="remindSplit" data-id="${b.id}">${ic('share-2', 'ic-sm')}Remind</button>` : '<span class="badge">Paid in full</span>'}</div></div></div>`; }).join('')
       : `<button class="biz" style="background:var(--surface);color:var(--ink);border:1px solid var(--line)" data-act="mode" data-id="venues">${ic('calendar-days')}<div class="grow"><b>Book a turf or court</b><small class="muted">Pick an hour, split the cost with your players over UPI.</small></div>${ic('chevron-right')}</button>`}</div>`;
 }
 
@@ -2845,6 +2837,86 @@ Object.assign(A, {
   copyShare: () => { const txt = $('#shareTxt').textContent; try { navigator.clipboard.writeText(txt).then(() => toast('Copied. Paste it into any app', 'copy'), () => { selectText('shareTxt'); toast('Selected. Copy it from the menu', 'copy'); }); } catch (e) { selectText('shareTxt'); } },
 });
 
+/* ═════ 9. FIRST RUN, PREFERENCES AND HONEST ACTIONS ═════ */
+const payApp = () => S.payDefault || UPI_APPS[0];
+function todoCount() { return notes().filter((n) => !n.done && noteVisible(n) && (n.pri === 'urgent' || n.pri === 'action')).length; }
+/* Sports you picked at first run come first in the filter row. */
+function sportsByPreference() { const fav = S.favSports || []; return fav.concat(Object.keys(SPORTS).filter((k) => !fav.includes(k))); }
+function buzz() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { /* not supported */ } }
+function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); app.classList.toggle('calm', !!S.calm); }
+
+/* Extra family members added in the app survive reloads. */
+(S.familyExtra || []).forEach((f) => { if (!FAMILY.find((x) => x.id === f.id)) FAMILY.push(f); FAMILY_COLORS[f.id] = f.color; });
+
+let OB = null;
+function onboardSheet() {
+  if (!OB) OB = { sports: (S.favSports || ['cricket', 'football']).slice() };
+  sheetSet(`<div style="display:grid;gap:6px;padding-top:4px"><h2>Welcome to LetsPlay</h2><div class="muted">Tell us what you play and we’ll put those games first on the map.</div></div>
+    <div class="field"><span class="lbl">Your sports · pick any</span><div class="chips" style="flex-wrap:wrap">${Object.keys(SPORTS).map((k) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="obSport" data-id="${k}" aria-pressed="${OB.sports.includes(k)}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
+    <div class="rows"><div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Games within 4 km of you</b><small>The prototype uses a sample neighbourhood instead of your real location.</small></div></div>
+      <div class="row">${ic('info', 'lead')}<div class="grow"><b>Sample content</b><small>Games, people, venues and prices here are examples. Messages to other players are simulated.</small></div></div></div>
+    <button class="btn btn-primary btn-block" style="min-height:54px" data-act="obDone">${OB.sports.length ? `Show ${OB.sports.length === 1 ? SPORTS[OB.sports[0]].name.toLowerCase() : 'my'} games` : 'Show all games'}</button>
+    <button class="btn btn-ghost btn-block" data-act="obSkip">Skip for now</button>`, 'onboard');
+}
+
+function addFamilySheet(ret) {
+  sheetSet(`${sheetHead('Add family member', 'Register children and partners without separate accounts')}
+    <form id="famForm" class="sheet-body" style="gap:14px">
+      <div class="field"><label for="famName">Full name</label><input class="input" id="famName" autocomplete="name" placeholder="Their name"></div>
+      <div class="field"><label for="famAge">Age</label><input class="input" id="famAge" type="number" min="3" max="99" inputmode="numeric" placeholder="Years"></div>
+      <div class="field"><label for="famEc">Emergency contact</label><input class="input" id="famEc" value="${esc(ME_USER.name)}" placeholder="Name and relation"></div>
+      <div class="err-box" id="famErr" role="alert" hidden>${ic('info')}<div></div></div>
+      <button class="btn btn-primary btn-block" type="submit">${ic('user-plus')}Add to family</button>
+    </form>`, 'fam', (sh) => {
+    $('#famForm', sh).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = $('#famName').value.trim(), age = parseInt($('#famAge').value, 10);
+      const err = !name ? 'Enter their name.' : Number.isNaN(age) || age < 3 || age > 99 ? 'Enter an age between 3 and 99.' : '';
+      if (err) { const b = $('#famErr'); b.hidden = false; b.lastElementChild.textContent = err; return; }
+      const f = { id: 'f' + Date.now(), name, age, note: `Age ${age}${age < 18 ? ' · add consent when registering' : ''}`, color: AV_COLORS[(FAMILY.length + 2) % AV_COLORS.length] };
+      FAMILY.push(f); FAMILY_COLORS[f.id] = f.color; S.familyExtra = (S.familyExtra || []).concat(f);
+      profiles()[f.id] = { phone: '', ecName: $('#famEc').value.trim(), ecPhone: profiles().f0.phone || '', medical: '' };
+      if (REG) REG.d[f.id] = JSON.parse(JSON.stringify(profiles()[f.id]));
+      save(); buzz(); toast(`${name} added to your family`, 'user-plus');
+      if (ret === 'reg' && REG) regRender(); else { closeSheet(); if (tab === 'me') renderMe(); }
+    });
+  });
+}
+
+function payPrefsSheet() {
+  sheetSet(`${sheetHead('Default UPI app', 'Used first when you pay for games, venues and gear')}
+    <div class="pick">${UPI_APPS.map((u) => `<button class="opt" data-act="payPick" data-id="${u}" aria-pressed="${u === payApp()}"><span class="sport-ic" style="--c:var(--brand)">${ic('smartphone')}</span><div><b>${u}</b></div><span class="tick">${ic('check')}</span></button>`).join('')}</div>`, 'pay');
+}
+function a11yPrefsSheet() {
+  sheetSet(`${sheetHead('Accessibility')}
+    <div class="rows">
+      <button type="button" class="row" data-act="a11yToggle" data-id="bigText" aria-pressed="${!!S.bigText}">${ic('eye', 'lead')}<div class="grow"><b>Larger text</b><small>Makes lists, forms and details easier to read</small></div><span class="tickbox">${ic('check')}</span></button>
+      <button type="button" class="row" data-act="a11yToggle" data-id="calm" aria-pressed="${!!S.calm}">${ic('timer', 'lead')}<div class="grow"><b>Reduce motion</b><small>Turns off slide and pop animations</small></div><span class="tickbox">${ic('check')}</span></button>
+    </div>
+    <div class="faint" style="font-size:12.5px">Your phone’s own reduce-motion setting is respected automatically.</div>
+    <button class="btn btn-primary btn-block" data-act="closeSheet">Done</button>`, 'a11y');
+}
+function bindShopSearch(focus) {
+  const i = $('#shopQ'); if (!i) return;
+  i.addEventListener('input', () => { const pos = i.selectionStart; S.shopQ = i.value; renderShop(); const n = $('#shopQ'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } });
+  if (focus) i.focus();
+}
+
+Object.assign(A, {
+  obSport: (el) => { const k = el.dataset.id; OB.sports = OB.sports.includes(k) ? OB.sports.filter((x) => x !== k) : OB.sports.concat(k); onboardSheet(); },
+  obDone: () => { S.favSports = OB.sports.slice(); S.onboarded = true; S.filter = OB.sports.length === 1 ? OB.sports[0] : 'all'; OB = null; save(); closeSheet(); renderExploreChrome(); renderPanel(); },
+  obSkip: () => { S.onboarded = true; OB = null; save(); closeSheet(); },
+  addFamily: (el) => addFamilySheet(el.dataset.return),
+  payPrefs: () => payPrefsSheet(),
+  payPick: (el) => { S.payDefault = el.dataset.id; save(); payPrefsSheet(); if (tab === 'me') renderMe(); toast(`${el.dataset.id} is your default UPI app`, 'smartphone'); },
+  a11yPrefs: () => a11yPrefsSheet(),
+  a11yToggle: (el) => { const k = el.dataset.id; S[k] = !S[k]; save(); applyPrefs(); a11yPrefsSheet(); if (tab === 'me') renderMe(); },
+  shareLeague: () => shareAny(`Join the ${ORG.league}`, `Join ${ORG.name}’s ${ORG.league} on LetsPlay and pick your department team.`, 'https://letsplay.app/org/halcyon'),
+  carpool: (el) => shareAny('Carpool for Saturday', `Can anyone share a ride on ${dayLabel(+el.dataset.day)} at ${fmtT(+el.dataset.day, el.dataset.t)} to ${el.dataset.venue}? I have a clash with another drop-off.`, 'https://letsplay.app'),
+  remindSplit: (el) => { const b = (S.turf || []).find((x) => x.id === el.dataset.id); if (!b) return; const v = VB(b.vid);
+    shareAny('Turf payment', `Please pay your share of ${inr(b.share)} for ${v.name}, ${dayLabel(b.d)} ${hourLabel(b.hours[0])}. Booking ${b.id}.`, 'https://letsplay.app/pay/' + b.id); },
+});
+
 function selectText(id) { const r = document.createRange(); r.selectNodeContents($('#' + id)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]'); if (!el) return;
@@ -2858,8 +2930,10 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('.
 $('#sbIcons').innerHTML = ic('signal') + ic('wifi') + ic('battery-full');
 $('#clock').textContent = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', hour12: false }).format(new Date());
 $('#logoMark').innerHTML = ic('map-pin', 'ic-lg');
+applyPrefs();
 renderPanel();
 go('explore');
+if (!S.onboarded) setTimeout(onboardSheet, 500);
 })();
 
 </script>

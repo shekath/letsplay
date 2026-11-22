@@ -91,7 +91,7 @@ function regRender() {
   let body = '';
   if (st === 'who') {
     body = `<div class="pick">${FAMILY.map((f) => { const ok = ageOk(a, f); return `<button class="opt" data-act="regWho" data-id="${f.id}" aria-pressed="${REG.who.includes(f.id)}" ${ok ? '' : 'aria-disabled="true" disabled'}>${avatar(f, 40)}<div><b>${f.name}</b><div class="faint" style="font-size:13px">${ok ? f.note : `Not eligible · ages ${a.ages} only`}</div></div><span class="tick">${ic('check')}</span></button>`; }).join('')}</div>
-      <button class="link" style="justify-self:start" data-act="toastMsg" data-msg="Add a family member from Profile → Family">${ic('plus', 'ic-sm')} Add family member</button>`;
+      <button class="link" style="justify-self:start;min-height:44px" data-act="addFamily" data-return="reg">${ic('plus', 'ic-sm')} Add family member</button>`;
   } else if (st === 'details') {
     body = REG.who.map((id) => { const f = famById(id), p = REG.d[id]; return `<div class="card reg-card"><div style="display:flex;gap:10px;align-items:center">${avatar(f, 36)}<b>${f.name}</b><span class="badge free" style="margin-left:auto">${ic('check')}Saved details</span></div>
       ${f.age >= 18 ? `<div class="field"><label for="rp-${id}">Mobile number</label><input class="input" id="rp-${id}" inputmode="tel" data-r="d.${id}.phone" value="${esc(p.phone)}" placeholder="10-digit mobile"></div>` : ''}
@@ -109,7 +109,7 @@ function regRender() {
     body = `${REG.failed ? `<div class="err-box" role="alert">${ic('info')}<div><b>Payment didn’t go through</b><br>No money was taken. Your details are saved, so you can try again or pick another UPI app.</div></div>` : ''}
       <div class="rows"><div class="row"><div class="grow"><b>${esc(a.title)}</b><small>${money(a.price)} × ${n} player${n > 1 ? 's' : ''}</small></div><b class="num">${money(a.price * n)}</b></div>
       <div class="row"><div class="grow"><b>Booking fee</b><small>Free during the pilot</small></div><b class="num">₹0</b></div></div>
-      <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="regApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="regApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="regApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="regApp" data-id="${u}" aria-pressed="${u === payApp()}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
       <button class="link faint" style="justify-self:start;font-size:13px" data-act="regFail">Test a failed payment</button>`;
   }
   const last = REG.step === steps.length - 1;
@@ -157,7 +157,7 @@ function regFinish() {
   S.bookings = S.bookings || {}; S.bookings[a.id] = Array.from(new Set((S.bookings[a.id] || []).concat(who)));
   S.spotsTaken[a.id] = (S.spotsTaken[a.id] || 0) + who.length;
   notes().unshift({ id: 'n' + Date.now(), pri: 'info', cat: 'booking', icon: 'circle-check', when: 'Just now', ref: a.id, title: `Booked: ${a.title}`, body: `${who.map(firstName).join(' and ')} ${who.length > 1 ? 'are' : 'is'} in for ${when(a)}. A reminder comes 2 hours before.`, actions: [['View game', 'view']], read: false });
-  REG = null; save();
+  REG = null; save(); buzz(); renderTabbar();
   openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>You’re in!</h2>
     <div class="muted">${esc(a.title)}<br>${longFmt.format(dateAt(a.d, a.t))} at ${timeFmt.format(dateAt(a.d, a.t))}<br>Playing: ${who.map(firstName).join(', ')}</div></div>
     <div class="rows"><div class="row">${ic('calendar-days', 'lead')}<div class="grow"><b>Added to the family calendar</b><small>Reminder 2 hours before</small></div></div>
@@ -200,7 +200,7 @@ function clashCard(c) {
   const wa = c.a.who.map(firstName).join(' & '), wb = c.b.who.map(firstName).join(' & ');
   return `<div class="clash" role="status">${ic('info')}<div class="grow"><b>Clash on ${dayLabel(c.a.d)}, ${fmtT(c.a.d, c.from)}–${fmtT(c.a.d, c.to)}</b>
     <span>${c.samePerson ? `${wa} is booked in two places at once.` : `${wa} at ${esc(c.a.venue.split(' · ')[0])} and ${wb} at ${esc(c.b.venue.split(' · ')[0])}. One adult can’t do both drop-offs.`}</span>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-line" data-act="clashSlot" data-sport="${c.b.sport}">Find another slot</button><button class="btn btn-sm btn-ghost" data-act="toastMsg" data-msg="Carpool request sent to 3 parents in the group" data-icon="send">Ask for a carpool</button></div></div></div>`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-line" data-act="clashSlot" data-sport="${c.b.sport}">Find another slot</button><button class="btn btn-sm btn-ghost" data-act="carpool" data-day="${c.a.d}" data-t="${c.a.t}" data-venue="${esc(c.a.venue.split(' · ')[0])}">${ic('share-2', 'ic-sm')}Ask for a carpool</button></div></div></div>`;
 }
 function renderFamilyCal() {
   const ev = famEvents(), who = S.calWho || 'all', day = S.calDay || 0;
@@ -218,7 +218,7 @@ function renderFamilyCal() {
         <div class="grow" style="min-width:0"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>${esc(e.title)}</b>${e.kind === 'turf' ? '<span class="badge brand">Venue booking</span>' : e.kind === 'team' ? '<span class="badge ent">Team match</span>' : ''}${inClash(e) ? '<span class="badge live">Clash</span>' : ''}</div><small>${esc(e.venue)}</small></div>
         <div class="avatars">${e.who.map((w) => avatar(famById(w))).join('')}</div></button>`).join('') : `<div class="empty card">${ic('calendar-days')}<b>Nothing on ${dayLabel(day).toLowerCase() === 'today' ? 'today' : dayLabel(day)}</b><button class="btn btn-soft btn-sm" data-act="tab" data-id="explore">Find something to play</button></div>`}
     </div>
-    <div class="section"><button class="btn btn-ghost btn-block" data-act="toastMsg" data-msg="Family calendar synced to your phone calendar" data-icon="calendar">${ic('calendar')}Sync to phone calendar</button></div>`;
+    <div class="section"><button class="btn btn-ghost btn-block" disabled aria-disabled="true">${ic('calendar')}Sync to phone calendar <span class="soon">Coming soon</span></button></div>`;
 }
 function gamesSegHTML() { const v = S.gamesView || 'list'; return `<div class="seg" role="group" aria-label="View"><button data-act="gamesView" data-id="list" aria-pressed="${v === 'list'}">Upcoming</button><button data-act="gamesView" data-id="calendar" aria-pressed="${v === 'calendar'}">Family calendar</button></div>`; }
 function attentionHTML() {
@@ -271,7 +271,7 @@ function noteAct(id, k) {
   if (k === 'shop') { go('shop'); return; }
   if (k === 'cancelSpot') { S.joined = S.joined.filter((x) => x !== n.ref); if (S.bookings) delete S.bookings[n.ref]; }
   if (k === 'yes' || k === 'no') { const t = S.teams.find((x) => x.id === n.ref); if (t) t.members[0].status = k === 'yes' ? 'yes' : 'no'; }
-  n.done = res[k] || 'Done'; n.read = true; save(); renderNotes(); toast(n.done, 'check');
+  n.done = res[k] || 'Done'; n.read = true; save(); renderNotes(); renderTabbar(); toast(n.done, 'check');
 }
 
 /* ═════ 5. WHAT'S NEXT strip ═════ */
@@ -301,7 +301,7 @@ function renderMD() {
   const present = Object.values(M.att).filter((x) => x === 'present' || x === 'late').length;
   v.innerHTML = `<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>Match day</h2></div>
     <div class="view-body" style="padding-top:4px">
-      <div class="org-hero" style="background:linear-gradient(135deg, ${t.color}, #0D1530)">
+      <div class="org-hero" style="background-color:color-mix(in srgb, ${t.color} 75%, #000)">
         <span class="badge" style="background:rgba(255,255,255,.18);color:#fff;justify-self:start">${ic(s2.icon)}${esc(t.name)}</span>
         <h2>${t.next ? 'v ' + esc(t.next.vs) : 'Training session'}</h2>
         <div style="opacity:.9;font-size:14px">${t.next ? `${longFmt.format(dateAt(t.next.d, t.next.t))} · ${fmtT(t.next.d, t.next.t)} · ${esc(t.next.venue)}` : 'No match scheduled yet'}<br>Report 30 min early · Forecast 28°, clear</div>
@@ -364,10 +364,10 @@ function renderVenueView() {
       <div class="field"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span class="lbl">Pick your hours</span><span class="faint" style="font-size:12px">Up to 4 in a row</span></div>
         <div class="legend"><span><i class="lg-free"></i>Free</span><span><i class="lg-peak"></i>Peak</span><span><i class="lg-booked"></i>Booked</span><span><i class="lg-sel"></i>Selected</span></div>
         <div class="slots">${hrs.map((h) => { const st = slotState(v, TB.court, TB.d, h), sel = TB.hours.includes(h), pk = isPeak(TB.d, h);
-          return `<button class="slot s-${st} ${pk ? 'peak' : ''} ${sel ? 'sel' : ''}" data-act="turfSlot" data-h="${h}" ${st === 'free' ? '' : 'disabled'} aria-pressed="${sel}" aria-label="${hourLabel(h)} to ${hourLabel(h + 1)}, ${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st}"><b>${hourLabel(h)}</b><small class="num">${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st === 'mine' ? 'Yours' : st === 'past' ? '—' : 'Booked'}</small></button>`; }).join('')}</div>
+          return `<button class="slot s-${st} ${pk ? 'peak' : ''} ${sel ? 'sel' : ''}" data-act="turfSlot" data-h="${h}" ${st === 'free' ? '' : 'disabled'} aria-pressed="${sel}" aria-label="${hourLabel(h)} to ${hourLabel(h + 1)}, ${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st}"><b>${hourLabel(h)}</b><small class="num">${st === 'free' ? inr(slotPrice(v, TB.d, h)) : st === 'mine' ? 'Yours' : st === 'past' ? 'Passed' : 'Booked'}</small></button>`; }).join('')}</div>
         <div class="faint" style="font-size:12.5px">Off-peak ${inr(v.price)}/hr. Peak ${inr(v.peak)}/hr after 6 pm and at weekends. Free cancellation up to 6 hours before.</div></div>
     </div>
-    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${TB.hours.length ? `${TB.hours.length} hr · ${hourLabel(TB.hours[0])}–${hourLabel(TB.hours[TB.hours.length - 1] + 1)}` : 'No slot selected'}</span><b class="num">${TB.hours.length ? inr(total) : '—'}</b></div>
+    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">${TB.hours.length ? `${TB.hours.length} hr · ${hourLabel(TB.hours[0])}–${hourLabel(TB.hours[TB.hours.length - 1] + 1)}` : 'No slot selected'}</span><b class="num">${TB.hours.length ? inr(total) : inr(0)}</b></div>
       <button class="btn btn-primary" data-act="turfNext" ${TB.hours.length ? '' : 'disabled'}>Continue</button></div>`;
   view.scrollTop = top;
 }
@@ -386,7 +386,7 @@ function turfCheckout() {
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b>Players sharing</b><div class="faint" style="font-size:13px">Including you</div></div><div class="stepper"><button data-act="tcPlayers" data-d="-1" aria-label="Fewer players">${ic('minus', 'ic-sm')}</button><b class="num">${TC.players}</b><button data-act="tcPlayers" data-d="1" aria-label="More players">${ic('plus', 'ic-sm')}</button></div></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="muted">Each pays</span><b class="num" style="font-family:var(--f-display);font-size:28px">${inr(share)}</b></div>
         <div class="faint" style="font-size:12.5px">You pay your share now to lock the slot. The others get a UPI payment request and a WhatsApp reminder. Unpaid shares are charged to you 2 hours before the game.</div></div>` : ''}
-    <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="tcApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="tcApp" data-id="${u}" aria-pressed="${i === 0}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Pay via UPI</span><div class="chips" id="tcApp">${UPI_APPS.map((u, i) => `<button type="button" class="chip" data-act="pickOne" data-group="tcApp" data-id="${u}" aria-pressed="${u === payApp()}">${ic('smartphone')}${u}</button>`).join('')}</div></div>
     <button class="btn btn-primary btn-block" style="min-height:54px" data-act="turfPay" id="tcGo">${ic('smartphone')}Pay ${inr(TC.split ? share : total)} via UPI</button>`, 'turf');
 }
 function turfPay() {
@@ -398,14 +398,14 @@ function turfPay() {
     const b = { id: 'LP' + String(Date.now()).slice(-6), vid: v.id, court: TB.court, d: TB.d, hours: TB.hours.slice(), total, split: TC.split, share, players: names };
     S.turf = S.turf || []; S.turf.push(b);
     notes().unshift({ id: 'n' + Date.now(), pri: 'info', cat: 'booking', icon: 'circle-check', when: 'Just now', title: `Venue booked: ${v.name}`, body: `${v.courts[b.court]}, ${dayLabel(b.d)} ${hourLabel(b.hours[0])}–${hourLabel(b.hours[b.hours.length - 1] + 1)}. Booking ${b.id}.${b.split ? ` ${names.length} payment requests sent.` : ''}`, actions: [['Open My games', 'games']], read: false });
-    save(); TC = null; popAll();
+    save(); buzz(); TC = null; popAll();
     openSheet(`<div class="success"><div class="burst">${ic('check')}</div><h2>Slot booked</h2>
       <div class="muted">${esc(v.name)} · ${esc(v.courts[b.court])}<br>${longFmt.format(dateAt(b.d, '12:00'))}, ${hourLabel(b.hours[0])}–${hourLabel(b.hours[b.hours.length - 1] + 1)}<br><span class="num">Booking ${b.id}</span></div></div>
       ${b.split ? `<div class="field"><span class="lbl">Split payment · 1 of ${names.length + 1} paid</span><div class="rows">
         <div class="row">${avatar(ME_USER, 32)}<div class="grow"><b>You</b></div><span class="badge free num">Paid ${inr(share)}</span></div>
         ${names.slice(0, 4).map((n) => `<div class="row">${avatar({ name: n }, 32)}<div class="grow"><b>${esc(n)}</b></div><span class="badge num">Requested ${inr(share)}</span></div>`).join('')}
         ${names.length > 4 ? `<div class="row"><div class="grow"><small>+${names.length - 4} more requested</small></div></div>` : ''}</div></div>
-        <button class="btn btn-soft btn-block" data-act="toastMsg" data-msg="Reminder sent on WhatsApp to ${names.length} players" data-icon="send">${ic('send')}Remind unpaid players</button>` : ''}
+        <button class="btn btn-soft btn-block" data-act="remindSplit" data-id="${b.id}">${ic('share-2')}Send a payment reminder</button>` : ''}
       <button class="btn btn-primary btn-block" data-act="turfPost" data-id="${v.id}">${ic('megaphone')}Post open spots as a game</button>
       <button class="btn btn-ghost btn-block" data-act="gotoGames">See it in My games</button>`);
   }, 1100);
@@ -415,7 +415,7 @@ function turfListHTML() {
   return `<div class="section"><div class="section-head"><h2>Venue bookings</h2><button class="link" data-act="mode" data-id="venues">${ic('plus', 'ic-sm')} Book</button></div>
     ${list.length ? list.map((b) => { const v = VB(b.vid); return `<div class="card" style="padding:10px;display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center"><img src="${IMG + v.img}.jpg" alt="" style="width:64px;height:64px;border-radius:12px;object-fit:cover">
       <div style="min-width:0;display:grid;gap:3px"><b>${esc(v.name)}</b><small class="faint">${esc(v.courts[b.court])} · ${dayLabel(b.d)} ${hourLabel(b.hours[0])}–${hourLabel(b.hours[b.hours.length - 1] + 1)} · <span class="num">${b.id}</span></small>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge free num">${inr(b.total)}</span>${b.split ? `<span class="badge num">1 of ${b.players.length + 1} paid</span><button class="link" style="font-size:13px" data-act="toastMsg" data-msg="Reminder sent on WhatsApp" data-icon="send">Remind</button>` : '<span class="badge">Paid in full</span>'}</div></div></div>`; }).join('')
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge free num">${inr(b.total)}</span>${b.split ? `<span class="badge num">1 of ${b.players.length + 1} paid</span><button class="link" style="font-size:13px;min-height:40px" data-act="remindSplit" data-id="${b.id}">${ic('share-2', 'ic-sm')}Remind</button>` : '<span class="badge">Paid in full</span>'}</div></div></div>`; }).join('')
       : `<button class="biz" style="background:var(--surface);color:var(--ink);border:1px solid var(--line)" data-act="mode" data-id="venues">${ic('calendar-days')}<div class="grow"><b>Book a turf or court</b><small class="muted">Pick an hour, split the cost with your players over UPI.</small></div>${ic('chevron-right')}</button>`}</div>`;
 }
 
@@ -570,4 +570,84 @@ Object.assign(A, {
     else shareAny('LetsPlay', 'Find games and book turfs near you on LetsPlay:', 'https://letsplay.app'); },
   shareGame: () => shareAny('My game on LetsPlay', 'I’m hosting a game on LetsPlay. Join here:', 'https://letsplay.app/g/new'),
   copyShare: () => { const txt = $('#shareTxt').textContent; try { navigator.clipboard.writeText(txt).then(() => toast('Copied. Paste it into any app', 'copy'), () => { selectText('shareTxt'); toast('Selected. Copy it from the menu', 'copy'); }); } catch (e) { selectText('shareTxt'); } },
+});
+
+/* ═════ 9. FIRST RUN, PREFERENCES AND HONEST ACTIONS ═════ */
+const payApp = () => S.payDefault || UPI_APPS[0];
+function todoCount() { return notes().filter((n) => !n.done && noteVisible(n) && (n.pri === 'urgent' || n.pri === 'action')).length; }
+/* Sports you picked at first run come first in the filter row. */
+function sportsByPreference() { const fav = S.favSports || []; return fav.concat(Object.keys(SPORTS).filter((k) => !fav.includes(k))); }
+function buzz() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { /* not supported */ } }
+function applyPrefs() { app.classList.toggle('big-text', !!S.bigText); app.classList.toggle('calm', !!S.calm); }
+
+/* Extra family members added in the app survive reloads. */
+(S.familyExtra || []).forEach((f) => { if (!FAMILY.find((x) => x.id === f.id)) FAMILY.push(f); FAMILY_COLORS[f.id] = f.color; });
+
+let OB = null;
+function onboardSheet() {
+  if (!OB) OB = { sports: (S.favSports || ['cricket', 'football']).slice() };
+  sheetSet(`<div style="display:grid;gap:6px;padding-top:4px"><h2>Welcome to LetsPlay</h2><div class="muted">Tell us what you play and we’ll put those games first on the map.</div></div>
+    <div class="field"><span class="lbl">Your sports · pick any</span><div class="chips" style="flex-wrap:wrap">${Object.keys(SPORTS).map((k) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="obSport" data-id="${k}" aria-pressed="${OB.sports.includes(k)}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
+    <div class="rows"><div class="row">${ic('map-pin', 'lead')}<div class="grow"><b>Games within 4 km of you</b><small>The prototype uses a sample neighbourhood instead of your real location.</small></div></div>
+      <div class="row">${ic('info', 'lead')}<div class="grow"><b>Sample content</b><small>Games, people, venues and prices here are examples. Messages to other players are simulated.</small></div></div></div>
+    <button class="btn btn-primary btn-block" style="min-height:54px" data-act="obDone">${OB.sports.length ? `Show ${OB.sports.length === 1 ? SPORTS[OB.sports[0]].name.toLowerCase() : 'my'} games` : 'Show all games'}</button>
+    <button class="btn btn-ghost btn-block" data-act="obSkip">Skip for now</button>`, 'onboard');
+}
+
+function addFamilySheet(ret) {
+  sheetSet(`${sheetHead('Add family member', 'Register children and partners without separate accounts')}
+    <form id="famForm" class="sheet-body" style="gap:14px">
+      <div class="field"><label for="famName">Full name</label><input class="input" id="famName" autocomplete="name" placeholder="Their name"></div>
+      <div class="field"><label for="famAge">Age</label><input class="input" id="famAge" type="number" min="3" max="99" inputmode="numeric" placeholder="Years"></div>
+      <div class="field"><label for="famEc">Emergency contact</label><input class="input" id="famEc" value="${esc(ME_USER.name)}" placeholder="Name and relation"></div>
+      <div class="err-box" id="famErr" role="alert" hidden>${ic('info')}<div></div></div>
+      <button class="btn btn-primary btn-block" type="submit">${ic('user-plus')}Add to family</button>
+    </form>`, 'fam', (sh) => {
+    $('#famForm', sh).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = $('#famName').value.trim(), age = parseInt($('#famAge').value, 10);
+      const err = !name ? 'Enter their name.' : Number.isNaN(age) || age < 3 || age > 99 ? 'Enter an age between 3 and 99.' : '';
+      if (err) { const b = $('#famErr'); b.hidden = false; b.lastElementChild.textContent = err; return; }
+      const f = { id: 'f' + Date.now(), name, age, note: `Age ${age}${age < 18 ? ' · add consent when registering' : ''}`, color: AV_COLORS[(FAMILY.length + 2) % AV_COLORS.length] };
+      FAMILY.push(f); FAMILY_COLORS[f.id] = f.color; S.familyExtra = (S.familyExtra || []).concat(f);
+      profiles()[f.id] = { phone: '', ecName: $('#famEc').value.trim(), ecPhone: profiles().f0.phone || '', medical: '' };
+      if (REG) REG.d[f.id] = JSON.parse(JSON.stringify(profiles()[f.id]));
+      save(); buzz(); toast(`${name} added to your family`, 'user-plus');
+      if (ret === 'reg' && REG) regRender(); else { closeSheet(); if (tab === 'me') renderMe(); }
+    });
+  });
+}
+
+function payPrefsSheet() {
+  sheetSet(`${sheetHead('Default UPI app', 'Used first when you pay for games, venues and gear')}
+    <div class="pick">${UPI_APPS.map((u) => `<button class="opt" data-act="payPick" data-id="${u}" aria-pressed="${u === payApp()}"><span class="sport-ic" style="--c:var(--brand)">${ic('smartphone')}</span><div><b>${u}</b></div><span class="tick">${ic('check')}</span></button>`).join('')}</div>`, 'pay');
+}
+function a11yPrefsSheet() {
+  sheetSet(`${sheetHead('Accessibility')}
+    <div class="rows">
+      <button type="button" class="row" data-act="a11yToggle" data-id="bigText" aria-pressed="${!!S.bigText}">${ic('eye', 'lead')}<div class="grow"><b>Larger text</b><small>Makes lists, forms and details easier to read</small></div><span class="tickbox">${ic('check')}</span></button>
+      <button type="button" class="row" data-act="a11yToggle" data-id="calm" aria-pressed="${!!S.calm}">${ic('timer', 'lead')}<div class="grow"><b>Reduce motion</b><small>Turns off slide and pop animations</small></div><span class="tickbox">${ic('check')}</span></button>
+    </div>
+    <div class="faint" style="font-size:12.5px">Your phone’s own reduce-motion setting is respected automatically.</div>
+    <button class="btn btn-primary btn-block" data-act="closeSheet">Done</button>`, 'a11y');
+}
+function bindShopSearch(focus) {
+  const i = $('#shopQ'); if (!i) return;
+  i.addEventListener('input', () => { const pos = i.selectionStart; S.shopQ = i.value; renderShop(); const n = $('#shopQ'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } });
+  if (focus) i.focus();
+}
+
+Object.assign(A, {
+  obSport: (el) => { const k = el.dataset.id; OB.sports = OB.sports.includes(k) ? OB.sports.filter((x) => x !== k) : OB.sports.concat(k); onboardSheet(); },
+  obDone: () => { S.favSports = OB.sports.slice(); S.onboarded = true; S.filter = OB.sports.length === 1 ? OB.sports[0] : 'all'; OB = null; save(); closeSheet(); renderExploreChrome(); renderPanel(); },
+  obSkip: () => { S.onboarded = true; OB = null; save(); closeSheet(); },
+  addFamily: (el) => addFamilySheet(el.dataset.return),
+  payPrefs: () => payPrefsSheet(),
+  payPick: (el) => { S.payDefault = el.dataset.id; save(); payPrefsSheet(); if (tab === 'me') renderMe(); toast(`${el.dataset.id} is your default UPI app`, 'smartphone'); },
+  a11yPrefs: () => a11yPrefsSheet(),
+  a11yToggle: (el) => { const k = el.dataset.id; S[k] = !S[k]; save(); applyPrefs(); a11yPrefsSheet(); if (tab === 'me') renderMe(); },
+  shareLeague: () => shareAny(`Join the ${ORG.league}`, `Join ${ORG.name}’s ${ORG.league} on LetsPlay and pick your department team.`, 'https://letsplay.app/org/halcyon'),
+  carpool: (el) => shareAny('Carpool for Saturday', `Can anyone share a ride on ${dayLabel(+el.dataset.day)} at ${fmtT(+el.dataset.day, el.dataset.t)} to ${el.dataset.venue}? I have a clash with another drop-off.`, 'https://letsplay.app'),
+  remindSplit: (el) => { const b = (S.turf || []).find((x) => x.id === el.dataset.id); if (!b) return; const v = VB(b.vid);
+    shareAny('Turf payment', `Please pay your share of ${inr(b.share)} for ${v.name}, ${dayLabel(b.d)} ${hourLabel(b.hours[0])}. Booking ${b.id}.`, 'https://letsplay.app/pay/' + b.id); },
 });
