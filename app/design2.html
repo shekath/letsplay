@@ -78,7 +78,7 @@ input { font: inherit; color: inherit; }
 .num { font-variant-numeric: tabular-nums; }
 h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: 0; line-height: 1.05; text-wrap: balance; }
 /* Every display-face element leans forward: names, scores, counts and badges read like a scoreboard. */
-.app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
+.app :is(.gi-title, .gi-time, .gi-dist, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
 /* The tab bar stays upright and plain so navigation reads calmly. */
 .tab, .tab .lbl { font-style: normal; }
 .muted { color: var(--ink-2); }
@@ -212,8 +212,16 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .gi-sport { position: absolute; left: 6px; bottom: 6px; width: 28px; height: 28px; border-radius: 9px; background: var(--c); color: #fff; display: grid; place-items: center; }
 .gi-sport .ic { width: 16px; height: 16px; }
 .gi-text { min-width: 0; display: grid; gap: 4px; }
-.gi-tags { display: flex; gap: 5px; }
-.gi-title { font: 700 17px var(--f-display); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* When and how far lead the card: big start time, the day, and a bold distance badge. */
+.gi-when { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.gi-time { font: 800 24px var(--f-display); line-height: 1; letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+.gi-time small { font-size: 14px; font-weight: 700; margin-left: 2px; }
+/* The day rides on the photo, so the header line has room for time and distance. */
+.gi-day { position: absolute; left: 6px; top: 6px; font-size: 12px; font-weight: 800; color: #fff; background: rgba(10, 11, 14, .72); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.gi-day.today { background: #C9362C; }
+.gi-dist { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; height: 28px; padding: 0 10px; border-radius: 999px; font: 800 15px var(--f-display); color: var(--ink); background: color-mix(in srgb, var(--c) 14%, var(--surface)); white-space: nowrap; }
+.gi-dist .ic { width: 14px; height: 14px; color: var(--c); }
+.gi-title { font: 700 16px var(--f-display); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gi-meta { font-size: 13px; color: var(--ink-2); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gi-spots { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
 .gi-spots .spots-bar { flex: 1; max-width: 120px; background: var(--surface-2); }
@@ -721,14 +729,17 @@ function renderPlay() {
   $('#llist').innerHTML = list.length ? list.map(itemHTML).join('') : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
   focusMap(true, list.find((a) => a.id === focused) || null);
 }
+/* "7:30" large with a small "pm", so the start time reads at a glance. */
+function timeParts(a) { const s = tf.format(dateAt(a.d, a.t)); const m = s.match(/^([\d:.]+)\s*(.*)$/); return m ? `${m[1]}<small>${esc(m[2])}</small>` : esc(s); }
 function itemHTML(a) {
   const s = sp(a.sport), joined = S.joined.includes(a.id), left = Math.max(0, a.spots - (joined ? 1 : 0));
   return `<article class="gitem ${focused === a.id ? 'on' : ''}" id="item-${a.id}" style="--c:${s.c}">
     <button class="gi-main" data-act="focus" data-id="${a.id}" aria-label="${esc(a.title)}: show on map and see details">
-      <span class="gi-photo"><img src="${IMG + a.img}.jpg" alt="" loading="lazy"><span class="gi-sport">${ic(s.icon)}</span></span>
-      <span class="gi-text"><span class="gi-tags">${a.d === 0 ? '<span class="tag live">Today</span>' : `<span class="tag soft">${dayLabel(a.d)}</span>`}<span class="tag soft">${money(a.price)}</span></span>
+      <span class="gi-photo"><img src="${IMG + a.img}.jpg" alt="" loading="lazy"><span class="gi-day ${a.d === 0 ? 'today' : ''}">${a.d === 1 ? 'Tmrw' : dayLabel(a.d)}</span><span class="gi-sport">${ic(s.icon)}</span></span>
+      <span class="gi-text">
+        <span class="gi-when"><b class="gi-time num">${timeParts(a)}</b><span class="gi-dist num">${ic('navigation')}${fmtKm(km(a.x, a.y))}</span></span>
         <b class="gi-title">${esc(a.title)}</b>
-        <span class="gi-meta">${tf.format(dateAt(a.d, a.t))} · ${fmtKm(km(a.x, a.y))} · ${esc(a.venue.split(' · ')[0])}</span>
+        <span class="gi-meta">${esc(a.venue.split(' · ')[0])} · ${money(a.price)}</span>
         <span class="gi-spots"><span class="spots-bar"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></span><span class="num">${left} left</span></span></span>
     </button>
     ${joined ? `<span class="gi-in">${ic('check')}In</span>` : left === 0 ? '<span class="gi-in gi-full">Full</span>' : `<button class="gi-join" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
