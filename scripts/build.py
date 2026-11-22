@@ -14,7 +14,7 @@ def bundle() -> str:
     html = (SRC / "shell.html").read_text()
     for marker, name in (("CSS", "styles.css"), ("ICONS", "icons.js"), ("DATA", "data.js"), ("APP", "app.js")):
         html = html.replace(f"/*@@{marker}@@*/", (SRC / name).read_text())
-    return html
+    return html.replace("/*@@TOURNAMENT@@*/", (SRC / "tournament.js").read_text())
 
 
 HEAD = """<!doctype html>

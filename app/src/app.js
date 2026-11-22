@@ -762,13 +762,13 @@ function scheduleSheet(teamId) {
 const teamById = (id) => ORG.teams.find((t) => t.id === id);
 function standings() { return ORG.teams.map((t) => ({ ...t, p: t.w + t.d + t.l, pts: t.w * 3 + t.d })).sort((a, b) => b.pts - a.pts || b.w - a.w); }
 function renderLeague(el) {
-  const segs = [['overview', 'Overview'], ['schedule', 'Schedule'], ['leaderboard', 'Leaderboard'], ['teams', 'Teams']];
+  const segs = [['overview', 'Overview'], ['cups', 'Tournaments'], ['schedule', 'Fixtures'], ['leaderboard', 'Table'], ['teams', 'Teams']];
   let body = '';
   if (S.entTab === 'overview') {
     const st = standings();
     body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-enterprise" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
         <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · cricket, football, kabaddi and more</div>
-        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="leaderboard">${ic('trophy', 'ic-sm')}Standings</button></div></div>
+        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
       <div class="stats section" style="margin-top:12px">
         <div class="card stat"><span>Active players</span><b class="num">248</b><span class="delta">${ic('trending-up', 'ic-sm')}+18 this month</span></div>
         <div class="card stat"><span>Participation</span><b class="num">60%</b><span class="delta">${ic('trending-up', 'ic-sm')}+7 pts</span></div>
@@ -785,6 +785,8 @@ function renderLeague(el) {
     body = `<div class="weekstrip" role="group" aria-label="Pick a day">${days.map((d) => { const dt = dateAt(d, '12:00'); const has = S.fixtures.some((f) => f.d === d); return `<button data-act="schedDay" data-id="${d}" aria-pressed="${S.schedDay === d}">${wkFmt.format(dt)}<b class="num">${dt.getDate()}</b>${has ? '<i></i>' : '<span style="height:5px"></span>'}</button>`; }).join('')}</div>
       <div class="section"><div class="section-head"><h2>${longFmt.format(dateAt(S.schedDay, '12:00'))}</h2><button class="btn btn-primary btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add</button></div>
       ${list.length ? list.map(fixtureCard).join('') : `<div class="empty card">${ic('calendar')}<b>No fixtures this day</b><button class="btn btn-soft btn-sm" data-act="addFixture">Schedule one</button></div>`}</div>`;
+  } else if (S.entTab === 'cups') {
+    body = cupsBody();
   } else if (S.entTab === 'leaderboard') {
     const st = standings();
     const sports = ['all', 'cricket', 'football', 'badminton', 'kabaddi', 'volleyball'];
@@ -798,7 +800,7 @@ function renderLeague(el) {
       <div style="display:grid;gap:10px" class="section">${ORG.teams.map((t) => `<div class="card team-card"><div class="team-top"><span class="crest" style="--c:${t.c}">${t.ab}</span><div class="grow"><h3>${t.name}</h3><div class="muted" style="font-size:13.5px">${t.dept} · ${t.players} players</div></div><span class="badge ent num">${t.w * 3 + t.d} pts</span></div></div>`).join('')}</div>`;
   }
   el.innerHTML = `<div class="page-head"><h1>League</h1>${tierPill()}</div>
-    <div class="seg" role="group" aria-label="League sections">${segs.map(([k, n]) => `<button data-act="entTab" data-id="${k}" aria-pressed="${S.entTab === k}">${n}</button>`).join('')}</div>
+    <div class="seg seg-scroll" role="group" aria-label="League sections">${segs.map(([k, n]) => `<button data-act="entTab" data-id="${k}" aria-pressed="${S.entTab === k}">${n}</button>`).join('')}</div>
     <div class="section" style="margin-top:14px">${body}</div>`;
 }
 function fixtureCard(f) {
@@ -920,7 +922,7 @@ function renderPanel() {
   const P = PLANS[S.tier];
   $('#panelTier').innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" data-quiet="1" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
-  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Add place to see the Pro upsell'], pro: ['Add place → take a photo to save a new place', 'My games → Host a game → point the address', 'Teams → open a team → Invite'], enterprise: ['League → Schedule → Add fixture', 'League → Leaderboard', 'Shop → bulk team kits'] }[S.tier];
+  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Add place to see the Pro upsell'], pro: ['Add place → take a photo to save a new place', 'My games → Host a game → point the address', 'Teams → open a team → Invite'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
 }
 
@@ -944,7 +946,7 @@ const A = {
   open: (el) => { closeSheet(true); openAct(el.dataset.id); },
   join: (el) => joinFlow(el.dataset.id),
   pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); const id = $('.sheet [data-act="confirmJoin"]'); if (id) updateJoinTotal(allActs().find((a) => a.id === id.dataset.id)); },
-  pickOne: (el) => { pickOne(el); if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
+  pickOne: (el) => { pickOne(el); if (el.dataset.tg && TD) { TD[el.dataset.tg] = el.dataset.id; renderGen(); return; } if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
   confirmJoin: (el) => confirmJoin(el.dataset.id),
   gotoGames: () => go('games'),
   back: () => pop(),
@@ -1001,6 +1003,7 @@ const A = {
   promote: () => promoteSheet(),
   reset: () => { S = fresh(); save(); selected = null; renderPanel(); go('explore'); toast('Demo reset', 'rotate-ccw'); },
 };
+/*@@TOURNAMENT@@*/
 function selectText(id) { const r = document.createRange(); r.selectNodeContents($('#' + id)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]'); if (!el) return;

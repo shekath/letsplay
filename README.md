@@ -25,6 +25,7 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 | Create teams, invite players (link, code, nearby, contacts) | – | ✓ | ✓ |
 | Host games, schedule matches, availability | – | ✓ | ✓ |
 | Company league: department teams, schedule builder, leaderboards, participation insights | – | – | ✓ |
+| Tournament organizer: auto-generated groups, seeded brackets, byes and full match schedule; winners advance to semifinals and final automatically | – | – | ✓ |
 
 Prices shown in the app (₹199/month for Pro, ₹149 per employee per month for Enterprise) are **placeholders** for validation, as the pitch recommends.
 
@@ -38,6 +39,7 @@ Locked features stay visible to Lite users and lead to an upgrade sheet, so peop
 - **Host a game (Pro/Enterprise):** from My games, a place sheet, or Add place. Set the location by pointing on the map, using your current location, searching saved venues and places, or snapping a new place. Edit the address shown to players, add a landmark ("Gate 2, opposite the chai stall"), set time, players needed, fee in ₹ and visibility (everyone nearby or invited only), invite teams and people, and publish. Invitees get the address and a map pin, and the game appears on the map.
 - **Teams (Pro):** create a team, open a roster, invite players, schedule a match.
 - **League (Enterprise):** overview stats, week schedule with **Add fixture**, podium and standings table, department teams.
+- **Tournaments (Enterprise):** League → Tournaments → **Create a tournament**. Choose sport, format (groups + knockout, or straight knockout), teams, seeding (league table or random draw), start day, weekdays/weekends, first match time, match length, slots per day, venues and an optional third-place match. The generator builds the plan and schedules every match across dates, times and parallel venues. Preview it, redraw if random, then publish. Enter results by tapping a match: group tables update, the top teams fill the semifinals, knockout winners advance automatically (level scores are settled by super over, penalties or another tie-break), and the final crowns the champion. A sample **Monsoon Cricket Cup** opens with the group stage done and the semifinals today. **Simulate** fills a round with random results for demos.
 - **Shop:** promo carousel with sponsored placements, categories, product pages, bag and checkout, and **Promote your business** ad packages (featured map pin, shop banner, event sponsorship).
 - **Profile:** plan card and plan comparison, family profiles, settings, and **Reset demo data**.
 
@@ -52,6 +54,7 @@ app/
     styles.css     design tokens (light + dark) and all components
     data.js        sample sports, activities, teams, company league, products, plans
     app.js         navigation, map engine, tier gating, every screen and flow
+    tournament.js  tournament generator, scheduler, bracket progression and UI (Enterprise)
     icons.js       inlined Lucide icon paths (ISC licence) + custom sport glyphs in app.js
   img/             optimised photos (Unsplash licence)
   index.html       built standalone PWA (generated)

@@ -142,6 +142,6 @@ const PLANS = {
     feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
     no: ['Company leagues and leaderboards'] },
   enterprise: { name: 'Enterprise', price: '₹149', per: '/employee/month', icon: 'building-2', blurb: 'Run sport across your company.',
-    feats: ['Everything in Pro', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
+    feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };

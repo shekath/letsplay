@@ -321,7 +321,8 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .view-nav button { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.92); color: #0D1530; display: grid; place-items: center; box-shadow: var(--shadow-sm); }
 .view-bar { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .view-bar h2 { font-size: 22px; font-style: italic; text-transform: uppercase; font-weight: 800; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.view-body { padding: 16px max(16px, env(safe-area-inset-left, 0px)) 24px max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; align-content: start; flex: 1; }
+.view-body > * { min-width: 0; }
+.view-body { grid-template-columns: minmax(0, 1fr); padding: 16px max(16px, env(safe-area-inset-left, 0px)) 24px max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; align-content: start; flex: 1; }
 .view-cta { position: sticky; bottom: 0; z-index: 3; padding: 12px 16px 16px; background: linear-gradient(transparent, var(--bg) 30%); display: flex; gap: 10px; align-items: center; flex: none; border-top: 1px solid var(--line); background: var(--bg); }
 .view-cta .price { display: grid; line-height: 1.1; }
 .view-cta .price b { font-family: var(--f-display); font-size: 28px; font-weight: 800; }
@@ -559,6 +560,43 @@ label.opt, label.loc-opt { cursor: pointer; }
 .row[aria-pressed="true"] .tickbox { background: var(--brand); border-color: var(--brand); color: #fff; }
 .row .tickbox .ic { width: 15px; height: 15px; color: inherit; }
 
+/* ───────── Tournaments ───────── */
+.seg-scroll { grid-auto-columns: max-content; overflow-x: auto; scrollbar-width: none; }
+.seg-scroll::-webkit-scrollbar { display: none; }
+.seg-scroll button { padding: 0 12px; }
+.gen-sum { display: flex; gap: 8px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--ent) 10%, var(--surface)); color: var(--ink); font-size: 14px; }
+.gen-sum .ic { color: var(--ent); margin-top: 2px; }
+.bracket { display: grid; grid-auto-flow: column; grid-auto-columns: 196px; gap: 22px; overflow-x: auto; margin: 0 -16px; padding: 4px 16px 12px; scroll-snap-type: x proximity; scroll-padding-inline: 16px; }
+.bcol { display: flex; flex-direction: column; gap: 8px; scroll-snap-align: start; min-width: 0; }
+.bcol h4 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; text-transform: uppercase; font-size: 17px; color: var(--ent); }
+.bstack { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 12px; }
+.bmatch { position: relative; display: block; width: 100%; text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px; padding: 8px 10px; }
+.bmatch.live { border-color: var(--ent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ent) 18%, transparent); }
+.bmatch.wide { max-width: 320px; }
+.bcol:not(:last-child) .bmatch::after { content: ""; position: absolute; right: -24px; top: 50%; width: 22px; border-top: 2px solid var(--line); }
+.bmatch .bl { position: absolute; top: -9px; left: 10px; background: var(--surface); padding: 0 5px; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: var(--ink-3); text-transform: uppercase; }
+.bmatch .tm { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13.5px; min-width: 0; }
+.bmatch .tm .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bmatch .tm.win { font-weight: 800; }
+.bmatch .tm.lose { color: var(--ink-3); }
+.bmatch .tm .sc { margin-left: auto; font-weight: 800; }
+.bmatch .tm .ph { font-style: italic; color: var(--ink-3); font-size: 13px; }
+.ph-crest { --c: var(--surface-2); color: var(--ink-3) !important; }
+.bmatch .meta { font-size: 11.5px; color: var(--ink-3); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 3px; }
+.champ { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 18px 10px; border-radius: 18px; background: linear-gradient(160deg, var(--volt), color-mix(in srgb, var(--volt) 55%, var(--ok))); color: var(--volt-ink); }
+.champ b { font-family: var(--f-display); font-size: 20px; font-style: italic; text-transform: uppercase; line-height: 1; }
+.champ-banner { display: flex; align-items: center; gap: 8px; background: var(--volt); color: var(--volt-ink); border-radius: 12px; padding: 10px 12px; font-size: 14px; justify-self: start; position: relative; z-index: 1; }
+.sched-row { align-items: center; }
+.sched-time { display: grid; min-width: 72px; line-height: 1.15; }
+.sched-time small { font-size: 11.5px; color: var(--ink-3); }
+.sched-teams { font-weight: 600; font-size: 14px; }
+.sched-teams i { font-weight: 500; color: var(--ink-3); }
+.score-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
+.score-side { display: grid; justify-items: center; gap: 8px; text-align: center; min-width: 0; }
+.score-side b { font-size: 14px; line-height: 1.15; }
+.score-side .input { text-align: center; font-family: var(--f-display); font-size: 28px; font-weight: 800; min-height: 60px; }
+.score-vs { padding-bottom: 20px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+
 </style>
 <div class="stage">
   <aside class="panel" aria-label="About this prototype">
@@ -593,7 +631,7 @@ label.opt, label.loc-opt { cursor: pointer; }
 </div>
 <script>
 /* Icon paths from Lucide (ISC License, https://lucide.dev). */
-const ICONS={"map-pin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>","search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","locate-fixed":"<line x1=\"2\" x2=\"5\" y1=\"12\" y2=\"12\"/><line x1=\"19\" x2=\"22\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"5\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/><circle cx=\"12\" cy=\"12\" r=\"7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","lock":"<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/>","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>","user-plus":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\"/><line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\"/>","calendar":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/>","calendar-days":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/><path d=\"M8 14h.01\"/><path d=\"M12 14h.01\"/><path d=\"M16 14h.01\"/><path d=\"M8 18h.01\"/><path d=\"M12 18h.01\"/><path d=\"M16 18h.01\"/>","shopping-bag":"<path d=\"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z\"/><path d=\"M3 6h18\"/><path d=\"M16 10a4 4 0 0 1-8 0\"/>","user":"<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>","trophy":"<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\"/><path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\"/><path d=\"M4 22h16\"/><path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\"/><path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\"/><path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\"/>","crown":"<path d=\"M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z\"/><path d=\"M5 21h14\"/>","building2":"<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\"/><path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\"/><path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\"/><path d=\"M10 6h4\"/><path d=\"M10 10h4\"/><path d=\"M10 14h4\"/><path d=\"M10 18h4\"/>","chevron-right":"<path d=\"m9 18 6-6-6-6\"/>","chevron-left":"<path d=\"m15 18-6-6 6-6\"/>","chevron-down":"<path d=\"m6 9 6 6 6-6\"/>","x":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","check":"<path d=\"M20 6 9 17l-5-5\"/>","share2":"<circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\"/><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\"/>","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","map":"<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\"/><path d=\"M15 5.764v15\"/><path d=\"M9 3.236v15\"/>","navigation":"<polygon points=\"3 11 22 2 13 21 11 13 3 11\"/>","star":"<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>","heart":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>","minus":"<path d=\"M5 12h14\"/>","bell":"<path d=\"M10.268 21a2 2 0 0 0 3.464 0\"/><path d=\"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326\"/>","settings":"<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>","accessibility":"<circle cx=\"16\" cy=\"4\" r=\"1\"/><path d=\"m18 19 1-7-6 1\"/><path d=\"m5 8 3-3 5.5 3-2.36 3.5\"/><path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\"/><path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\"/>","credit-card":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><line x1=\"2\" x2=\"22\" y1=\"10\" y2=\"10\"/>","tag":"<path d=\"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>","zap":"<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\"/>","sparkles":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/>","medal":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\"/><path d=\"M11 12 5.12 2.2\"/><path d=\"m13 12 5.88-9.8\"/><path d=\"M8 7h8\"/><circle cx=\"12\" cy=\"17\" r=\"5\"/><path d=\"M12 18v-2h-.5\"/>","arrow-left":"<path d=\"m12 19-7-7 7-7\"/><path d=\"M19 12H5\"/>","ellipsis":"<circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/><circle cx=\"5\" cy=\"12\" r=\"1\"/>","circle-check":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/>","info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","wallet":"<path d=\"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1\"/><path d=\"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4\"/>","ticket":"<path d=\"M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z\"/><path d=\"M13 5v2\"/><path d=\"M13 17v2\"/><path d=\"M13 11v2\"/>","send":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>","link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","qr-code":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","flag":"<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\"/><line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\"/>","trending-up":"<polyline points=\"22 7 13.5 15.5 8.5 10.5 2 17\"/><polyline points=\"16 7 22 7 22 13\"/>","volleyball":"<path d=\"M11.1 7.1a16.55 16.55 0 0 1 10.9 4\"/><path d=\"M12 12a12.6 12.6 0 0 1-8.7 5\"/><path d=\"M16.8 13.6a16.55 16.55 0 0 1-9 7.5\"/><path d=\"M20.7 17a12.8 12.8 0 0 0-8.7-5 13.3 13.3 0 0 1 0-10\"/><path d=\"M6.3 3.8a16.55 16.55 0 0 0 1.9 11.5\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>","footprints":"<path d=\"M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z\"/><path d=\"M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z\"/><path d=\"M16 17h4\"/><path d=\"M4 13h4\"/>","person-standing":"<circle cx=\"12\" cy=\"5\" r=\"1\"/><path d=\"m9 20 3-6 3 6\"/><path d=\"m6 8 6 2 6-2\"/><path d=\"M12 10v4\"/>","waves":"<path d=\"M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>","bike":"<circle cx=\"18.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"5.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><path d=\"M12 17.5V14l-3-3 4-3 2 3h2\"/>","mountain":"<path d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/>","crosshair":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"22\" x2=\"18\" y1=\"12\" y2=\"12\"/><line x1=\"6\" x2=\"2\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"6\" y2=\"2\"/><line x1=\"12\" x2=\"12\" y1=\"22\" y2=\"18\"/>","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","megaphone":"<path d=\"m3 11 18-5v12L3 14v-3z\"/><path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\"/>","truck":"<path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"/><path d=\"M15 18H9\"/><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/>","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><path d=\"m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7\"/><path d=\"m7.5 4.27 9 5.15\"/>","shuffle":"<path d=\"m18 14 4 4-4 4\"/><path d=\"m18 2 4 4-4 4\"/><path d=\"M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22\"/><path d=\"M2 6h1.972a4 4 0 0 1 3.6 2.2\"/><path d=\"M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45\"/>","chart-column":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"M18 17V9\"/><path d=\"M13 17V5\"/><path d=\"M8 17v-3\"/>","store":"<path d=\"m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7\"/><path d=\"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8\"/><path d=\"M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4\"/><path d=\"M2 7h20\"/><path d=\"M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7\"/>","house":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>","message-circle":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"/>","dumbbell":"<path d=\"M14.4 14.4 9.6 9.6\"/><path d=\"M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z\"/><path d=\"m21.5 21.5-1.4-1.4\"/><path d=\"M3.9 3.9 2.5 2.5\"/><path d=\"M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z\"/>","shirt":"<path d=\"M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z\"/>","gift":"<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13\"/><path d=\"M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7\"/><path d=\"M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5\"/>","percent":"<line x1=\"19\" x2=\"5\" y1=\"5\" y2=\"19\"/><circle cx=\"6.5\" cy=\"6.5\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17.5\" r=\"2.5\"/>","timer":"<line x1=\"10\" x2=\"14\" y1=\"2\" y2=\"2\"/><line x1=\"12\" x2=\"15\" y1=\"14\" y2=\"11\"/><circle cx=\"12\" cy=\"14\" r=\"8\"/>","layers":"<path d=\"M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z\"/><path d=\"M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12\"/><path d=\"M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17\"/>","map-pin-plus":"<path d=\"M19.914 11.105A7.298 7.298 0 0 0 20 10a8 8 0 0 0-16 0c0 4.993 5.539 10.193 7.399 11.799a1 1 0 0 0 1.202 0 32 32 0 0 0 .824-.738\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/><path d=\"M16 18h6\"/><path d=\"M19 15v6\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","repeat":"<path d=\"m17 2 4 4-4 4\"/><path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/><path d=\"m7 22-4-4 4-4\"/><path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>","baby":"<path d=\"M9 12h.01\"/><path d=\"M15 12h.01\"/><path d=\"M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5\"/><path d=\"M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1\"/>","rotate-ccw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","cloud-sun":"<path d=\"M12 2v2\"/><path d=\"m4.93 4.93 1.41 1.41\"/><path d=\"M20 12h2\"/><path d=\"m19.07 4.93-1.41 1.41\"/><path d=\"M15.947 12.65a4 4 0 0 0-5.925-4.128\"/><path d=\"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z\"/>","signal":"<path d=\"M2 20h.01\"/><path d=\"M7 20v-4\"/><path d=\"M12 20v-8\"/><path d=\"M17 20V8\"/><path d=\"M22 4v16\"/>","wifi":"<path d=\"M12 20h.01\"/><path d=\"M2 8.82a15 15 0 0 1 20 0\"/><path d=\"M5 12.859a10 10 0 0 1 14 0\"/><path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/>","battery-full":"<rect width=\"16\" height=\"10\" x=\"2\" y=\"7\" rx=\"2\" ry=\"2\"/><line x1=\"22\" x2=\"22\" y1=\"11\" y2=\"13\"/><line x1=\"6\" x2=\"6\" y1=\"11\" y2=\"13\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"13\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"13\"/>","compass":"<path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>","swords":"<polyline points=\"14.5 17.5 3 6 3 3 6 3 17.5 14.5\"/><line x1=\"13\" x2=\"19\" y1=\"19\" y2=\"13\"/><line x1=\"16\" x2=\"20\" y1=\"16\" y2=\"20\"/><line x1=\"19\" x2=\"21\" y1=\"21\" y2=\"19\"/><polyline points=\"14.5 6.5 18 3 21 3 21 6 17.5 9.5\"/><line x1=\"5\" x2=\"9\" y1=\"14\" y2=\"18\"/><line x1=\"7\" x2=\"4\" y1=\"17\" y2=\"20\"/><line x1=\"3\" x2=\"5\" y1=\"19\" y2=\"21\"/>","target":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>","flame":"<path d=\"M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z\"/>","award":"<path d=\"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526\"/><circle cx=\"12\" cy=\"8\" r=\"6\"/>","list-checks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","badge-check":"<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/><path d=\"m9 12 2 2 4-4\"/>","trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","arrow-right":"<path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/>","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M12 18h.01\"/>","camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","image-plus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","indian-rupee":"<path d=\"M6 3h12\"/><path d=\"M6 8h12\"/><path d=\"m6 13 8.5 8\"/><path d=\"M6 13h3\"/><path d=\"M9 13c6.667 0 6.667-10 0-10\"/>","eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","lock-keyhole":"<circle cx=\"12\" cy=\"16\" r=\"1\"/><rect x=\"3\" y=\"10\" width=\"18\" height=\"12\" rx=\"2\"/><path d=\"M7 10V7a5 5 0 0 1 10 0v3\"/>","milestone":"<path d=\"M12 13v8\"/><path d=\"M12 3v3\"/><path d=\"M4 6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h13a2 2 0 0 0 1.152-.365l3.424-2.317a1 1 0 0 0 0-1.635l-3.424-2.318A2 2 0 0 0 17 6z\"/>"};
+const ICONS={"map-pin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>","search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","locate-fixed":"<line x1=\"2\" x2=\"5\" y1=\"12\" y2=\"12\"/><line x1=\"19\" x2=\"22\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"5\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/><circle cx=\"12\" cy=\"12\" r=\"7\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","lock":"<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/>","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>","user-plus":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\"/><line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\"/>","calendar":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/>","calendar-days":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/><path d=\"M8 14h.01\"/><path d=\"M12 14h.01\"/><path d=\"M16 14h.01\"/><path d=\"M8 18h.01\"/><path d=\"M12 18h.01\"/><path d=\"M16 18h.01\"/>","shopping-bag":"<path d=\"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z\"/><path d=\"M3 6h18\"/><path d=\"M16 10a4 4 0 0 1-8 0\"/>","user":"<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>","trophy":"<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\"/><path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\"/><path d=\"M4 22h16\"/><path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\"/><path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\"/><path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\"/>","crown":"<path d=\"M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z\"/><path d=\"M5 21h14\"/>","building-2":"<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\"/><path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\"/><path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\"/><path d=\"M10 6h4\"/><path d=\"M10 10h4\"/><path d=\"M10 14h4\"/><path d=\"M10 18h4\"/>","chevron-right":"<path d=\"m9 18 6-6-6-6\"/>","chevron-left":"<path d=\"m15 18-6-6 6-6\"/>","chevron-down":"<path d=\"m6 9 6 6 6-6\"/>","x":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","check":"<path d=\"M20 6 9 17l-5-5\"/>","share-2":"<circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\"/><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\"/>","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","map":"<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\"/><path d=\"M15 5.764v15\"/><path d=\"M9 3.236v15\"/>","navigation":"<polygon points=\"3 11 22 2 13 21 11 13 3 11\"/>","star":"<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>","heart":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>","minus":"<path d=\"M5 12h14\"/>","bell":"<path d=\"M10.268 21a2 2 0 0 0 3.464 0\"/><path d=\"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326\"/>","settings":"<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>","accessibility":"<circle cx=\"16\" cy=\"4\" r=\"1\"/><path d=\"m18 19 1-7-6 1\"/><path d=\"m5 8 3-3 5.5 3-2.36 3.5\"/><path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\"/><path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\"/>","credit-card":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><line x1=\"2\" x2=\"22\" y1=\"10\" y2=\"10\"/>","tag":"<path d=\"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>","zap":"<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\"/>","sparkles":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/>","medal":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\"/><path d=\"M11 12 5.12 2.2\"/><path d=\"m13 12 5.88-9.8\"/><path d=\"M8 7h8\"/><circle cx=\"12\" cy=\"17\" r=\"5\"/><path d=\"M12 18v-2h-.5\"/>","arrow-left":"<path d=\"m12 19-7-7 7-7\"/><path d=\"M19 12H5\"/>","ellipsis":"<circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/><circle cx=\"5\" cy=\"12\" r=\"1\"/>","circle-check":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/>","info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","wallet":"<path d=\"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1\"/><path d=\"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4\"/>","ticket":"<path d=\"M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z\"/><path d=\"M13 5v2\"/><path d=\"M13 17v2\"/><path d=\"M13 11v2\"/>","send":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>","link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","qr-code":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","flag":"<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\"/><line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\"/>","trending-up":"<polyline points=\"22 7 13.5 15.5 8.5 10.5 2 17\"/><polyline points=\"16 7 22 7 22 13\"/>","volleyball":"<path d=\"M11.1 7.1a16.55 16.55 0 0 1 10.9 4\"/><path d=\"M12 12a12.6 12.6 0 0 1-8.7 5\"/><path d=\"M16.8 13.6a16.55 16.55 0 0 1-9 7.5\"/><path d=\"M20.7 17a12.8 12.8 0 0 0-8.7-5 13.3 13.3 0 0 1 0-10\"/><path d=\"M6.3 3.8a16.55 16.55 0 0 0 1.9 11.5\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>","footprints":"<path d=\"M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z\"/><path d=\"M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z\"/><path d=\"M16 17h4\"/><path d=\"M4 13h4\"/>","person-standing":"<circle cx=\"12\" cy=\"5\" r=\"1\"/><path d=\"m9 20 3-6 3 6\"/><path d=\"m6 8 6 2 6-2\"/><path d=\"M12 10v4\"/>","waves":"<path d=\"M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>","bike":"<circle cx=\"18.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"5.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><path d=\"M12 17.5V14l-3-3 4-3 2 3h2\"/>","mountain":"<path d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/>","crosshair":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"22\" x2=\"18\" y1=\"12\" y2=\"12\"/><line x1=\"6\" x2=\"2\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"6\" y2=\"2\"/><line x1=\"12\" x2=\"12\" y1=\"22\" y2=\"18\"/>","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","megaphone":"<path d=\"m3 11 18-5v12L3 14v-3z\"/><path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\"/>","truck":"<path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"/><path d=\"M15 18H9\"/><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/>","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><path d=\"m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7\"/><path d=\"m7.5 4.27 9 5.15\"/>","shuffle":"<path d=\"m18 14 4 4-4 4\"/><path d=\"m18 2 4 4-4 4\"/><path d=\"M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22\"/><path d=\"M2 6h1.972a4 4 0 0 1 3.6 2.2\"/><path d=\"M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45\"/>","chart-column":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"M18 17V9\"/><path d=\"M13 17V5\"/><path d=\"M8 17v-3\"/>","store":"<path d=\"m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7\"/><path d=\"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8\"/><path d=\"M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4\"/><path d=\"M2 7h20\"/><path d=\"M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7\"/>","house":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>","message-circle":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"/>","dumbbell":"<path d=\"M14.4 14.4 9.6 9.6\"/><path d=\"M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z\"/><path d=\"m21.5 21.5-1.4-1.4\"/><path d=\"M3.9 3.9 2.5 2.5\"/><path d=\"M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z\"/>","shirt":"<path d=\"M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z\"/>","gift":"<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13\"/><path d=\"M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7\"/><path d=\"M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5\"/>","percent":"<line x1=\"19\" x2=\"5\" y1=\"5\" y2=\"19\"/><circle cx=\"6.5\" cy=\"6.5\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17.5\" r=\"2.5\"/>","timer":"<line x1=\"10\" x2=\"14\" y1=\"2\" y2=\"2\"/><line x1=\"12\" x2=\"15\" y1=\"14\" y2=\"11\"/><circle cx=\"12\" cy=\"14\" r=\"8\"/>","layers":"<path d=\"M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z\"/><path d=\"M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12\"/><path d=\"M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17\"/>","map-pin-plus":"<path d=\"M19.914 11.105A7.298 7.298 0 0 0 20 10a8 8 0 0 0-16 0c0 4.993 5.539 10.193 7.399 11.799a1 1 0 0 0 1.202 0 32 32 0 0 0 .824-.738\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/><path d=\"M16 18h6\"/><path d=\"M19 15v6\"/>","rocket":"<path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0\"/><path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/>","globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","repeat":"<path d=\"m17 2 4 4-4 4\"/><path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/><path d=\"m7 22-4-4 4-4\"/><path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>","baby":"<path d=\"M9 12h.01\"/><path d=\"M15 12h.01\"/><path d=\"M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5\"/><path d=\"M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1\"/>","rotate-ccw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","cloud-sun":"<path d=\"M12 2v2\"/><path d=\"m4.93 4.93 1.41 1.41\"/><path d=\"M20 12h2\"/><path d=\"m19.07 4.93-1.41 1.41\"/><path d=\"M15.947 12.65a4 4 0 0 0-5.925-4.128\"/><path d=\"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z\"/>","signal":"<path d=\"M2 20h.01\"/><path d=\"M7 20v-4\"/><path d=\"M12 20v-8\"/><path d=\"M17 20V8\"/><path d=\"M22 4v16\"/>","wifi":"<path d=\"M12 20h.01\"/><path d=\"M2 8.82a15 15 0 0 1 20 0\"/><path d=\"M5 12.859a10 10 0 0 1 14 0\"/><path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/>","battery-full":"<rect width=\"16\" height=\"10\" x=\"2\" y=\"7\" rx=\"2\" ry=\"2\"/><line x1=\"22\" x2=\"22\" y1=\"11\" y2=\"13\"/><line x1=\"6\" x2=\"6\" y1=\"11\" y2=\"13\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"13\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"13\"/>","compass":"<path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/>","swords":"<polyline points=\"14.5 17.5 3 6 3 3 6 3 17.5 14.5\"/><line x1=\"13\" x2=\"19\" y1=\"19\" y2=\"13\"/><line x1=\"16\" x2=\"20\" y1=\"16\" y2=\"20\"/><line x1=\"19\" x2=\"21\" y1=\"21\" y2=\"19\"/><polyline points=\"14.5 6.5 18 3 21 3 21 6 17.5 9.5\"/><line x1=\"5\" x2=\"9\" y1=\"14\" y2=\"18\"/><line x1=\"7\" x2=\"4\" y1=\"17\" y2=\"20\"/><line x1=\"3\" x2=\"5\" y1=\"19\" y2=\"21\"/>","target":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>","flame":"<path d=\"M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z\"/>","award":"<path d=\"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526\"/><circle cx=\"12\" cy=\"8\" r=\"6\"/>","list-checks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","badge-check":"<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/><path d=\"m9 12 2 2 4-4\"/>","trash-2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","arrow-right":"<path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/>","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M12 18h.01\"/>","camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","image-plus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","indian-rupee":"<path d=\"M6 3h12\"/><path d=\"M6 8h12\"/><path d=\"m6 13 8.5 8\"/><path d=\"M6 13h3\"/><path d=\"M9 13c6.667 0 6.667-10 0-10\"/>","eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","lock-keyhole":"<circle cx=\"12\" cy=\"16\" r=\"1\"/><rect x=\"3\" y=\"10\" width=\"18\" height=\"12\" rx=\"2\"/><path d=\"M7 10V7a5 5 0 0 1 10 0v3\"/>","milestone":"<path d=\"M12 13v8\"/><path d=\"M12 3v3\"/><path d=\"M4 6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h13a2 2 0 0 0 1.152-.365l3.424-2.317a1 1 0 0 0 0-1.635l-3.424-2.318A2 2 0 0 0 17 6z\"/>","list":"<path d=\"M3 12h.01\"/><path d=\"M3 18h.01\"/><path d=\"M3 6h.01\"/><path d=\"M8 12h13\"/><path d=\"M8 18h13\"/><path d=\"M8 6h13\"/>"};
 
 </script>
 <script>
@@ -741,7 +779,7 @@ const PLANS = {
     feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
     no: ['Company leagues and leaderboards'] },
   enterprise: { name: 'Enterprise', price: '₹149', per: '/employee/month', icon: 'building-2', blurb: 'Run sport across your company.',
-    feats: ['Everything in Pro', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
+    feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };
 
@@ -1511,13 +1549,13 @@ function scheduleSheet(teamId) {
 const teamById = (id) => ORG.teams.find((t) => t.id === id);
 function standings() { return ORG.teams.map((t) => ({ ...t, p: t.w + t.d + t.l, pts: t.w * 3 + t.d })).sort((a, b) => b.pts - a.pts || b.w - a.w); }
 function renderLeague(el) {
-  const segs = [['overview', 'Overview'], ['schedule', 'Schedule'], ['leaderboard', 'Leaderboard'], ['teams', 'Teams']];
+  const segs = [['overview', 'Overview'], ['cups', 'Tournaments'], ['schedule', 'Fixtures'], ['leaderboard', 'Table'], ['teams', 'Teams']];
   let body = '';
   if (S.entTab === 'overview') {
     const st = standings();
     body = `<div class="org-hero"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tier t-enterprise" style="background:rgba(255,255,255,.18)">${ic('building-2')}${ORG.name}</span><span style="font-size:13px;opacity:.85">Week 8 of 12</span></div>
         <h2>${ORG.league}</h2><div style="opacity:.85;font-size:14px">${ORG.teams.length} department teams · cricket, football, kabaddi and more</div>
-        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="leaderboard">${ic('trophy', 'ic-sm')}Standings</button></div></div>
+        <div style="display:flex;gap:8px;position:relative;z-index:1"><button class="btn btn-volt btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add fixture</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="entTab" data-id="cups">${ic('trophy', 'ic-sm')}Tournaments</button></div></div>
       <div class="stats section" style="margin-top:12px">
         <div class="card stat"><span>Active players</span><b class="num">248</b><span class="delta">${ic('trending-up', 'ic-sm')}+18 this month</span></div>
         <div class="card stat"><span>Participation</span><b class="num">60%</b><span class="delta">${ic('trending-up', 'ic-sm')}+7 pts</span></div>
@@ -1534,6 +1572,8 @@ function renderLeague(el) {
     body = `<div class="weekstrip" role="group" aria-label="Pick a day">${days.map((d) => { const dt = dateAt(d, '12:00'); const has = S.fixtures.some((f) => f.d === d); return `<button data-act="schedDay" data-id="${d}" aria-pressed="${S.schedDay === d}">${wkFmt.format(dt)}<b class="num">${dt.getDate()}</b>${has ? '<i></i>' : '<span style="height:5px"></span>'}</button>`; }).join('')}</div>
       <div class="section"><div class="section-head"><h2>${longFmt.format(dateAt(S.schedDay, '12:00'))}</h2><button class="btn btn-primary btn-sm" data-act="addFixture">${ic('plus', 'ic-sm')}Add</button></div>
       ${list.length ? list.map(fixtureCard).join('') : `<div class="empty card">${ic('calendar')}<b>No fixtures this day</b><button class="btn btn-soft btn-sm" data-act="addFixture">Schedule one</button></div>`}</div>`;
+  } else if (S.entTab === 'cups') {
+    body = cupsBody();
   } else if (S.entTab === 'leaderboard') {
     const st = standings();
     const sports = ['all', 'cricket', 'football', 'badminton', 'kabaddi', 'volleyball'];
@@ -1547,7 +1587,7 @@ function renderLeague(el) {
       <div style="display:grid;gap:10px" class="section">${ORG.teams.map((t) => `<div class="card team-card"><div class="team-top"><span class="crest" style="--c:${t.c}">${t.ab}</span><div class="grow"><h3>${t.name}</h3><div class="muted" style="font-size:13.5px">${t.dept} · ${t.players} players</div></div><span class="badge ent num">${t.w * 3 + t.d} pts</span></div></div>`).join('')}</div>`;
   }
   el.innerHTML = `<div class="page-head"><h1>League</h1>${tierPill()}</div>
-    <div class="seg" role="group" aria-label="League sections">${segs.map(([k, n]) => `<button data-act="entTab" data-id="${k}" aria-pressed="${S.entTab === k}">${n}</button>`).join('')}</div>
+    <div class="seg seg-scroll" role="group" aria-label="League sections">${segs.map(([k, n]) => `<button data-act="entTab" data-id="${k}" aria-pressed="${S.entTab === k}">${n}</button>`).join('')}</div>
     <div class="section" style="margin-top:14px">${body}</div>`;
 }
 function fixtureCard(f) {
@@ -1669,7 +1709,7 @@ function renderPanel() {
   const P = PLANS[S.tier];
   $('#panelTier').innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" data-quiet="1" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');
   $('#panelFeats').innerHTML = P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('') + P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('');
-  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Add place to see the Pro upsell'], pro: ['Add place → take a photo to save a new place', 'My games → Host a game → point the address', 'Teams → open a team → Invite'], enterprise: ['League → Schedule → Add fixture', 'League → Leaderboard', 'Shop → bulk team kits'] }[S.tier];
+  const tries = { lite: ['Tap a pin on the map, then Join', 'Drag the list sheet up and down', 'Tap Add place to see the Pro upsell'], pro: ['Add place → take a photo to save a new place', 'My games → Host a game → point the address', 'Teams → open a team → Invite'], enterprise: ['League → Tournaments → Create a tournament', 'Open Monsoon Cricket Cup → enter semifinal results', 'League → Fixtures → Add fixture'] }[S.tier];
   $('#panelTry').innerHTML = tries.map((t) => `<li>${ic('arrow-right')}${t}</li>`).join('');
 }
 
@@ -1693,7 +1733,7 @@ const A = {
   open: (el) => { closeSheet(true); openAct(el.dataset.id); },
   join: (el) => joinFlow(el.dataset.id),
   pickMany: (el) => { el.setAttribute('aria-pressed', el.getAttribute('aria-pressed') !== 'true'); const id = $('.sheet [data-act="confirmJoin"]'); if (id) updateJoinTotal(allActs().find((a) => a.id === id.dataset.id)); },
-  pickOne: (el) => { pickOne(el); if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
+  pickOne: (el) => { pickOne(el); if (el.dataset.tg && TD) { TD[el.dataset.tg] = el.dataset.id; renderGen(); return; } if (el.dataset.h && Host.draft) { Host.draft[el.dataset.h] = el.dataset.id; if (el.dataset.h === 'sport') renderHost(); } },
   confirmJoin: (el) => confirmJoin(el.dataset.id),
   gotoGames: () => go('games'),
   back: () => pop(),
@@ -1750,6 +1790,323 @@ const A = {
   promote: () => promoteSheet(),
   reset: () => { S = fresh(); save(); selected = null; renderPanel(); go('explore'); toast('Demo reset', 'rotate-ccw'); },
 };
+/* ───────── TOURNAMENT ORGANIZER (Enterprise) ─────────
+   Generates a full plan from a few settings:
+   - Knockout: seeded bracket (1 v 8, 4 v 5, 2 v 7, 3 v 6), byes for top seeds when the field is not a power of two.
+   - Groups + knockout: snake-seeded groups, round-robin (circle method), top teams to semifinals, then the final.
+   Then it schedules every match into dates, time slots and venues, and advances winners automatically as results come in. */
+const SCORE = { cricket: ['runs', [95, 190], 'super over'], football: ['goals', [0, 4], 'penalties'], kabaddi: ['points', [22, 46], 'golden raid'],
+  basketball: ['points', [28, 64], 'overtime'], volleyball: ['sets', [0, 2], 'golden set'], badminton: ['games', [0, 2], 'decider'] };
+const TOUR_SPORTS = ['cricket', 'football', 'kabaddi', 'badminton', 'volleyball', 'basketball'];
+const scoreOf = (sport) => SCORE[sport] || ['points', [0, 10], 'tie-break'];
+
+function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function seedOrder(P) { let s = [1, 2]; while (s.length < P) { const L = s.length * 2; s = s.flatMap((x) => [x, L + 1 - x]); } return s; }
+const koRoundName = (k) => (k === 2 ? 'Final' : k === 4 ? 'Semifinals' : k === 8 ? 'Quarterfinals' : 'Round of ' + k);
+const koPrefix = (k) => (k === 4 ? 'SF' : k === 8 ? 'QF' : 'R' + k + '-');
+function rrRounds(list) {
+  const t = list.slice(); if (t.length % 2) t.push(null);
+  const n = t.length, R = [];
+  for (let r = 0; r < n - 1; r++) {
+    const pairs = [];
+    for (let i = 0; i < n / 2; i++) { const a = t[i], b = t[n - 1 - i]; if (a && b) pairs.push(r % 2 ? [b, a] : [a, b]); }
+    R.push(pairs); t.splice(1, 0, t.pop());
+  }
+  return R;
+}
+function addMins(t, m) { const [h, mm] = t.split(':').map(Number); const x = h * 60 + mm + m; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); }
+function playable(d, mode) { const wd = dateAt(d, '12:00').getDay(); return mode === 'every' || (mode === 'weekdays' ? wd > 0 && wd < 6 : wd === 0 || wd === 6); }
+
+function orderTeams(cfg, rand) {
+  if (cfg.seeding === 'random') { const a = cfg.teams.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  return standings().map((t) => t.id).filter((id) => cfg.teams.includes(id));
+}
+
+function buildTournament(cfg, rand = Math.random) {
+  const teams = orderTeams(cfg, rand);
+  const M = []; let mid = 0;
+  const add = (o) => { const m = Object.assign({ id: 'm' + (++mid), sa: null, sb: null, winner: null, tb: null, bye: false, a: null, b: null }, o); M.push(m); return m; };
+  let groups = null, entrants;
+  if (cfg.format === 'groups') {
+    const G = teams.length >= 6 ? 2 : 1, names = ['A', 'B'].slice(0, G); groups = {};
+    names.forEach((g) => (groups[g] = []));
+    teams.forEach((t, i) => { const row = Math.floor(i / G); const idx = row % 2 === 0 ? i % G : G - 1 - (i % G); groups[names[idx]].push(t); });
+    names.forEach((g) => { let n = 0; rrRounds(groups[g]).forEach((pairs, r) => pairs.forEach(([a, b]) => add({ stage: 'group', group: g, rk: r, round: `Group ${g} · Matchday ${r + 1}`, label: g + (++n), a, b }))); });
+    entrants = G === 2
+      ? [{ type: 'group', ref: 'A1' }, { type: 'group', ref: 'B2' }, { type: 'group', ref: 'B1' }, { type: 'group', ref: 'A2' }]
+      : [{ type: 'group', ref: 'A1' }, { type: 'group', ref: 'A4' }, { type: 'group', ref: 'A2' }, { type: 'group', ref: 'A3' }];
+  } else {
+    const P = Math.pow(2, Math.ceil(Math.log2(teams.length)));
+    entrants = seedOrder(P).map((s) => (s <= teams.length ? { type: 'team', ref: teams[s - 1], seed: s } : { type: 'bye' }));
+  }
+  let cur = entrants, k = cur.length, rk = 100, semis = [];
+  while (k >= 2) {
+    const next = [], name = koRoundName(k);
+    for (let i = 0; i < k / 2; i++) {
+      const m = add({ stage: 'ko', rk, round: name, label: k === 2 ? 'Final' : koPrefix(k) + (i + 1), srcA: cur[2 * i], srcB: cur[2 * i + 1] });
+      if (k === 4) semis.push(m.id);
+      next.push({ type: 'win', ref: m.id });
+    }
+    cur = next; k /= 2; rk++;
+  }
+  if (cfg.thirdPlace && semis.length === 2) add({ stage: 'ko', rk: rk - 1.5, round: 'Third place', label: '3rd', srcA: { type: 'lose', ref: semis[0] }, srcB: { type: 'lose', ref: semis[1] } });
+  const T = Object.assign({ id: 'tr' + Date.now(), created: Date.now(), groups, matches: M, champion: null }, JSON.parse(JSON.stringify(cfg)));
+  T.seeds = teams;
+  propagate(T); schedulePlan(T);
+  return T;
+}
+
+function schedulePlan(T) {
+  const keys = [...new Set(T.matches.filter((m) => !m.bye).map((m) => m.rk))].sort((a, b) => a - b);
+  const V = Math.max(1, T.venues.length);
+  let day = T.startDay; while (!playable(day, T.days)) day++;
+  let slot = 0, prev = null;
+  const nextDay = () => { day++; slot = 0; while (!playable(day, T.days)) day++; };
+  keys.forEach((rk) => {
+    const ms = T.matches.filter((m) => m.rk === rk && !m.bye);
+    const ko = ms[0].stage === 'ko';
+    const finalAfterThird = ms[0].round === 'Final' && prev === 'Third place';
+    if (ko && slot > 0 && !finalAfterThird) nextDay();
+    for (let i = 0; i < ms.length; i += V) {
+      ms.slice(i, i + V).forEach((m, j) => { m.d = day; m.t = addMins(T.time, slot * (T.mins + 15)); m.venue = T.venues[j % V]; });
+      slot++; if (slot >= T.perDay) nextDay();
+    }
+    prev = ms[0].round;
+  });
+  const ds = T.matches.filter((m) => !m.bye).map((m) => m.d);
+  T.endDay = Math.max(...ds); T.matchDays = new Set(ds).size;
+}
+
+function groupTable(T, g) {
+  const rows = T.groups[g].map((id) => ({ id, p: 0, w: 0, d: 0, l: 0, f: 0, a: 0, pts: 0 }));
+  const by = Object.fromEntries(rows.map((r) => [r.id, r]));
+  T.matches.filter((m) => m.stage === 'group' && m.group === g && m.sa != null).forEach((m) => {
+    const A2 = by[m.a], B2 = by[m.b]; A2.p++; B2.p++; A2.f += m.sa; A2.a += m.sb; B2.f += m.sb; B2.a += m.sa;
+    if (m.sa > m.sb) { A2.w++; B2.l++; A2.pts += 3; } else if (m.sa < m.sb) { B2.w++; A2.l++; B2.pts += 3; } else { A2.d++; B2.d++; A2.pts++; B2.pts++; }
+  });
+  return rows.sort((x, y) => y.pts - x.pts || (y.f - y.a) - (x.f - x.a) || y.f - x.f);
+}
+const groupDone = (T, g) => T.matches.filter((m) => m.stage === 'group' && m.group === g).every((m) => m.sa != null);
+function resolveSrc(T, src) {
+  if (!src || src.type === 'bye') return null;
+  if (src.type === 'team') return src.ref;
+  if (src.type === 'group') { const g = src.ref[0], pos = +src.ref.slice(1); return groupDone(T, g) ? (groupTable(T, g)[pos - 1] || {}).id || null : null; }
+  const m = T.matches.find((x) => x.id === src.ref); if (!m || !m.winner) return null;
+  if (src.type === 'win') return m.winner;
+  return m.winner === m.a ? m.b : m.a;
+}
+function propagate(T) {
+  T.matches.filter((m) => m.stage === 'ko').sort((a, b) => a.rk - b.rk).forEach((m) => {
+    const a = resolveSrc(T, m.srcA), b = resolveSrc(T, m.srcB);
+    if (m.a !== a || m.b !== b) { m.a = a; m.b = b; m.sa = m.sb = null; m.winner = null; m.tb = null; }
+    if ((m.srcA && m.srcA.type === 'bye') || (m.srcB && m.srcB.type === 'bye')) { m.bye = true; m.winner = a || b || null; }
+  });
+  const f = T.matches.find((m) => m.round === 'Final'); T.champion = (f && f.winner) || null;
+}
+function srcLabel(T, src) {
+  if (!src) return 'TBD';
+  if (src.type === 'team') return teamById(src.ref).name;
+  if (src.type === 'bye') return 'Bye';
+  if (src.type === 'group') return T.groups && Object.keys(T.groups).length === 1 ? `#${src.ref.slice(1)} in group` : `Group ${src.ref[0]} #${src.ref.slice(1)}`;
+  const m = T.matches.find((x) => x.id === src.ref); return (src.type === 'win' ? 'Winner ' : 'Loser ') + (m ? m.label : '');
+}
+function playMatch(T, m, sa, sb, tbWinner) {
+  m.sa = sa; m.sb = sb;
+  m.winner = sa > sb ? m.a : sb > sa ? m.b : m.stage === 'ko' ? tbWinner : null;
+  m.tb = sa === sb && m.stage === 'ko' ? tbWinner : null;
+  propagate(T);
+}
+function simulateMatch(T, m, rand) {
+  const [, [lo, hi]] = scoreOf(T.sport);
+  let a = lo + Math.floor(rand() * (hi - lo + 1)), b = lo + Math.floor(rand() * (hi - lo + 1));
+  if (hi === 2) { if (rand() < 0.5) { a = 2; b = Math.floor(rand() * 2); } else { b = 2; a = Math.floor(rand() * 2); } }
+  playMatch(T, m, a, b, rand() < 0.5 ? m.a : m.b);
+}
+const ready = (m) => m.a && m.b && m.sa == null && !m.bye;
+function nextRound(T) { const r = T.matches.filter(ready); if (!r.length) return []; const rk = Math.min(...r.map((m) => m.rk)); return r.filter((m) => m.rk === rk); }
+function tourStatus(T) {
+  if (T.champion) return { text: 'Champion: ' + teamById(T.champion).name, done: true };
+  const open = T.matches.filter((m) => !m.bye && m.sa == null).sort((a, b) => a.rk - b.rk)[0];
+  if (!open) return { text: 'Complete', done: true };
+  return { text: open.stage === 'group' ? 'Group stage' : open.round, done: false };
+}
+function tourProgress(T) { const ms = T.matches.filter((m) => !m.bye); return { played: ms.filter((m) => m.sa != null).length, total: ms.length }; }
+
+function sampleTournament() {
+  const T = buildTournament({ name: 'Monsoon Cricket Cup', sport: 'cricket', format: 'groups', teams: ORG.teams.map((t) => t.id), seeding: 'standings', thirdPlace: true,
+    venues: ['Oval Cricket Ground', 'Riverfront Maidan · Turf 2'], startDay: -3, days: 'every', time: '18:30', mins: 120, perDay: 2 }, rng(11));
+  T.id = 'tr-sample'; const r = rng(7);
+  T.matches.filter((m) => m.stage === 'group').forEach((m) => simulateMatch(T, m, r));
+  return T;
+}
+function tours() { if (!S.tournaments) { S.tournaments = [sampleTournament()]; save(); } return S.tournaments; }
+
+/* ── UI ── */
+const crestOf = (id, cls = 'sm') => { const t = teamById(id); return `<span class="crest ${cls}" style="--c:${t.c}">${t.ab}</span>`; };
+function cupsBody() {
+  const list = tours();
+  return `<button class="biz" style="background:linear-gradient(120deg,var(--ent),#2B1C7A);color:#fff" data-act="tourNew">${ic('trophy')}<div class="grow"><b>Create a tournament</b><small>Pick teams and dates. LetsPlay generates groups, brackets and the full schedule.</small></div>${ic('chevron-right')}</button>
+    <div style="display:grid;gap:12px" class="section">${list.map((T) => { const st = tourStatus(T), pr = tourProgress(T), s2 = sp(T.sport);
+      const nxt = T.matches.filter((m) => ready(m)).sort((a, b) => a.d - b.d || a.t.localeCompare(b.t))[0];
+      return `<button class="card team-card" data-act="tourOpen" data-id="${T.id}">
+        <div class="team-top"><span class="sport-ic" style="--c:${s2.c}">${ic(s2.icon)}</span><div class="grow"><h3>${esc(T.name)}</h3><div class="muted" style="font-size:13px">${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'} · ${T.teams.length} teams · ${longFmt.format(dateAt(T.startDay, '12:00'))} – ${longFmt.format(dateAt(T.endDay, '12:00'))}</div></div>${ic('chevron-right')}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="badge ${st.done ? 'volt' : 'ent'}">${ic(st.done ? 'trophy' : 'flame')}${esc(st.text)}</span><span class="faint num" style="font-size:12.5px">${pr.played}/${pr.total} played</span></div>
+        <div class="bar" style="--c:var(--ent)"><i style="width:${Math.round((pr.played / pr.total) * 100)}%"></i></div>
+        ${nxt ? `<div class="team-next">${ic('calendar', 'ic-sm')}<span>${esc(nxt.round === 'Final' ? 'Final' : nxt.label)}: ${teamById(nxt.a).name} v ${teamById(nxt.b).name} · ${dayLabel(nxt.d)} ${timeFmt.format(dateAt(nxt.d, nxt.t))}</span></div>` : ''}
+      </button>`; }).join('')}</div>`;
+}
+
+/* Generator */
+let TD = null;
+function freshTD() {
+  return { name: 'Corporate Champions Trophy', sport: 'football', format: 'groups', teams: ORG.teams.map((t) => t.id), seeding: 'standings', thirdPlace: true,
+    venues: ['Riverfront Maidan · Turf 2', 'Northgate Courts'], startDay: '1', days: 'weekdays', time: '18:00', mins: '60', perDay: '2' };
+}
+function tdConfig() { return Object.assign({}, TD, { startDay: +TD.startDay, mins: +TD.mins, perDay: +TD.perDay }); }
+function tdError() {
+  if (TD.teams.length < (TD.format === 'groups' ? 4 : 3)) return TD.format === 'groups' ? 'Pick at least 4 teams for groups + knockout' : 'Pick at least 3 teams';
+  if (!TD.venues.length) return 'Pick at least one venue';
+  return '';
+}
+function openTourGen() {
+  TD = TD || freshTD(); popAll();
+  const v = push(''); v.id = 'genView'; renderGen();
+  v.addEventListener('input', (e) => { const k = e.target.dataset.t; if (k) { TD[k] = e.target.value; genSummary(); } });
+  v.addEventListener('change', (e) => { const k = e.target.dataset.t; if (k) { TD[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value; genSummary(); } });
+}
+function genSummary() {
+  const el = $('#genSum'); if (!el) return; const err = tdError();
+  if (err) { el.innerHTML = `${ic('info', 'ic-sm')}${err}`; return; }
+  const T = buildTournament(tdConfig(), rng(1)); const n = T.matches.filter((m) => !m.bye).length, byes = T.matches.filter((m) => m.bye).length;
+  el.innerHTML = `${ic('sparkles', 'ic-sm')}<span><b class="num">${n} matches</b> over ${T.matchDays} match days${byes ? ` · ${byes} bye${byes > 1 ? 's' : ''}` : ''} · Final on ${longFmt.format(dateAt(T.endDay, '12:00'))}</span>`;
+}
+function renderGen() {
+  const v = $('#genView'); if (!v) return; const top = v.scrollTop; const st = standings();
+  const seedNo = (id) => (TD.seeding === 'standings' ? st.filter((t) => TD.teams.includes(t.id)).findIndex((t) => t.id === id) + 1 : 0);
+  const opt = (k, val, title, sub, icon) => `<button type="button" class="opt" data-act="pickOne" data-group="tdFormat" data-tg="${k}" data-id="${val}" aria-pressed="${TD[k] === val}"><span class="sport-ic" style="--c:var(--ent)">${ic(icon)}</span><div style="min-width:0"><b>${title}</b><div class="faint" style="font-size:13px">${sub}</div></div><span class="tick">${ic('check')}</span></button>`;
+  const selT = (id, k, opts) => `<select class="input" id="${id}" data-t="${k}">${opts.map(([a, b]) => `<option value="${a}" ${String(TD[k]) === String(a) ? 'selected' : ''}>${b}</option>`).join('')}</select>`;
+  v.innerHTML = `<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>New tournament</h2></div>
+    <div class="view-body" style="padding-top:4px">
+      <div class="field"><label for="tdName">Tournament name</label><input class="input" id="tdName" data-t="name" value="${esc(TD.name)}"></div>
+      <div class="field"><span class="lbl">Sport</span><div class="chips" id="tdSport">${TOUR_SPORTS.map((k) => `<button type="button" class="chip sport" style="--c:${SPORTS[k].c}" data-act="pickOne" data-group="tdSport" data-tg="sport" data-id="${k}" aria-pressed="${TD.sport === k}">${ic(SPORTS[k].icon)}${SPORTS[k].name}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Format</span><div class="pick" id="tdFormat">
+        ${opt('format', 'groups', 'Groups + knockout', 'Round-robin groups, top teams reach the semifinals, winners meet in the final.', 'layers')}
+        ${opt('format', 'knockout', 'Straight knockout', 'Seeded bracket. Top seeds get byes if needed. Win and advance.', 'swords')}
+      </div></div>
+      <div class="field"><span class="lbl">Teams · ${TD.teams.length} selected</span><div class="rows">${st.map((t) => `<button class="row" data-act="genToggle" data-kind="teams" data-id="${t.id}" aria-pressed="${TD.teams.includes(t.id)}">${crestOf(t.id)}<div class="grow"><b>${t.name}</b><small>${t.dept} · ${t.pts} league pts</small></div>${TD.teams.includes(t.id) && seedNo(t.id) ? `<span class="badge ent num">Seed ${seedNo(t.id)}</span>` : ''}<span class="tickbox">${ic('check')}</span></button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Seeding</span><div class="seg" id="tdSeed"><button type="button" data-act="pickOne" data-group="tdSeed" data-tg="seeding" data-id="standings" aria-pressed="${TD.seeding === 'standings'}">League table</button><button type="button" data-act="pickOne" data-group="tdSeed" data-tg="seeding" data-id="random" aria-pressed="${TD.seeding === 'random'}">Random draw</button></div></div>
+      <div class="field"><span class="lbl">Starts</span><div class="chips" id="tdStart">${[0, 1, 2, 3, 4, 5, 6, 7].map((d) => `<button type="button" class="chip" data-act="pickOne" data-group="tdStart" data-tg="startDay" data-id="${d}" aria-pressed="${String(TD.startDay) === String(d)}">${dayLabel(d)} ${dateAt(d, '12:00').getDate()}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Play on</span><div class="seg" id="tdDays">${[['weekdays', 'Weekdays'], ['weekends', 'Weekends'], ['every', 'Every day']].map(([k, n]) => `<button type="button" data-act="pickOne" data-group="tdDays" data-tg="days" data-id="${k}" aria-pressed="${TD.days === k}">${n}</button>`).join('')}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="field"><label for="tdTime">First match</label><input class="input" type="time" id="tdTime" data-t="time" value="${TD.time}"></div>
+        <div class="field"><label for="tdMins">Match length</label>${selT('tdMins', 'mins', [['45', '45 min'], ['60', '1 hr'], ['90', '1.5 hr'], ['120', '2 hr'], ['180', '3 hr']])}</div>
+        <div class="field"><label for="tdPer">Slots a day</label>${selT('tdPer', 'perDay', [['1', '1'], ['2', '2'], ['3', '3'], ['4', '4']])}</div>
+      </div>
+      <div class="field"><span class="lbl">Venues · matches run in parallel</span><div class="chips" style="flex-wrap:wrap">${VENUES_ENT.map((n) => `<button type="button" class="chip" data-act="genToggle" data-kind="venues" data-id="${esc(n)}" aria-pressed="${TD.venues.includes(n)}">${ic('map-pin')}${esc(n)}</button>`).join('')}</div></div>
+      <label class="row card" style="gap:12px;cursor:pointer"><input type="checkbox" id="tdThird" data-t="thirdPlace" ${TD.thirdPlace ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--ent)"><div class="grow"><b>Third-place match</b><small>Semifinal losers play before the final</small></div></label>
+      <div class="gen-sum" id="genSum"></div>
+    </div>
+    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('sparkles')}Generate tournament plan</button></div>`;
+  v.scrollTop = top; genSummary();
+}
+
+/* Tournament detail (also used as preview before publishing) */
+let tourTab = 'bracket', previewT = null;
+function openTour(id) { const T = tours().find((x) => x.id === id); tourTab = 'bracket'; popAll(); const v = push(''); v.id = 'tourView'; v.dataset.id = id; renderTour(); }
+function curTour() { const v = $('#tourView'); if (!v) return null; return v.dataset.preview ? previewT : tours().find((x) => x.id === v.dataset.id); }
+function teamLine(T, m, side) {
+  const id = side === 'a' ? m.a : m.b, src = side === 'a' ? m.srcA : m.srcB, sc = side === 'a' ? m.sa : m.sb;
+  if (!id) return `<div class="tm"><span class="crest sm ph-crest">?</span><span class="ph">${esc(src ? srcLabel(T, src) : 'TBD')}</span></div>`;
+  const cls = m.winner ? (m.winner === id ? 'win' : 'lose') : '';
+  return `<div class="tm ${cls}">${crestOf(id)}<span class="nm">${teamById(id).name}</span>${sc != null ? `<span class="sc num">${sc}${m.tb === id ? '*' : ''}</span>` : m.bye ? '<span class="sc faint">bye</span>' : ''}</div>`;
+}
+function matchMeta(m) { return m.bye ? 'Advances on a bye' : `${dayLabel(m.d)} ${dateAt(m.d, '12:00').getDate()} · ${timeFmt.format(dateAt(m.d, m.t))} · ${esc(m.venue)}`; }
+function bracketHTML(T) {
+  const ko = T.matches.filter((m) => m.stage === 'ko' && m.round !== 'Third place');
+  const rounds = [...new Set(ko.map((m) => m.rk))].sort((a, b) => a - b);
+  const third = T.matches.find((m) => m.round === 'Third place');
+  return `<div class="bracket">${rounds.map((rk) => { const ms = ko.filter((m) => m.rk === rk); return `<div class="bcol"><h4>${ms[0].round}</h4><div class="bstack">${ms.map((m) => `<button class="bmatch ${m.winner ? 'done' : ready(m) ? 'live' : ''}" data-act="tourMatch" data-id="${m.id}"><div class="bl">${esc(m.label)}</div>${teamLine(T, m, 'a')}${teamLine(T, m, 'b')}<div class="meta">${matchMeta(m)}</div></button>`).join('')}</div></div>`; }).join('')}
+    ${T.champion ? `<div class="bcol"><h4>Champion</h4><div class="bstack"><div class="champ">${ic('trophy', 'ic-lg')}${crestOf(T.champion, '')}<b>${teamById(T.champion).name}</b></div></div></div>` : ''}</div>
+    ${third ? `<div class="section"><div class="eyebrow">Third-place match</div><button class="bmatch wide ${third.winner ? 'done' : ready(third) ? 'live' : ''}" data-act="tourMatch" data-id="${third.id}">${teamLine(T, third, 'a')}${teamLine(T, third, 'b')}<div class="meta">${matchMeta(third)}</div></button></div>` : ''}
+    <div class="faint" style="font-size:12.5px;margin-top:10px">Tap a match to enter the result. Winners move to the next round automatically.${T.matches.some((m) => m.tb) ? ` * won the ${scoreOf(T.sport)[2]}.` : ''}</div>`;
+}
+function scheduleHTML(T) {
+  const ms = T.matches.filter((m) => !m.bye).sort((a, b) => a.d - b.d || a.t.localeCompare(b.t) || a.venue.localeCompare(b.venue));
+  const days = [...new Set(ms.map((m) => m.d))];
+  return days.map((d) => `<div class="day-group section" style="margin-top:14px"><div class="day-label">${longFmt.format(dateAt(d, '12:00'))}${d === 0 ? ' · Today' : ''}</div><div class="rows">${ms.filter((m) => m.d === d).map((m) => `
+    <button class="row sched-row" data-act="tourMatch" data-id="${m.id}"><div class="sched-time num"><b>${timeFmt.format(dateAt(m.d, m.t))}</b><small>${esc(m.stage === 'group' ? 'Group ' + m.group : m.round)}</small></div>
+      <div class="grow"><div class="sched-teams">${m.a ? teamById(m.a).name : `<i>${esc(srcLabel(T, m.srcA))}</i>`} <span class="faint">v</span> ${m.b ? teamById(m.b).name : `<i>${esc(srcLabel(T, m.srcB))}</i>`}</div><small>${esc(m.venue)}</small></div>
+      ${m.sa != null ? `<span class="badge free num">${m.sa}–${m.sb}</span>` : ready(m) ? '<span class="badge ent">Enter</span>' : '<span class="badge">TBD</span>'}</button>`).join('')}</div></div>`).join('');
+}
+function groupsHTML(T) {
+  const q = Object.keys(T.groups).length === 1 ? 4 : 2;
+  return Object.keys(T.groups).map((g) => { const rows = groupTable(T, g); return `<div class="section"><div class="section-head"><h2>Group ${g}</h2><span class="faint">${groupDone(T, g) ? 'Complete' : 'In progress'}</span></div>
+    <div class="card table-wrap" style="padding:4px 8px"><table class="lb"><thead><tr><th>#</th><th style="text-align:left">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>+/-</th><th>Pts</th></tr></thead><tbody>
+    ${rows.map((r, i) => `<tr class="${i < q ? 'mine' : ''}"><td>${i + 1}</td><td class="team"><div>${crestOf(r.id)}${teamById(r.id).name}</div></td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.f - r.a > 0 ? '+' : ''}${r.f - r.a}</td><td class="pts">${r.pts}</td></tr>`).join('')}
+    </tbody></table></div></div>`; }).join('') + `<div class="faint" style="font-size:12.5px;margin-top:8px">Top ${q} qualify (highlighted). 3 points for a win, 1 for a tie. Ties broken by ${scoreOf(T.sport)[0]} difference.</div>`;
+}
+function renderTour() {
+  const v = $('#tourView'); const T = curTour(); if (!v || !T) return; const top = v.scrollTop;
+  const preview = !!v.dataset.preview, st = tourStatus(T), pr = tourProgress(T), s2 = sp(T.sport);
+  const tabs = [['bracket', 'Bracket'], ['schedule', 'Schedule']].concat(T.groups ? [['groups', 'Groups']] : []);
+  if (!tabs.find((t) => t[0] === tourTab)) tourTab = 'bracket';
+  const nr = nextRound(T);
+  v.innerHTML = `<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>${preview ? 'Plan preview' : esc(T.name)}</h2>${preview ? '' : `<button class="icon-btn" data-act="tourDelete" aria-label="Delete tournament">${ic('trash-2')}</button>`}</div>
+    <div class="view-body" style="padding-top:4px">
+      <div class="org-hero" style="gap:10px">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="badge" style="background:rgba(255,255,255,.18);color:#fff">${ic(s2.icon)}${s2.name} · ${T.format === 'groups' ? 'Groups + knockout' : 'Knockout'}</span><span style="font-size:12.5px;opacity:.85" class="num">${pr.played}/${pr.total} played</span></div>
+        <h2>${esc(T.name)}</h2>
+        <div style="font-size:13.5px;opacity:.9">${T.teams.length} teams · ${T.matchDays} match days · ${longFmt.format(dateAt(T.startDay, '12:00'))} to ${longFmt.format(dateAt(T.endDay, '12:00'))}<br>${T.venues.map(esc).join(' · ')}</div>
+        ${T.champion ? `<div class="champ-banner">${ic('trophy')}<b>${teamById(T.champion).name}</b> are champions</div>` : `<span class="badge volt" style="justify-self:start">${ic('flame')}${esc(st.text)}</span>`}
+      </div>
+      ${!preview && nr.length ? `<button class="btn btn-soft btn-block" data-act="tourSim">${ic('shuffle')}Simulate ${esc(nr[0].stage === 'group' ? 'next matchday' : nr[0].round)} (demo)</button>` : ''}
+      <div class="seg" role="group" aria-label="Tournament view">${tabs.map(([k, n]) => `<button data-act="tourTab" data-id="${k}" aria-pressed="${tourTab === k}">${n}</button>`).join('')}</div>
+      <div>${tourTab === 'bracket' ? bracketHTML(T) : tourTab === 'schedule' ? scheduleHTML(T) : groupsHTML(T)}</div>
+    </div>
+    ${preview ? `<div class="view-cta"><button class="btn btn-ghost" style="flex:0 0 auto" data-act="tourRegen">${ic('shuffle')}${T.seeding === 'random' ? 'Redraw' : 'Edit'}</button><button class="btn btn-primary" style="background:var(--ent)" data-act="tourPublish">${ic('send')}Publish & notify squads</button></div>` : ''}`;
+  v.scrollTop = top;
+}
+function resultSheet(T, m) {
+  if (m.bye) { toast(`${teamById(m.winner).name} advance on a bye`, 'info'); return; }
+  if (!m.a || !m.b) { toast(`Waiting for ${!m.a ? srcLabel(T, m.srcA) : srcLabel(T, m.srcB)}`, 'clock'); return; }
+  const [unit, , tbName] = scoreOf(T.sport); const A2 = teamById(m.a), B2 = teamById(m.b);
+  openSheet(`${sheetHead('Enter result', `${esc(m.stage === 'group' ? m.round : m.round + (m.round === 'Final' ? '' : ' · ' + m.label))} · ${matchMeta(m)}`)}
+    <div class="score-grid">
+      <div class="score-side">${crestOf(m.a, '')}<b>${A2.name}</b><input class="input num" type="number" min="0" id="scA" value="${m.sa ?? ''}" inputmode="numeric" aria-label="${A2.name} ${unit}"></div>
+      <div class="score-vs">${unit}</div>
+      <div class="score-side">${crestOf(m.b, '')}<b>${B2.name}</b><input class="input num" type="number" min="0" id="scB" value="${m.sb ?? ''}" inputmode="numeric" aria-label="${B2.name} ${unit}"></div>
+    </div>
+    ${m.stage === 'ko' ? `<div class="field"><span class="lbl">If level, who won the ${tbName}?</span><div class="seg" id="tbW"><button type="button" data-act="pickOne" data-group="tbW" data-id="${m.a}" aria-pressed="${m.tb !== m.b}">${A2.name}</button><button type="button" data-act="pickOne" data-group="tbW" data-id="${m.b}" aria-pressed="${m.tb === m.b}">${B2.name}</button></div></div>` : ''}
+    ${(() => { const nx = T.matches.find((x) => (x.srcA && x.srcA.ref === m.id && x.srcA.type === 'win') || (x.srcB && x.srcB.ref === m.id && x.srcB.type === 'win')); return nx ? `<div class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">${ic('arrow-right', 'ic-sm')}Winner goes to ${nx.round === 'Final' ? 'the Final' : nx.label} on ${dayLabel(nx.d)} ${dateAt(nx.d, '12:00').getDate()}</div>` : ''; })()}
+    <button class="btn btn-primary btn-block" style="background:var(--ent)" data-act="tourSave" data-id="${m.id}">${ic('check')}Save result</button>`, { onMount: (sh) => { const i = $('#scA', sh); if (i) setTimeout(() => i.focus(), 320); } });
+}
+function afterResultToast(T, m) {
+  if (m.round === 'Final' && T.champion) return toast(`${teamById(T.champion).name} are champions!`, 'trophy');
+  if (m.stage === 'ko' && m.winner) { const nx = T.matches.find((x) => x.srcA && x.srcA.ref === m.id && x.srcA.type === 'win') || T.matches.find((x) => x.srcB && x.srcB.ref === m.id && x.srcB.type === 'win'); return toast(`${teamById(m.winner).name} advance to the ${nx ? (nx.round === 'Final' ? 'Final' : nx.round) : 'next round'}`, 'arrow-right'); }
+  if (m.stage === 'group' && groupDone(T, m.group)) return toast(`Group ${m.group} complete. Semifinals are set`, 'trophy');
+  toast('Result saved. Table updated', 'check');
+}
+
+Object.assign(A, {
+  tourNew: () => { TD = null; openTourGen(); },
+  tourOpen: (el) => openTour(el.dataset.id),
+  genToggle: (el) => { const arr = TD[el.dataset.kind]; const i = arr.indexOf(el.dataset.id); if (i >= 0) arr.splice(i, 1); else if (el.dataset.kind === 'teams' && arr.length >= 8) { toast('Up to 8 teams per tournament in this prototype', 'info'); return; } else arr.push(el.dataset.id); renderGen(); },
+  tourGenerate: () => { const err = tdError(); if (err) { toast(err, 'info'); return; } previewT = buildTournament(tdConfig()); const v = push(''); v.id = 'tourView'; v.dataset.preview = '1'; tourTab = 'bracket'; renderTour(); },
+  tourRegen: () => pop(),
+  tourPublish: () => { S.tournaments = tours(); S.tournaments.unshift(previewT); save(); const id = previewT.id; TD = null; previewT = null; S.entTab = 'cups'; renderTeams(); openTour(id); toast('Tournament published. Squads notified with their fixtures', 'send'); },
+  tourTab: (el) => { tourTab = el.dataset.id; renderTour(); },
+  tourMatch: (el) => { const T = curTour(); resultSheet(T, T.matches.find((m) => m.id === el.dataset.id)); },
+  tourSave: (el) => { const T = curTour(); const m = T.matches.find((x) => x.id === el.dataset.id);
+    const a = parseInt($('#scA').value, 10), b = parseInt($('#scB').value, 10);
+    if (Number.isNaN(a) || Number.isNaN(b) || a < 0 || b < 0) { toast(`Enter ${scoreOf(T.sport)[0]} for both teams`, 'info'); return; }
+    const tbEl = $('#tbW [aria-pressed="true"]'); playMatch(T, m, a, b, tbEl ? tbEl.dataset.id : m.a);
+    if (!$('#tourView').dataset.preview) save(); closeSheet(); renderTour(); afterResultToast(T, m); },
+  tourSim: () => { const T = curTour(); const r = Math.random; const ms = nextRound(T); ms.forEach((m) => simulateMatch(T, m, r)); save(); renderTour();
+    const last = ms[ms.length - 1]; if (last) afterResultToast(T, last); },
+  tourDelete: () => { const T = curTour(); openSheet(`${sheetHead('Delete tournament?', esc(T.name))}<div class="muted">The schedule and results are removed for everyone. This cannot be undone.</div><button class="btn btn-block" style="background:var(--hot);color:#fff" data-act="tourDeleteYes" data-id="${T.id}">${ic('trash-2')}Delete tournament</button><button class="btn btn-ghost btn-block" data-act="closeSheet">Keep it</button>`); },
+  tourDeleteYes: (el) => { S.tournaments = tours().filter((t) => t.id !== el.dataset.id); save(); closeSheet(); popAll(); renderTeams(); toast('Tournament deleted', 'trash-2'); },
+});
+
 function selectText(id) { const r = document.createRange(); r.selectNodeContents($('#' + id)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]'); if (!el) return;
