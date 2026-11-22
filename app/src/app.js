@@ -12,11 +12,18 @@ const IS_IOS = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Andro
 const PAY = 'UPI';
 const UPI_APPS = ['GPay', 'PhonePe', 'Paytm', 'BHIM'];
 
-/* Icons come from the LetsPlay Sport Icons set (icons.js). The matrix leans every icon 8 degrees
-   forward around its vertical centre, matching the italic scoreboard type. */
+const SPORT_GLYPHS = {
+  's-football': '<circle cx="12" cy="12" r="9"/><path d="M12 8.2l3.4 2.5-1.3 4h-4.2l-1.3-4z"/><path d="M12 3v5.2M15.4 10.7l5-1.6M14.1 14.7l3 4.2M9.9 14.7l-3 4.2M8.6 10.7l-5-1.6"/>',
+  's-basketball': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18"/><path d="M5.6 5.6c2.3 1.8 3.6 3.9 3.6 6.4s-1.3 4.6-3.6 6.4M18.4 5.6c-2.3 1.8-3.6 3.9-3.6 6.4s1.3 4.6 3.6 6.4"/>',
+  's-tennis': '<circle cx="12" cy="12" r="9"/><path d="M5.2 6c2.4 1.6 3.8 3.6 3.8 6s-1.4 4.4-3.8 6M18.8 6c-2.4 1.6-3.8 3.6-3.8 6s1.4 4.4 3.8 6"/>',
+  's-shuttle': '<path d="M9.5 15.5 6 4h12l-3.5 11.5z"/><path d="M10.5 15.5 10 4M13.5 15.5 14 4M7 8h10"/><path d="M9.5 15.5h5v1.5a2.5 2.5 0 0 1-5 0z"/>',
+  's-cricket': '<path d="M14.5 3.5l4 4-8.8 8.8a1.5 1.5 0 0 1-2.1 0l-1.9-1.9a1.5 1.5 0 0 1 0-2.1z"/><path d="M6.5 15.5 3 19"/><circle cx="18" cy="17.5" r="2.5"/>',
+  's-kabaddi': '<circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v5.5l-4.5 7.5M12 13l4.5 7.5M5 11l7-3 7 3"/>',
+  's-paddle': '<circle cx="14" cy="9.5" r="6"/><path d="M9.8 13.7 4.5 19"/><circle cx="5.5" cy="6" r="1.6"/>',
+};
 function ic(name, cls = '') {
-  const body = ICONS[name] || ICONS.info;
-  return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><g transform="matrix(1 0 -0.14 1 1.68 0)">${body}</g></svg>`;
+  const body = SPORT_GLYPHS[name] || ICONS[name] || ICONS['circle-check'];
+  return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 }
 const sp = (id) => SPORTS[id];
 const money = (n) => (n === 0 ? 'Free' : inr(n));
@@ -618,7 +625,8 @@ function openAct(id) {
 function renderGames() {
   const mine = allActs().filter(isJoined).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t));
   const next = mine[0];
-  let html = `<div class="page-head"><h1>My games</h1>${bellHTML()}</div>`;
+  const todo = todoCount();
+  let html = `<div class="page-head"><div><h1>My games</h1><div class="page-sub"><b class="num">${mine.length}</b> booked${todo ? ` · <b class="num">${todo}</b> need${todo === 1 ? 's' : ''} attention` : ''}</div></div>${bellHTML()}</div>`;
   if (next) {
     const ms = dateAt(next.d, next.t) - Date.now(); const h = Math.max(0, Math.floor(ms / 3.6e6)); const m = Math.max(0, Math.floor((ms % 3.6e6) / 6e4));
     html += `<div class="section"><div class="eyebrow">Up next</div>
@@ -654,7 +662,7 @@ function renderTeams() {
     return;
   }
   if (S.tier === 'enterprise') return renderLeague(el);
-  el.innerHTML = `<div class="page-head"><h1>Teams</h1><button class="btn btn-primary btn-sm" data-act="newTeam">${ic('plus', 'ic-sm')}New team</button></div>
+  el.innerHTML = `<div class="page-head"><div><h1>Teams</h1><div class="page-sub"><b class="num">${S.teams.length}</b> team${S.teams.length === 1 ? '' : 's'} · <b class="num">${PLAYERS.filter((p) => p.lft).length}</b> free agents</div></div><button class="btn btn-primary btn-sm" data-act="newTeam">${ic('plus', 'ic-sm')}New team</button></div>
     <div style="display:grid;gap:12px">${S.teams.map(teamCard).join('')}</div>
     <div class="section"><div class="section-head"><h2>Players near you</h2><button class="link" data-act="addPlayers" data-id="${S.teams[0] ? S.teams[0].id : ''}">See all nearby</button></div>
       <div class="rows">${PEOPLE.map(personRow).join('')}</div></div>`;
@@ -802,7 +810,7 @@ function renderShop() {
   const cartN = S.cart.reduce((n, c) => n + c.qty, 0);
   const memberOff = S.tier !== 'lite';
   $('#scr-shop').innerHTML = `
-    <div class="page-head"><h1>Shop</h1><div style="display:flex;gap:8px"><button class="icon-btn" data-act="shopSearch" aria-label="Search the shop" aria-expanded="${S.shopSearch ? 'true' : 'false'}">${ic(S.shopSearch ? 'x' : 'search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
+    <div class="page-head"><div><h1>Shop</h1><div class="page-sub">Local sellers${S.tier !== 'lite' ? ' · <b>10% off for you</b>' : ''}</div></div><div style="display:flex;gap:8px"><button class="icon-btn" data-act="shopSearch" aria-label="Search the shop" aria-expanded="${S.shopSearch ? 'true' : 'false'}">${ic(S.shopSearch ? 'x' : 'search')}</button><button class="icon-btn" data-act="cart" aria-label="Cart, ${cartN} items">${ic('shopping-bag')}${cartN ? `<span class="count num">${cartN}</span>` : ''}</button></div></div>
     ${S.shopSearch ? `<label class="search" style="box-shadow:none;margin-bottom:14px">${ic('search')}<input id="shopQ" type="search" placeholder="Search balls, shoes, jerseys" value="${esc(S.shopQ || '')}" aria-label="Search products"></label>` : ''}
     <div class="promos">
       <button class="promo" data-act="shopCat" data-id="apparel"><img src="${IMG}gym.jpg" alt=""><span class="badge volt" style="align-self:flex-start">Up to 30% off</span><h3>Monsoon kit drop</h3><p>Quick-dry jerseys and training outfits.</p></button>
@@ -864,8 +872,10 @@ function promoteSheet() {
 function renderMe() {
   const P = PLANS[S.tier];
   $('#scr-me').innerHTML = `
-    <div class="me-head">${avatar(ME_USER, 72)}<div style="flex:1;min-width:0"><h1>${esc(ME_USER.name)}</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}${AREA} · ${esc((S.favSports || ['cricket', 'football']).map((k) => SPORTS[k].name.toLowerCase()).join(', '))}</div></div></div>
-    <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">${S.joined.length}</b><span>Games booked</span></div><div class="card"><b class="num">${(S.hosted || []).length}</b><span>Games hosted</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
+    <div class="me-hero">
+      <div class="me-head">${avatar(ME_USER, 72)}<div style="flex:1;min-width:0"><h1>${esc(ME_USER.name)}</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}${AREA} · ${esc((S.favSports || ['cricket', 'football']).map((k) => SPORTS[k].name.toLowerCase()).join(', '))}</div></div></div>
+      <div class="me-stats"><div class="card"><b class="num">${S.joined.length}</b><span>Games booked</span></div><div class="card"><b class="num">${(S.hosted || []).length}</b><span>Games hosted</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
+    </div>
     <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Your plan</div><h2>${P.name}</h2><div style="opacity:.92;max-width:32ch;position:relative;z-index:1">${P.blurb}<br><span class="num" style="font-weight:600">${planSummary()}</span></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1"><button class="btn btn-sm" data-act="plans">${S.tier === 'lite' ? 'See plans' : 'Change plan'}</button>${S.tier !== 'lite' && billing() === 'monthly' ? `<button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="subscribe" data-id="${S.tier}" data-period="yearly">Switch to yearly, save 20%</button>` : ''}</div></div>
     <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="addFamily">${ic('plus', 'ic-sm')}Add</button></div>

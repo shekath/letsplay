@@ -152,15 +152,18 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; }
   padding: 6px max(6px, env(safe-area-inset-left, 0px)) 6px max(6px, env(safe-area-inset-right, 0px)); position: relative; z-index: 30; }
 .framed .tabbar { padding-bottom: 22px; }
 .tab { display: grid; justify-items: center; gap: 3px; padding: 6px 0; min-height: 52px; color: var(--ink-3); font-size: 12px; font-weight: 600; position: relative; border-radius: 12px; }
-.tab .ic { width: 23px; height: 23px; }
+/* Active tab: a soft pill behind the icon (the platform convention on Android, familiar on iOS). */
+.tab .ic { width: 58px; height: 32px; padding: 4px 17px; border-radius: 16px; transition: background-color .2s ease; }
 .tab[aria-current="page"] { color: var(--brand-text); }
-.tab[aria-current="page"]::before { content: ""; position: absolute; top: -7px; width: 28px; height: 3px; border-radius: 3px; background: var(--brand); }
+.tab[aria-current="page"] .ic { background: var(--brand-soft); }
 .tab .dot.lock { background: var(--ink-3); min-width: 16px; width: 16px; height: 16px; padding: 0; margin-left: 5px; top: 1px; }
 .tab .dot.lock .ic { width: 10px; height: 10px; }
-.tab .dot { position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hot-fill); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.tab .dot { position: absolute; top: 2px; left: 50%; margin-left: 9px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hot-fill); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .page-head h1 { font-size: 32px; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: 1; }
+.page-sub { margin-top: 5px; font-size: 14px; color: var(--ink-2); }
+.page-sub b { color: var(--ink); font-weight: 600; }
 .icon-btn { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); position: relative; flex: none; }
 .icon-btn .badge-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; border-radius: 50%; background: var(--hot); border: 2px solid var(--surface); }
 .icon-btn .count { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 5px; background: var(--hot-fill); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
@@ -218,6 +221,8 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .bar > i { display: block; height: 100%; border-radius: 3px; background: var(--c, var(--brand)); }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+/* A hairline shadow gives lists a ground plane without making them float. */
+.card, .rows, .act, .fact { box-shadow: 0 1px 2px rgba(13, 21, 48, .05); }
 .section { display: grid; gap: 12px; margin-top: 22px; }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .section-head h2 { font-size: 22px; font-weight: 700; }
@@ -357,6 +362,9 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .row .grow { flex: 1; min-width: 0; }
 .row .ic { color: var(--ink-3); }
 .row .lead { color: var(--brand); }
+/* Leading icons sit on a soft tile so rows scan as a set. */
+.row > .ic.lead, .fact > .ic { width: 38px; height: 38px; padding: 9px; border-radius: 11px; background: var(--brand-soft); color: var(--brand-text); }
+.row > .ic.lead.hotc { background: color-mix(in srgb, var(--hot) 12%, var(--surface)); }
 .row small { display: block; color: var(--ink-3); font-size: 13px; }
 .mini-map { height: 130px; border-radius: var(--r); overflow: hidden; position: relative; border: 1px solid var(--line); }
 .mini-map svg { position: absolute; }
@@ -524,6 +532,11 @@ table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent)
 .sum .total { font-weight: 800; font-size: 17px; padding-top: 8px; border-top: 1px solid var(--line); }
 
 /* ───────── Profile ───────── */
+/* Profile hero: a dark ground with the pitch motif, the same family as the plan and league cards. */
+.me-hero { border: 1px solid var(--line); border-radius: var(--r-lg); padding: 18px; display: grid; gap: 16px; color: #fff; background-color: #0D1530; background-image: var(--motif); background-repeat: no-repeat; background-position: right -70px center; background-size: auto 120%; }
+.me-hero .muted { color: rgba(255, 255, 255, .82); }
+.me-hero .me-stats .card { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .14); box-shadow: none; }
+.me-hero .me-stats span { color: rgba(255, 255, 255, .8); }
 .me-head { display: flex; gap: 14px; align-items: center; }
 .me-head .av { border-radius: 22px; font-family: var(--f-display); font-style: italic; }
 .me-head h1 { font-size: 30px; font-weight: 800; font-style: italic; text-transform: uppercase; line-height: 1; }

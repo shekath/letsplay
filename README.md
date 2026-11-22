@@ -77,7 +77,7 @@ app/
     app.js         navigation, map engine, tier gating, every screen and flow
     tournament.js  tournament generator, scheduler, bracket progression and UI (Enterprise)
     features.js    filters, registration steps, waitlist, family calendar, notifications, coach match day, venue booking
-    icons.js       LetsPlay Sport Icons: original icon set and sport glyphs (no third-party library)
+    icons.js       inlined Lucide icon paths (ISC licence); custom sport glyphs live in app.js
   img/             optimised photos (Unsplash licence)
   index.html       built standalone PWA (generated)
   embed.html       built page fragment for hosted previews (generated)
@@ -93,7 +93,7 @@ After editing anything in `app/src`, run `python3 scripts/build.py`.
 - **Type:** a "scoreboard" voice (Barlow Condensed, italic capitals) only on page titles and hero moments. Section headings, sheets and labels use sentence case without wide tracking. Barlow for body text.
 - **Colour:** ink neutrals and cobalt for every action. Volt yellow-green is the single accent and only marks "today", deals and the champion. Sport and plan colours are data encodings. No decorative gradients or glows. Full dark mode.
 - **Identity motif:** thin pitch markings (halfway line, centre circle, boxes) on solid hero cards: plan card, league and tournament heroes, match day, the Pro promo.
-- **Icons:** LetsPlay Sport Icons, an original set drawn for the app. 24px grid, 2.25 stroke, square line ends and sharp corners, octagon "badge" containers, and an 8 degree forward lean that matches the italic titles. Sport glyphs (cricket, kabaddi, shuttle, runner and so on) follow the same rules and appear on map pins, chips and badges.
+- **Icons:** Lucide line icons at a slightly lighter 1.9 stroke, plus custom sport glyphs (cricket, kabaddi, shuttle, football and more). List rows put their icon on a soft tinted tile; the active tab gets a pill behind its icon.
 - **Mobile:** 40 to 44 px touch targets, press feedback on every tappable item, safe-area insets, bottom tab bar with counts for things that need attention, bottom sheets, and toasts at the top so they never cover the main action.
 - **Accessibility:** secondary text measured at 5.3:1 (light) and 6.5:1 (dark), keyboard focus states, labelled controls, in-app larger text and reduce-motion settings, and status that never relies on colour alone. A full WCAG 2.2 AA audit with assistive technology is still to do.
 - **Honesty:** sample content is labelled as sample in the app, people show initials instead of stock photos, and features that are not built yet say "Coming soon" instead of pretending to work.

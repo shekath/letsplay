@@ -9,13 +9,13 @@ const SPORTS = {
   kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#C05316' },
   basketball: { name: 'Basketball', icon: 's-basketball',    c: '#C2410C' },
   tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#6A7B06' },
-  volleyball: { name: 'Volleyball', icon: 's-volley',        c: '#9B6C03' },
-  running:    { name: 'Running',    icon: 's-run',           c: '#D93065' },
-  yoga:       { name: 'Yoga',       icon: 's-yoga',          c: '#9355DB' },
-  swimming:   { name: 'Swimming',   icon: 's-swim',          c: '#0A77C3' },
-  cycling:    { name: 'Cycling',    icon: 's-bike',          c: '#0C8073' },
+  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#9B6C03' },
+  running:    { name: 'Running',    icon: 'footprints',      c: '#D93065' },
+  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9355DB' },
+  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0A77C3' },
+  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#0C8073' },
   pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#4D7F0A' },
-  climbing:   { name: 'Climbing',   icon: 's-climb',         c: '#8A6A4C' },
+  climbing:   { name: 'Climbing',   icon: 'mountain',        c: '#8A6A4C' },
 };
 /* Default cover photo per sport, used for games people host themselves. */
 const SPORT_IMG = { cricket: 'cricket', football: 'field', badminton: 'badminton', kabaddi: 'field', basketball: 'basketball', tennis: 'tennis', volleyball: 'volley', running: 'running', yoga: 'yoga', swimming: 'swim', cycling: 'cycling', pickleball: 'pickle', climbing: 'climb' };
