@@ -583,7 +583,7 @@ function openAct(id) {
   const atts = a.hostedByMe ? [ME_USER] : [PEOPLE[0], PEOPLE[1], PEOPLE[2], PEOPLE[3]];
   push(`
     <div class="view-hero"><img src="${imgOf(a)}" alt="">
-      <div class="view-nav"><button data-act="back" aria-label="Back">${ic('arrow-left')}</button><button data-act="share" aria-label="Share">${ic('share-2')}</button></div>
+      <div class="view-nav"><button data-act="back" aria-label="Back">${ic('arrow-left')}</button><button data-act="share" data-id="${a.id}" aria-label="Share">${ic('share-2')}</button></div>
       <div class="hero-cap"><div style="display:flex;gap:6px;flex-wrap:wrap">${a.d === 0 ? '<span class="badge live">Today</span>' : ''}<span class="badge" style="background:${s.c};color:#fff">${ic(s.icon)}${s.name}</span><span class="badge">${a.setting}</span>${a.hostedByMe ? `<span class="badge volt">${a.visibility === 'Invited only' ? 'Invite only' : 'Hosting'}</span>` : ''}</div><h1>${esc(a.title)}</h1><div>${esc(a.venue)}</div></div>
     </div>
     <div class="view-body">
@@ -690,7 +690,7 @@ function renderTeams() {
   if (S.tier === 'enterprise') return renderLeague(el);
   el.innerHTML = `<div class="page-head"><h1>Teams</h1><button class="btn btn-primary btn-sm" data-act="newTeam">${ic('plus', 'ic-sm')}New team</button></div>
     <div style="display:grid;gap:12px">${S.teams.map(teamCard).join('')}</div>
-    <div class="section"><div class="section-head"><h2>Players near you</h2><span class="faint">Looking for a team</span></div>
+    <div class="section"><div class="section-head"><h2>Players near you</h2><button class="link" data-act="addPlayers" data-id="${S.teams[0] ? S.teams[0].id : ''}">See all nearby</button></div>
       <div class="rows">${PEOPLE.map(personRow).join('')}</div></div>`;
 }
 function teamCard(t) {
@@ -710,16 +710,16 @@ function personRow(p) {
 function openTeam(id) {
   const t = S.teams.find((x) => x.id === id), s = sp(t.sport);
   const cnt = (st) => t.members.filter((m) => m.status === st).length;
-  push(`<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>${esc(t.name)}</h2><button class="icon-btn" data-act="invite" data-id="${t.id}" aria-label="Invite players">${ic('user-plus')}</button></div>
+  push(`<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>${esc(t.name)}</h2><button class="icon-btn" data-act="addPlayers" data-id="${t.id}" aria-label="Add players">${ic('user-plus')}</button></div>
     <div class="view-body" style="padding-top:4px">
       <div class="card" style="padding:16px;display:grid;gap:14px">
         <div class="team-top"><span class="crest" style="--c:${t.color};width:64px;height:64px;font-size:26px">${esc(t.name.split(' ').map((w) => w[0]).join('').slice(0, 2))}</span><div class="grow"><div class="eyebrow">${s.name} · ${t.privacy}</div><h3 style="font-size:26px">${esc(t.name)}</h3></div></div>
-        <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" style="flex:1" data-act="invite" data-id="${t.id}">${ic('user-plus', 'ic-sm')}Invite</button><button class="btn btn-soft btn-sm" style="flex:1" data-act="scheduleMatch" data-id="${t.id}">${ic('calendar', 'ic-sm')}Schedule</button><button class="btn btn-ghost btn-sm" style="flex:1" data-act="matchDay" data-id="${t.id}">${ic('list-checks', 'ic-sm')}Match day</button></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" style="flex:1" data-act="addPlayers" data-id="${t.id}">${ic('user-plus', 'ic-sm')}Add players</button><button class="btn btn-soft btn-sm" style="flex:1" data-act="scheduleMatch" data-id="${t.id}">${ic('calendar', 'ic-sm')}Schedule</button><button class="btn btn-ghost btn-sm" style="flex:1" data-act="matchDay" data-id="${t.id}">${ic('list-checks', 'ic-sm')}Match day</button></div>
       </div>
       ${t.next ? `<div class="card" style="padding:14px;display:grid;gap:12px"><div class="eyebrow">Next match</div><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><b style="font-size:17px">vs ${esc(t.next.vs)}</b><div class="muted" style="font-size:13.5px">${longFmt.format(dateAt(t.next.d, t.next.t))} · ${timeFmt.format(dateAt(t.next.d, t.next.t))}<br>${esc(t.next.venue)}</div></div></div>
         <div class="avail"><div><b style="color:var(--ok)">${cnt('yes')}</b><small>Playing</small></div><div><b style="color:var(--warn)">${cnt('maybe')}</b><small>Maybe</small></div><div><b style="color:var(--hot)">${cnt('no')}</b><small>Out</small></div></div></div>` : ''}
       <div class="section-head"><h2 style="font-size:20px;font-style:italic;text-transform:uppercase">Roster</h2><span class="faint num">${t.members.length} players</span></div>
-      <div class="rows">${t.members.map((m) => `<div class="row"><div class="avatars">${avatar(m)}</div><div class="grow"><b>${esc(m.name)}</b><small>${m.role}</small></div><span class="badge ${m.status === 'yes' ? 'free' : m.status === 'maybe' ? '' : 'live'}">${m.status === 'yes' ? 'Playing' : m.status === 'maybe' ? 'Maybe' : m.status === 'invited' ? 'Invited' : 'Out'}</span></div>`).join('')}</div>
+      <div class="rows">${t.members.map((m) => `<div class="row"><div class="avatars">${avatar(m)}</div><div class="grow"><b>${esc(m.name)}</b><small>${m.role}</small></div><span class="badge ${m.status === 'yes' ? 'free' : m.status === 'maybe' ? '' : m.status === 'invited' ? 'brand' : 'live'}">${m.status === 'yes' ? 'Playing' : m.status === 'maybe' ? 'Maybe' : m.status === 'invited' ? 'Invited' : 'Out'}</span></div>`).join('')}</div>
     </div>`);
 }
 function inviteSheet(teamId) {
@@ -730,7 +730,9 @@ function inviteSheet(teamId) {
     <div class="field"><span class="lbl">Share invite link</span><div class="copybox"><code id="invLink">${link}</code><button class="btn btn-primary btn-sm" data-act="copy" data-target="invLink">${ic('copy', 'ic-sm')}Copy</button></div></div>
     <div class="field"><span class="lbl">Or use team code</span><div class="copybox"><code id="invCode" style="font-size:20px;font-weight:700;letter-spacing:.12em">${code}</code><button class="btn btn-ghost btn-sm" data-act="copy" data-target="invCode">${ic('copy', 'ic-sm')}Copy</button></div></div>
     <div class="field"><label for="invSearch">Invite by name, phone or email</label><div style="display:flex;gap:8px"><input class="input" id="invSearch" placeholder="Name, phone or email"><button class="btn btn-soft" data-act="inviteTyped" data-id="${t.id}">${ic('send')}</button></div></div>
+    <button class="btn btn-soft btn-block" data-act="shareTeam" data-id="${t.id}">${ic('share-2')}Share to any app</button>
     <div class="field"><span class="lbl">Suggested near you</span><div class="rows" id="invPeople">${PEOPLE.map(personRow).join('')}</div></div>
+    <button class="btn btn-ghost btn-block" data-act="addPlayers" data-id="${t.id}">${ic('users')}See all players near you</button>
     <button class="btn btn-primary btn-block" data-act="closeSheet">Done</button>`);
 }
 function newTeamSheet() {
@@ -747,7 +749,7 @@ function newTeamSheet() {
       const t = { id: 't' + Date.now(), name: $('#teamName').value.trim() || 'New team', sport: $('#teamSport [aria-pressed="true"]').dataset.id,
         color: $('#teamColor [aria-pressed="true"]').dataset.id, privacy: $('#teamPrivacy [aria-pressed="true"]').dataset.id,
         members: [{ name: ME_USER.name, img: ME_USER.img, role: 'Captain', status: 'yes' }], next: null };
-      S.teams.unshift(t); save(); renderTeams(); inviteSheet(t.id); toast('Team created. Now invite your players', 'users');
+      S.teams.unshift(t); save(); renderTeams(); closeSheet(true); openAddPlayers(t.id, true); toast('Team created. Add players near you', 'users');
     });
   } });
 }

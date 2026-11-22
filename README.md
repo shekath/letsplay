@@ -39,6 +39,7 @@ Locked features stay visible to Lite users and lead to an upgrade sheet, so peop
 - **Notification centre:** the bell on Explore and My games. Urgent changes, actions, updates and offers, each saying what changed and what to do, with one-tap actions. Cancellations, changes and payments are always on; club news, suggestions and offers can be turned off.
 - **What's next strip:** at the top of the nearby list: your next activity plus counts of changes and to-dos.
 - **Coach details** on game pages, and a Pro **Match day** screen per team: availability with nudges, attendance check-in, lineup builder with captain, quick team messages, share lineup.
+- **Add players (Pro):** after creating a team, or from a team's Add players button, browse every player on LetsPlay sorted nearest first and grouped by distance (within 1 km, 1–3 km, 3 km+), filter by sport, radius, name or "looking for a team", multi-select and invite. Share the team link to any app: the phone's share menu where supported, otherwise WhatsApp, Telegram, SMS, email, Facebook, X or copy. Game pages share the same way.
 - **Turf and court booking:** Explore → Book venue. Pick court, date and hours (off-peak and peak pricing, booked slots shown), then pay in full or **split with players** over UPI with payment tracking and WhatsApp reminders. Pro users can post open spots as a hosted game.
 
 ## What you can try

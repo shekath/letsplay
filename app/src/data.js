@@ -200,3 +200,22 @@ const VENUES_BOOK = [
   { id: 'v6', name: 'Lakeside Sand Courts', x: 1105, y: 1030, sports: ['volleyball'], courts: ['Court 1', 'Court 2'], price: 600, peak: 800, img: 'volley', setting: 'Outdoor', rating: 4.4, reviews: 98, amenities: ['Floodlights', 'Showers', 'Ball hire'] },
 ];
 const LINEUP_SIZE = { cricket: 11, football: 7, kabaddi: 7, basketball: 5, volleyball: 6, badminton: 4 };
+
+/* Players on LetsPlay, for adding to teams. km = distance from you. lft = looking for a team. */
+const PLAYERS = [
+  { id: 'u6', name: 'Aditya Kulkarni', sports: ['cricket', 'football'], level: 'Intermediate', km: 0.3, lft: true, games: 58, bio: 'Opening batter, part-time spin' },
+  { id: 'u1', name: 'Rohan Iyer', sports: ['football', 'cricket'], level: 'Intermediate', km: 0.6, lft: false, games: 42, bio: 'Midfielder, plays weekday evenings' },
+  { id: 'u7', name: 'Fatima Sheikh', sports: ['badminton', 'volleyball'], level: 'Advanced', km: 0.8, lft: true, games: 77, bio: 'State-level doubles player' },
+  { id: 'u2', name: 'Ananya Rao', sports: ['tennis', 'running'], level: 'Intermediate', km: 1.1, lft: true, games: 35, bio: 'Morning runner, weekend tennis' },
+  { id: 'u8', name: 'Harpreet Gill', sports: ['kabaddi', 'football'], level: 'Advanced', km: 1.2, lft: true, games: 64, bio: 'Raider, 6 years club kabaddi' },
+  { id: 'u3', name: 'Kavya Nair', sports: ['badminton'], level: 'Intermediate', km: 1.4, lft: false, games: 49, bio: 'Singles and mixed doubles' },
+  { id: 'u9', name: 'Siddharth Jain', sports: ['cricket'], level: 'Beginner', km: 1.7, lft: true, games: 6, bio: 'New to the city, keen fast bowler' },
+  { id: 'u4', name: 'Vikram Singh', sports: ['cricket', 'kabaddi'], level: 'Advanced', km: 2.0, lft: false, games: 91, bio: 'Wicketkeeper-batter' },
+  { id: 'u5', name: 'Sameer Khan', sports: ['football'], level: 'Intermediate', km: 2.3, lft: true, games: 28, bio: 'Centre-back, free on weekends' },
+  { id: 'u10', name: 'Meenakshi Pillai', sports: ['volleyball', 'basketball'], level: 'Intermediate', km: 2.9, lft: true, games: 22, bio: 'Setter, also plays 3×3' },
+  { id: 'u11', name: 'Arnav Bose', sports: ['football', 'basketball'], level: 'Beginner', km: 3.4, lft: true, games: 9, bio: 'College student, evenings free' },
+  { id: 'u12', name: 'Deepa Menon', sports: ['cricket', 'badminton'], level: 'Intermediate', km: 3.8, lft: false, games: 31, bio: 'All-rounder, corporate league' },
+  { id: 'u13', name: 'Imran Qureshi', sports: ['cricket'], level: 'Advanced', km: 4.6, lft: true, games: 120, bio: 'Left-arm seam, club captain' },
+  { id: 'u14', name: 'Tanvi Shah', sports: ['badminton', 'pickleball'], level: 'Beginner', km: 5.2, lft: true, games: 4, bio: 'Learning, happy to join any team' },
+  { id: 'u15', name: 'Rahul Verma', sports: ['kabaddi', 'cricket'], level: 'Intermediate', km: 6.5, lft: false, games: 40, bio: 'Defender, weekend matches only' },
+];

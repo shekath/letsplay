@@ -488,3 +488,86 @@ Object.assign(A, {
 /* registration inputs write straight into the draft, so nothing is lost between steps */
 document.addEventListener('input', (e) => { const p = e.target.dataset && e.target.dataset.r; if (!p || !REG) return; const keys = p.split('.'); let o = REG; keys.slice(0, -1).forEach((k) => (o = o[k])); o[keys[keys.length - 1]] = e.target.type === 'checkbox' ? e.target.checked : e.target.value; });
 document.addEventListener('change', (e) => { const p = e.target.dataset && e.target.dataset.r; if (!p || !REG || e.target.type !== 'checkbox') return; const keys = p.split('.'); let o = REG; keys.slice(0, -1).forEach((k) => (o = o[k])); o[keys[keys.length - 1]] = e.target.checked; });
+
+/* ═════ 8. ADD PLAYERS TO A TEAM (Pro) + SHARE TO ANY APP ═════ */
+let AP = null;
+const teamCodeOf = (t) => t.name.replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() + '-' + (1000 + (t.id.length * 7919 + t.name.length * 31) % 9000);
+const teamLink = (t) => 'https://letsplay.app/join/' + teamCodeOf(t).toLowerCase();
+function openAddPlayers(tid, fresh) {
+  if (!can.teams()) { upsell('teams'); return; }
+  const t = S.teams.find((x) => x.id === tid); if (!t) { A.newTeam(); return; }
+  AP = { tid, q: '', sport: t.sport, km: 'any', lft: false, sel: [], fresh: !!fresh };
+  popAll(); const v = push(''); v.id = 'apView'; renderAP();
+}
+function apList() {
+  const q = AP.q.trim().toLowerCase();
+  return PLAYERS.filter((p) => (AP.sport === 'all' || p.sports.includes(AP.sport)) && (AP.km === 'any' || p.km <= +AP.km) && (!AP.lft || p.lft) &&
+    (!q || (p.name + ' ' + p.sports.map((s) => SPORTS[s].name).join(' ')).toLowerCase().includes(q))).sort((a, b) => a.km - b.km);
+}
+function apRow(p, t) {
+  const inTeam = t.members.some((m) => m.name === p.name && m.status !== 'invited');
+  const invited = t.members.some((m) => m.name === p.name && m.status === 'invited');
+  const on = AP.sel.includes(p.id);
+  return `<button class="row ap-row" ${inTeam || invited ? 'aria-disabled="true"' : `data-act="apToggle" data-id="${p.id}" aria-pressed="${on}"`}>
+    ${avatar(p, 44)}
+    <div class="grow" style="min-width:0"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>${esc(p.name)}</b>${p.lft ? '<span class="badge free">Looking for a team</span>' : ''}</div>
+      <small>${p.sports.map((s) => SPORTS[s].name).join(' · ')} · ${p.level} · ${p.games} games</small><small class="ellip">${esc(p.bio)}</small></div>
+    <div class="ap-side"><span class="km num">${p.km < 1 ? Math.round(p.km * 1000) + ' m' : p.km.toFixed(1) + ' km'}</span>${inTeam ? '<span class="badge">In team</span>' : invited ? '<span class="badge brand">Invited</span>' : `<span class="tickbox">${ic('check')}</span>`}</div></button>`;
+}
+function renderAP() {
+  const v = $('#apView'); if (!v) return; const top = v.scrollTop; const t = S.teams.find((x) => x.id === AP.tid); const list = apList();
+  const bands = [[0, 1, 'Within 1 km'], [1, 3, '1–3 km away'], [3, 99, 'More than 3 km']];
+  const sportsList = ['all'].concat(Object.keys(SPORTS).filter((k) => PLAYERS.some((p) => p.sports.includes(k))));
+  v.innerHTML = `<div class="view-bar"><button class="icon-btn" data-act="back" aria-label="Back">${ic('arrow-left')}</button><h2>Add players</h2><button class="icon-btn" data-act="shareTeam" data-id="${t.id}" aria-label="Share invite">${ic('share-2')}</button></div>
+    <div class="view-body" style="padding-top:4px">
+      <div class="card" style="padding:12px 14px;display:flex;gap:12px;align-items:center"><span class="crest" style="--c:${t.color}">${esc(t.name.split(' ').map((w) => w[0]).join('').slice(0, 2))}</span><div class="grow" style="min-width:0"><b style="font-size:17px">${esc(t.name)}</b><div class="faint" style="font-size:13px">${SPORTS[t.sport].name} · ${t.members.length} member${t.members.length === 1 ? '' : 's'}${AP.fresh ? ' · new team' : ''}</div></div></div>
+      <div class="share-card"><div class="grow" style="min-width:0"><b>Invite anyone with a link</b><div class="faint ellip" style="font-size:13px">${teamLink(t)}</div></div><button class="btn btn-primary btn-sm" data-act="shareTeam" data-id="${t.id}">${ic('share-2', 'ic-sm')}Share</button></div>
+      <label class="search" style="box-shadow:none">${ic('search')}<input id="apQ" type="search" placeholder="Search players by name or sport" value="${esc(AP.q)}" aria-label="Search players"></label>
+      <div class="chips">${sportsList.map((k) => `<button class="chip ${k !== 'all' ? 'sport' : ''}" style="${k !== 'all' ? '--c:' + SPORTS[k].c : ''}" data-act="apSport" data-id="${k}" aria-pressed="${AP.sport === k}">${k === 'all' ? ic('layers') + 'All sports' : ic(SPORTS[k].icon) + SPORTS[k].name}</button>`).join('')}</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="seg seg-sm" style="flex:1;min-width:220px">${[['1', '1 km'], ['3', '3 km'], ['5', '5 km'], ['any', 'Any']].map(([k, l]) => `<button data-act="apKm" data-id="${k}" aria-pressed="${AP.km === k}">${l}</button>`).join('')}</div>
+        <button class="chip" data-act="apLft" aria-pressed="${AP.lft}">${ic('user-plus')}Looking for a team</button></div>
+      <div class="faint" style="font-size:12.5px;display:flex;gap:6px;align-items:center">${ic('navigation', 'ic-sm')}${list.length} player${list.length === 1 ? '' : 's'}, nearest first</div>
+      ${list.length ? bands.map(([lo, hi, label]) => { const g = list.filter((p) => p.km >= lo && p.km < hi); return g.length ? `<div class="day-group"><div class="day-label">${label}</div><div class="rows">${g.map((p) => apRow(p, t)).join('')}</div></div>` : ''; }).join('')
+        : `<div class="empty card">${ic('search')}<b>No players match</b><span>Widen the distance or share the invite link instead.</span><button class="btn btn-soft btn-sm" data-act="shareTeam" data-id="${t.id}">${ic('share-2', 'ic-sm')}Share invite</button></div>`}
+    </div>
+    <div class="view-cta"><div class="price"><span class="faint" style="font-size:12px">Selected</span><b class="num">${AP.sel.length}</b></div><button class="btn btn-primary" data-act="apAdd" ${AP.sel.length ? '' : 'disabled'}>${ic('user-plus')}${AP.sel.length ? `Add ${AP.sel.length} player${AP.sel.length > 1 ? 's' : ''}` : 'Select players'}</button></div>`;
+  v.scrollTop = top;
+  const qi = $('#apQ', v); qi.addEventListener('input', () => { AP.q = qi.value; const pos = qi.selectionStart; renderAP(); const n = $('#apQ'); n.focus(); n.setSelectionRange(pos, pos); });
+}
+
+/* Share to any app: the phone's own share sheet when available, otherwise app links and copy */
+async function shareAny(title, text, url) {
+  if (navigator.share) { try { await navigator.share({ title, text, url }); toast('Shared', 'share-2'); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  const full = `${text} ${url}`, enc = encodeURIComponent;
+  const apps = [
+    ['WhatsApp', '#25D366', 'message-circle', `https://wa.me/?text=${enc(full)}`],
+    ['Telegram', '#229ED9', 'send', `https://t.me/share/url?url=${enc(url)}&text=${enc(text)}`],
+    ['SMS', '#13A04B', 'smartphone', `sms:?&body=${enc(full)}`],
+    ['Email', '#E0611A', 'send', `mailto:?subject=${enc(title)}&body=${enc(full)}`],
+    ['Facebook', '#1877F2', 'globe', `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`],
+    ['X', '#0D1530', 'share-2', `https://twitter.com/intent/tweet?text=${enc(full)}`],
+  ];
+  sheetSet(`${sheetHead('Share', esc(title))}
+    <div class="share-grid">${apps.map(([n, c, i, href]) => `<a class="share-app" href="${href}" target="_blank" rel="noopener" style="--c:${c}"><span>${ic(i)}</span>${n}</a>`).join('')}
+      <button class="share-app" data-act="copyShare" style="--c:var(--ink-2)"><span>${ic('copy')}</span>Copy link</button></div>
+    <div class="field"><span class="lbl">Message</span><div class="copybox" style="align-items:flex-start"><code id="shareTxt" style="white-space:normal">${esc(full)}</code></div></div>
+    <div class="faint" style="font-size:12.5px">On a phone, the installed app opens your phone’s share menu so you can send it to any app.</div>`, 'share');
+}
+
+Object.assign(A, {
+  addPlayers: (el) => (el.dataset.id ? openAddPlayers(el.dataset.id) : A.newTeam()),
+  apToggle: (el) => { const id = el.dataset.id; AP.sel = AP.sel.includes(id) ? AP.sel.filter((x) => x !== id) : AP.sel.concat(id); renderAP(); },
+  apSport: (el) => { AP.sport = el.dataset.id; renderAP(); },
+  apKm: (el) => { AP.km = el.dataset.id; renderAP(); },
+  apLft: () => { AP.lft = !AP.lft; renderAP(); },
+  apAdd: () => { const t = S.teams.find((x) => x.id === AP.tid); const add = PLAYERS.filter((p) => AP.sel.includes(p.id));
+    add.forEach((p) => t.members.push({ name: p.name, role: 'Player', status: 'invited', pid: p.id })); save();
+    const n = add.length; AP = null; popAll(); renderTeams(); openTeam(t.id);
+    toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); },
+  shareTeam: (el) => { const t = S.teams.find((x) => x.id === el.dataset.id); shareAny(`Join ${t.name} on LetsPlay`, `Join my ${SPORTS[t.sport].name.toLowerCase()} team ${t.name} on LetsPlay. Team code ${teamCodeOf(t)}.`, teamLink(t)); },
+  share: (el) => { const a = el.dataset.id && allActs().find((x) => x.id === el.dataset.id);
+    if (a) shareAny(a.title, `${a.title} · ${when(a)} at ${a.venue}. ${spotsLeft(a)} spots left, ${money(a.price)}. Join me on LetsPlay:`, 'https://letsplay.app/g/' + a.id);
+    else shareAny('LetsPlay', 'Find games and book turfs near you on LetsPlay:', 'https://letsplay.app'); },
+  shareGame: () => shareAny('My game on LetsPlay', 'I’m hosting a game on LetsPlay. Join here:', 'https://letsplay.app/g/new'),
+  copyShare: () => { const txt = $('#shareTxt').textContent; try { navigator.clipboard.writeText(txt).then(() => toast('Copied. Paste it into any app', 'copy'), () => { selectText('shareTxt'); toast('Selected. Copy it from the menu', 'copy'); }); } catch (e) { selectText('shareTxt'); } },
+});
