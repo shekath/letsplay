@@ -18,12 +18,12 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 
 A second, engagement-first direction at `http://localhost:8080/design2.html`, built on the same data:
 
-- **Play:** game cards float over the live map. Swipe right to join, left to pass, up (or tap) for details, or use the buttons and arrow keys. The map follows the top card and highlights its pin.
+- **Play:** a list of games in a bottom sheet over the live map (drag or tap to expand). Tap a game to move the map to its pin and open details; tap a pin to highlight its card; tap + to join. Full games say so instead of offering to join.
 - **Starting soon:** story rings for games today and tomorrow; a full-screen viewer that advances every 5 seconds (hold to pause, tap the sides to move; manual when reduced motion is on).
 - **Progress:** joining earns XP with a short celebration, levels with titles, a weekly goal ring you can adjust, a streak chart and earnable badges.
 - **Book:** pick a court from a photo carousel and drag a time window along the day. Booked hours are striped, peak hours tinted, clashes turn the window red. A slider splits the cost live.
 - **Squad:** pick a player and tap a fielding position on a cricket field, vote in the availability poll, send quick chat messages.
-- **Look:** Unbounded and Manrope type, a neutral base where each card takes its sport colour, violet only for your progress, a floating pill tab bar, and light and dark themes.
+- **Look:** Kanit bold italic for titles, scores and numbers (athletic, scoreboard feel) with Manrope for reading, a neutral base where each card takes its sport colour, violet only for your progress, a floating pill tab bar, and light and dark themes.
 
 Source: `app/design2/src` (shell, `d2.css`, `d2.js`); `scripts/build.py` bundles it with the shared `data.js` and `icons.js`.
 

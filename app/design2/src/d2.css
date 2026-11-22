@@ -1,8 +1,8 @@
 /* LetsPlay Design 2: "Playground".
    Design read: the same community-sports app, tuned for engagement: gestures, quick wins and visible progress.
-   Dials: ENERGY 3 / RHYTHM 2 / MOTION 3 (swipe physics, story progress, a short celebration on joining;
+   Dials: ENERGY 3 / RHYTHM 2 / MOTION 3 (map follows the game you pick, story progress, a short celebration on joining;
    every animation answers an action and none loops forever; reduced-motion turns them off).
-   Type: Unbounded (wide geometric display) for names and numbers, Manrope for reading.
+   Type: Kanit bold italic (athletic, forward-leaning, scoreboard-like) for names and numbers, Manrope for reading.
    Colour: a quiet neutral base; each game card takes its sport colour as its ground (data, not decoration);
    ink pills for actions; violet is the single accent and only means "your progress" (XP, goals, levels).
    Layout: map stays on screen at all times; a card deck floats over it; floating pill tab bar. */
@@ -24,7 +24,7 @@
   --scrim: rgba(10, 11, 14, .5);
   --shadow: 0 18px 40px rgba(15, 16, 20, .18), 0 4px 10px rgba(15, 16, 20, .08);
   --map-land: #E6E7E1; --map-block: #DCDDD6; --map-road: #FFFFFF; --map-park: #CFE3C2; --map-water: #C3D9EE; --map-label: #6A6D76;
-  --f-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-display: "Kanit", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
   --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --r: 22px;
   --r-lg: 30px;
@@ -54,7 +54,9 @@ input { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--you); outline-offset: 2px; border-radius: 12px; }
 .ic { width: 20px; height: 20px; flex: none; display: block; }
 .num { font-variant-numeric: tabular-nums; }
-h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: 0; line-height: 1.05; text-wrap: balance; }
+/* Every display-face element leans forward: names, scores, counts and badges read like a scoreboard. */
+.app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window, .tab .lbl) { font-style: italic; }
 .muted { color: var(--ink-2); }
 .faint { color: var(--ink-3); }
 button:disabled { cursor: not-allowed; opacity: .5; }
@@ -160,48 +162,45 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .story .ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid var(--surface); }
 .story .t { display: block; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.deck-wrap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 12; padding: 0 max(16px, env(safe-area-inset-left, 0px)) calc(92px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; pointer-events: none; }
-.app.framed .deck-wrap { padding-bottom: 104px; }
-.deck-wrap > * { pointer-events: auto; }
-.deck { position: relative; height: 262px; }
-/* Shorter phones: a smaller deck and no hint line, so the sport chips and a strip of map stay visible. */
-@media (max-height: 760px) {
-  .deck { height: 196px; }
-  .hint { display: none; }
-  .deck-actions .round { width: 50px; height: 50px; }
-  .deck-actions .round.big { width: 58px; height: 58px; }
-  .gcard h3 { font-size: 17px; }
-  .story .ring { width: 50px; height: 50px; }
-}
-.gcard .body { gap: 6px; }
-.gcard { position: absolute; inset: 0; border-radius: var(--r-lg); overflow: hidden; background: var(--c); color: #fff; box-shadow: var(--shadow); display: grid; grid-template-rows: 1fr auto; touch-action: none; user-select: none; will-change: transform; transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .35s; }
-.gcard.dragging { transition: none; }
-.gcard[data-depth="1"] { transform: translateY(12px) scale(.95); }
-.gcard[data-depth="2"] { transform: translateY(24px) scale(.9); opacity: .7; }
-.gcard .photo { position: relative; min-height: 0; }
-.gcard .photo img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
-.gcard .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.25), transparent 40%); }
-.gcard .tags { position: absolute; left: 14px; top: 14px; z-index: 1; display: flex; gap: 6px; flex-wrap: wrap; }
+/* List of games: a bottom sheet over the map with two heights (peek and expanded). */
+.lsheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 12; display: flex; flex-direction: column; background: var(--surface); border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(15,16,20,.14); transition: height .32s cubic-bezier(.2, .8, .2, 1); }
+.lsheet.dragging { transition: none; }
+.lgrab { flex: none; height: 24px; display: grid; place-items: center; cursor: grab; touch-action: none; }
+.lgrab::before { content: ""; width: 44px; height: 5px; border-radius: 3px; background: var(--line); }
+.lhead { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 18px 10px; touch-action: none; }
+.lhead h2 { font-size: 18px; }
+.llist { flex: 1; overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 10px; align-content: start; padding: 2px 14px calc(96px + env(safe-area-inset-bottom, 0px)); }
+.app.framed .llist { padding-bottom: 108px; }
+.gitem { position: relative; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 22px; background: var(--surface); border: 1.5px solid var(--line); transition: border-color .2s ease, box-shadow .2s ease, transform .12s ease; }
+.gitem:active { transform: scale(.99); }
+.gitem.on { border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent); }
+.gi-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; text-align: left; }
+.gi-photo { position: relative; width: 84px; height: 84px; border-radius: 16px; overflow: hidden; flex: none; background: var(--surface-2); }
+.gi-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gi-sport { position: absolute; left: 6px; bottom: 6px; width: 28px; height: 28px; border-radius: 9px; background: var(--c); color: #fff; display: grid; place-items: center; }
+.gi-sport .ic { width: 16px; height: 16px; }
+.gi-text { min-width: 0; display: grid; gap: 4px; }
+.gi-tags { display: flex; gap: 5px; }
+.gi-title { font: 700 17px var(--f-display); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gi-meta { font-size: 13px; color: var(--ink-2); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gi-spots { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+.gi-spots .spots-bar { flex: 1; max-width: 120px; background: var(--surface-2); }
+.gi-spots .spots-bar i { background: var(--c); }
+.gi-join { width: 48px; height: 48px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--cta); color: var(--cta-ink); transition: transform .12s ease; }
+.gi-join:active { transform: scale(.92); }
+.gi-join .ic { width: 22px; height: 22px; }
+.gi-in { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px; border-radius: 999px; flex: none; font-size: 13px; font-weight: 800; color: color-mix(in srgb, var(--ok) 72%, var(--ink)); background: color-mix(in srgb, var(--ok) 14%, var(--surface)); }
+.gi-in .ic { width: 15px; height: 15px; }
+.gi-full { color: var(--ink-2); background: var(--surface-2); }
+.pin { border: 0; background: none; padding: 0; cursor: pointer; }
+.pin.joined span { box-shadow: 0 0 0 3px var(--ok), 0 3px 10px rgba(0,0,0,.25); }
+@media (max-height: 760px) { .story .ring { width: 50px; height: 50px; } }
 .tag { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12.5px; font-weight: 800; background: rgba(0,0,0,.45); color: #fff; }
 .tag .ic { width: 14px; height: 14px; }
 .tag.live { background: #C9362C; }   /* fixed fill: white text stays above 4.5:1 in both themes */
-.gcard .body { padding: 14px 16px 16px; display: grid; gap: 8px; background: color-mix(in srgb, var(--c) 82%, #000); }
-.gcard h3 { font-size: 20px; line-height: 1.1; }
-.gcard .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; font-weight: 600; opacity: .95; }
-.gcard .meta span { display: inline-flex; align-items: center; gap: 5px; }
-.gcard .meta .ic { width: 15px; height: 15px; }
-.spots-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; }
-.spots-bar i { display: block; height: 100%; background: #fff; border-radius: 3px; }
-.stamp { position: absolute; top: 26px; z-index: 2; padding: 6px 14px; border: 4px solid; border-radius: 12px; font: 800 24px var(--f-display); letter-spacing: .02em; opacity: 0; pointer-events: none; }
-.stamp.in { left: 22px; color: #fff; border-color: #fff; background: rgba(12,131,83,.85); transform: rotate(-12deg); }
-.stamp.pass { right: 22px; color: #fff; border-color: #fff; background: rgba(21,22,26,.75); transform: rotate(12deg); }
-.deck-empty { position: absolute; inset: 0; border-radius: var(--r-lg); background: var(--surface); border: 2px dashed var(--line); display: grid; place-items: center; text-align: center; padding: 24px; gap: 10px; align-content: center; }
-.deck-actions { display: flex; justify-content: center; align-items: center; gap: 18px; }
-.deck-actions .round { width: 56px; height: 56px; box-shadow: var(--shadow); }
-.deck-actions .round.big { width: 68px; height: 68px; background: var(--ok); border-color: var(--ok); color: #fff; }
-.deck-actions .round.big .ic { width: 30px; height: 30px; }
-.deck-actions .round .ic { width: 24px; height: 24px; }
-.hint { justify-self: center; font-size: 12.5px; color: var(--ink-2); font-weight: 700; padding: 3px 10px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 88%, transparent); }
+.tag.soft { background: var(--surface-2); color: var(--ink); }
+.spots-bar { height: 6px; border-radius: 3px; overflow: hidden; }
+.spots-bar i { display: block; height: 100%; border-radius: 3px; }
 
 /* ── Sheets ── */
 .scrim { position: absolute; inset: 0; z-index: 70; background: var(--scrim); animation: fade .2s; }

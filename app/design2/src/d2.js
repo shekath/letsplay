@@ -35,7 +35,7 @@ function buzz(ms = 12) { try { if (navigator.vibrate) navigator.vibrate(ms); } c
 
 /* ── State ── */
 const KEY = 'letsplay-d2-v1';
-const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7'], passed: [], seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], vote: null, poll: { yes: 4, maybe: 1, no: 1 }, lineup: {}, chat: null, venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10 });
+const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7'], seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], vote: null, poll: { yes: 4, maybe: 1, no: 1 }, lineup: {}, chat: null, venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10 });
 let S = fresh();
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) S = Object.assign(fresh(), s); } catch (e) { /* storage unavailable */ }
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } };
@@ -69,7 +69,7 @@ function go(t) {
   ({ play: renderPlay, book: renderBook, squad: renderSquad, me: renderMe })[t]();
 }
 
-/* ═════ PLAY: map + swipe deck ═════ */
+/* ═════ PLAY: map + list of games (tap a card or a pin; the two stay in sync) ═════ */
 const MAP_S = 0.62;
 function mapSVG() {
   let o = '<svg width="1600" height="1600" viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg"><rect class="m-land" width="1600" height="1600"/>';
@@ -80,7 +80,8 @@ function mapSVG() {
   [[800, 1340, 'MG Road', 90], [1380, 792, 'Nehru Marg', 0], [640, 392, 'Ring Road', 0]].forEach(([x, y, n, r]) => { o += `<text class="m-label" x="${x}" y="${y}" text-anchor="middle" dy="5" transform="rotate(${r} ${x} ${y})">${n}</text>`; });
   return o + '</svg>';
 }
-const queue = () => ACTIVITIES.filter((a) => !S.joined.includes(a.id) && !S.passed.includes(a.id) && (S.mood === 'all' || a.sport === S.mood)).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
+const games = () => ACTIVITIES.filter((a) => S.mood === 'all' || a.sport === S.mood).sort((a, b) => a.d - b.d || km(a.x, a.y) - km(b.x, b.y));
+let focused = null;   /* the game the map is showing */
 const soon = () => ACTIVITIES.filter((a) => a.d <= 1).sort((a, b) => dateAt(a.d, a.t) - dateAt(b.d, b.t)).slice(0, 8);
 function goalRing() {
   const r = 20, c = 2 * Math.PI * r, done = Math.min(S.week, S.goal);
@@ -93,82 +94,64 @@ function renderPlay() {
   if (!$('#map')) {
     el.innerHTML = `<div class="map" id="map" aria-label="Map of games near you"><div class="map-layer" id="mapLayer">${mapSVG()}<div id="pins"></div></div></div>
       <div class="play-top top-safe" id="playTop"></div>
-      <div class="deck-wrap"><div class="deck" id="deck" aria-live="polite"></div>
-        <div class="deck-actions"><button class="round" data-act="pass" aria-label="Pass on this game">${ic('x')}</button><button class="round big" data-act="in" aria-label="I’m in: join this game">${ic('check')}</button><button class="round" data-act="info" aria-label="See details">${ic('info')}</button></div>
-        <div class="hint">Swipe right to join, left to pass, up for details</div></div>`;
-    bindMapDrag();
+      <div class="lsheet" id="lsheet"><div class="lgrab" id="lgrab" aria-hidden="true"></div><div class="lhead" id="lhead"></div><div class="llist" id="llist"></div></div>`;
+    bindMapDrag(); bindSheet();
   }
   const moods = [['all', 'Anything', null]].concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga'].map((k) => [k, sp(k).name, sp(k)]));
   $('#playTop').innerHTML = `<div class="hello"><h1><small>Good to see you, Arjun</small>What do you feel like playing?</h1><span class="streak" title="Weekly streak">${ic('flame')}<span class="num">${streakWeeks()}</span></span>${goalRing()}</div>
     <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${IMG + a.img}.jpg" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
     <div class="chips">${moods.map(([k, n, s]) => `<button class="chip ${s ? '' : 'neutral'}" style="${s ? '--c:' + s.c : ''}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('')}</div>`;
-  $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>` + ACTIVITIES.map((a) => `<div class="pin ${S.joined.includes(a.id) || S.passed.includes(a.id) ? 'gone' : ''}" id="pin-${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px"><span>${ic(sp(a.sport).icon)}</span></div>`).join('');
-  renderDeck();
+  const list = games();
+  if (!list.find((a) => a.id === focused)) focused = list[0] ? list[0].id : null;
+  $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>` + ACTIVITIES.map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
+  $('#lhead').innerHTML = `<div><h2>${list.length} game${list.length === 1 ? '' : 's'} near you</h2><div class="faint" style="font-size:13px;font-weight:600">Tap a game to see it on the map</div></div><button class="pill sm soft" data-act="sheetToggle" aria-label="Expand or collapse the list">${ic('layers')}${sheetIdx ? 'Map' : 'List'}</button>`;
+  $('#llist').innerHTML = list.length ? list.map(itemHTML).join('') : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() : '')} games nearby yet</b><div class="muted">Try another sport, or book a court and start your own.</div><button class="pill sm soft" data-act="tab" data-id="book" style="justify-self:center">Book a court</button></div>`;
+  focusMap(true, list.find((a) => a.id === focused) || null);
 }
-function cardHTML(a, depth) {
-  const s = sp(a.sport), left = Math.max(0, a.spots - (S.joined.includes(a.id) ? 1 : 0));
-  return `<article class="gcard" data-id="${a.id}" data-depth="${depth}" style="--c:${s.c};z-index:${10 - depth}" ${depth ? 'aria-hidden="true"' : `aria-label="${esc(a.title)}"`}>
-    <div class="photo"><img src="${IMG + a.img}.jpg" alt="" draggable="false"><div class="tags">${a.d === 0 ? '<span class="tag live">Today</span>' : ''}<span class="tag">${ic(s.icon)}${s.name}</span><span class="tag">${money(a.price)}</span></div>
-      <span class="stamp in">I’M IN</span><span class="stamp pass">PASS</span></div>
-    <div class="body"><h3>${esc(a.title)}</h3>
-      <div class="meta"><span>${ic('clock')}${when(a)}</span><span>${ic('navigation')}${fmtKm(km(a.x, a.y))}</span><span>${ic('users')}${left} of ${a.total} left</span></div>
-      <div class="spots-bar"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></div></div></article>`;
+function itemHTML(a) {
+  const s = sp(a.sport), joined = S.joined.includes(a.id), left = Math.max(0, a.spots - (joined ? 1 : 0));
+  return `<article class="gitem ${focused === a.id ? 'on' : ''}" id="item-${a.id}" style="--c:${s.c}">
+    <button class="gi-main" data-act="focus" data-id="${a.id}" aria-label="${esc(a.title)}: show on map and see details">
+      <span class="gi-photo"><img src="${IMG + a.img}.jpg" alt="" loading="lazy"><span class="gi-sport">${ic(s.icon)}</span></span>
+      <span class="gi-text"><span class="gi-tags">${a.d === 0 ? '<span class="tag live">Today</span>' : `<span class="tag soft">${dayLabel(a.d)}</span>`}<span class="tag soft">${money(a.price)}</span></span>
+        <b class="gi-title">${esc(a.title)}</b>
+        <span class="gi-meta">${tf.format(dateAt(a.d, a.t))} · ${fmtKm(km(a.x, a.y))} · ${esc(a.venue.split(' · ')[0])}</span>
+        <span class="gi-spots"><span class="spots-bar"><i style="width:${Math.round(((a.total - left) / a.total) * 100)}%"></i></span><span class="num">${left} left</span></span></span>
+    </button>
+    ${joined ? `<span class="gi-in">${ic('check')}In</span>` : left === 0 ? '<span class="gi-in gi-full">Full</span>' : `<button class="gi-join" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">${ic('plus')}</button>`}
+  </article>`;
 }
-function renderDeck() {
-  const q = queue(), d = $('#deck');
-  if (!q.length) {
-    d.innerHTML = `<div class="deck-empty"><h3 style="font-size:18px">You’ve seen every game nearby</h3><div class="muted">Try another sport, book a court for your own game, or start the deck again.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="pill sm" data-act="resetDeck">Show games again</button><button class="pill sm soft" data-act="tab" data-id="book">Book a court</button></div></div>`;
-    $$('.deck-actions .round').forEach((b) => (b.disabled = true)); focusMap(true, null); return;
-  }
-  $$('.deck-actions .round').forEach((b) => (b.disabled = false));
-  d.innerHTML = q.slice(0, 3).map((a, i) => cardHTML(a, i)).reverse().join('');
-  bindCard($('.gcard[data-depth="0"]', d)); focusMap(true, q[0]);
+/* The list is a bottom sheet with two heights: peek (map first) and expanded (browse). */
+let sheetIdx = 0;
+function sheetHeights() { const h = $('#scr-play').clientHeight; return [Math.round(h * 0.42), h - (($('#playTop') || {}).offsetHeight || 220) + 40]; }
+function setSheet(i, anim = true) { sheetIdx = i; const el = $('#lsheet'); if (!el) return; el.classList.toggle('dragging', !anim); el.style.height = sheetHeights()[i] + 'px'; const b = $('#lhead [data-act="sheetToggle"]'); if (b) b.innerHTML = `${ic('layers')}${i ? 'Map' : 'List'}`; if (anim) setTimeout(() => focusMap(true, ACTIVITIES.find((a) => a.id === focused) || null), 340); }
+function bindSheet() {
+  const el = $('#lsheet'); let s = null; setSheet(0, false);
+  const down = (e) => { if (e.target.closest('button')) return; s = { y: e.clientY, h: el.clientHeight, moved: 0 }; e.currentTarget.setPointerCapture(e.pointerId); el.classList.add('dragging'); };
+  const move = (e) => { if (!s) return; const [lo, hi] = sheetHeights(); s.moved = Math.abs(e.clientY - s.y); el.style.height = Math.max(lo - 60, Math.min(hi, s.h - (e.clientY - s.y))) + 'px'; };
+  const up = () => { if (!s) return; const [lo, hi] = sheetHeights(); const h = el.clientHeight; const tap = s.moved < 5; s = null; el.classList.remove('dragging'); setSheet(tap ? 1 - sheetIdx : (Math.abs(h - lo) < Math.abs(h - hi) ? 0 : 1)); };
+  ['lgrab', 'lhead'].forEach((id) => { const g = $('#' + id); g.addEventListener('pointerdown', down); g.addEventListener('pointermove', move); g.addEventListener('pointerup', up); g.addEventListener('pointercancel', up); });
+}
+function focusGame(id, scroll) {
+  focused = id; $$('.gitem.on').forEach((e) => e.classList.remove('on')); const it = $('#item-' + id); if (it) { it.classList.add('on'); if (scroll) { const l = $('#llist'); l.scrollTo({ top: it.offsetTop - l.offsetTop - 8, behavior: REDUCED ? 'auto' : 'smooth' }); } }
+  focusMap(true, ACTIVITIES.find((a) => a.id === id)); buzz(6);
 }
 let mapPos = { x: 0, y: 0 };
 function setMap(x, y, anim) { const l = $('#mapLayer'); if (!l) return; mapPos = { x, y }; l.classList.toggle('dragging', !anim); l.style.transform = `translate(${x}px,${y}px) scale(${MAP_S})`; }
 function focusMap(anim, a) {
-  const m = $('#map'); if (!m) return; const target = a === undefined ? queue()[0] : a; const p = target || ME;
-  const topH = ($('#playTop') || {}).offsetHeight || 200, deckTop = ($('.deck-wrap') || {}).offsetTop || m.clientHeight * 0.5;
-  const cy = topH + (deckTop - topH) / 2;
+  const m = $('#map'); if (!m) return; const target = a === undefined ? ACTIVITIES.find((x) => x.id === focused) : a; const p = target || ME;
+  const topH = ($('#playTop') || {}).offsetHeight || 200, sheetTop = m.clientHeight - (($('#lsheet') || {}).offsetHeight || m.clientHeight * 0.42);
+  const cy = topH + Math.max(40, (sheetTop - topH) / 2);
   setMap(m.clientWidth / 2 - p.x * MAP_S, cy - p.y * MAP_S, anim);
   $$('.pin.on').forEach((e) => e.classList.remove('on'));
   if (target) { const pin = $('#pin-' + target.id); if (pin) { void pin.offsetWidth; pin.classList.add('on'); } }
 }
 function bindMapDrag() {
   const m = $('#map'); let start = null;
-  m.addEventListener('pointerdown', (e) => { start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y }; m.setPointerCapture(e.pointerId); });
+  m.addEventListener('pointerdown', (e) => { if (e.target.closest('.pin')) return; start = { x: e.clientX, y: e.clientY, mx: mapPos.x, my: mapPos.y }; m.setPointerCapture(e.pointerId); });
   m.addEventListener('pointermove', (e) => { if (start) setMap(start.mx + e.clientX - start.x, start.my + e.clientY - start.y, false); });
   const end = () => { start = null; }; m.addEventListener('pointerup', end); m.addEventListener('pointercancel', end);
 }
-/* Card physics: follow the finger, tilt with distance, show the stamp, decide on release. */
-function bindCard(c) {
-  if (!c) return; let s = null;
-  c.addEventListener('pointerdown', (e) => { s = { x: e.clientX, y: e.clientY }; c.setPointerCapture(e.pointerId); c.classList.add('dragging'); });
-  c.addEventListener('pointermove', (e) => {
-    if (!s) return; const dx = e.clientX - s.x, dy = e.clientY - s.y;
-    c.style.transform = `translate(${dx}px,${dy}px) rotate(${dx / 18}deg)`;
-    $('.stamp.in', c).style.opacity = Math.max(0, Math.min(1, dx / 90)); $('.stamp.pass', c).style.opacity = Math.max(0, Math.min(1, -dx / 90));
-  });
-  const up = (e) => {
-    if (!s) return; const dx = e.clientX - s.x, dy = e.clientY - s.y; s = null; c.classList.remove('dragging');
-    if (dx > 100) return decide('in', c); if (dx < -100) return decide('pass', c);
-    if (dy < -90 || (Math.abs(dx) < 6 && Math.abs(dy) < 6)) { c.style.transform = ''; resetStamps(c); return openDetail(c.dataset.id); }
-    c.style.transform = ''; resetStamps(c);
-  };
-  c.addEventListener('pointerup', up); c.addEventListener('pointercancel', () => { s = null; c.classList.remove('dragging'); c.style.transform = ''; resetStamps(c); });
-}
-const resetStamps = (c) => $$('.stamp', c).forEach((x) => (x.style.opacity = 0));
-function decide(kind, c) {
-  c = c || $('.gcard[data-depth="0"]'); if (!c) return; const id = c.dataset.id;
-  $('.stamp.' + (kind === 'in' ? 'in' : 'pass'), c).style.opacity = 1;
-  c.style.transform = `translate(${kind === 'in' ? 520 : -520}px, 40px) rotate(${kind === 'in' ? 24 : -24}deg)`; c.style.opacity = '0';
-  buzz(kind === 'in' ? 18 : 8);
-  setTimeout(() => {
-    if (kind === 'pass') { S.passed.push(id); save(); renderPlay(); toast('Passed. It stays on the map if you change your mind', 'x'); }
-    else { renderDeckWithout(id); joinSheet(id); }
-  }, REDUCED ? 0 : 280);
-}
-function renderDeckWithout(id) { S.passed.push(id); renderDeck(); S.passed = S.passed.filter((x) => x !== id); }
 
 /* Join: confirm, celebrate, show progress */
 function joinSheet(id) {
@@ -187,7 +170,7 @@ function confirmJoin(id) {
       <div class="muted">${esc(a.title)} · ${when(a)}<br>Added to your games. The host can see you’re coming.</div></div>
     <div class="card" style="padding:14px;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;font-weight:700"><span>Level ${level()}</span><span class="num">${S.xp % LV}/${LV} XP</span></div><div class="xpbar" style="background:var(--surface-2)"><i style="width:0%" id="xpFill"></i></div>
       <div class="muted" style="font-size:13.5px">${goalHit ? 'Weekly goal reached. Your streak is safe.' : `Weekly goal: ${Math.min(S.week, S.goal)} of ${S.goal} games`}</div></div>
-    <button class="pill block" data-act="close">Keep swiping</button>`);
+    <button class="pill block" data-act="close">Back to the map</button>`);
   requestAnimationFrame(() => setTimeout(() => { const f = $('#xpFill'); if (f) f.style.width = ((S.xp % LV) / LV) * 100 + '%'; }, 60));
   confetti(sp(a.sport).c); buzz(30);
   if (tab === 'play') renderPlay();
@@ -209,7 +192,7 @@ function openDetail(id) {
     <div><h2>${esc(a.title)}</h2><div class="muted" style="margin-top:4px">${esc(a.venue)} · ${fmtKm(km(a.x, a.y))}</div></div>
     <div class="facts"><div class="fact"><b>${when(a)}</b><span>${a.mins} min</span></div><div class="fact"><b>${money(a.price)}</b><span>${a.spots} of ${a.total} spots left</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div><div class="fact"><b>${a.setting}</b><span>${esc(a.surface)}</span></div></div>
     <div class="muted" style="font-size:14px"><b style="color:var(--ink)">Bring:</b> ${esc(a.equipment)}<br><b style="color:var(--ink)">Access:</b> ${esc(a.access)}</div>
-    ${joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
+    ${joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : a.spots === 0 ? '<button class="pill block soft" disabled>This game is full</button>' : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
 }
 
 /* Stories: games starting soon, full screen, auto-advancing (manual when motion is reduced). */
@@ -310,12 +293,14 @@ const A = {
   close: () => closeSheet(),
   theme: (el) => { S.theme = el.dataset.id; save(); applyTheme(); if (tab === 'me') renderMe(); },
   mood: (el) => { S.mood = el.dataset.id; save(); renderPlay(); },
-  pass: () => decide('pass'), in: () => decide('in'),
-  info: () => { const c = $('.gcard[data-depth="0"]'); if (c) openDetail(c.dataset.id); },
+  /* Tap a card: the map moves to its pin and the details open. Tap a pin: its card is highlighted in the list. */
+  focus: (el) => { focusGame(el.dataset.id, false); openDetail(el.dataset.id); },
+  pin: (el) => { if (sheetIdx) setSheet(0); focusGame(el.dataset.id, true); },
+  join: (el) => { focusGame(el.dataset.id, false); joinSheet(el.dataset.id); },
+  sheetToggle: () => setSheet(1 - sheetIdx),
   confirmJoin: (el) => confirmJoin(el.dataset.id),
   cancelJoin: () => { closeSheet(); renderPlay(); },
   joinFromDetail: (el) => joinSheet(el.dataset.id),
-  resetDeck: () => { S.passed = []; save(); renderPlay(); },
   story: (el) => openStory(+el.dataset.i),
   closeStory: () => closeStory(),
   storyJoin: (el) => { const id = el.dataset.id; closeStory(); joinSheet(id); },
@@ -341,7 +326,6 @@ document.addEventListener('click', (e) => { const el = e.target.closest('[data-a
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { if ($('#storyView')) closeStory(); else closeSheet(); }
   if ($('#storyView') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) stepStory(e.key === 'ArrowRight' ? 1 : -1);
-  if (tab === 'play' && !$('.sheet') && !$('#storyView') && document.activeElement === document.body) { if (e.key === 'ArrowRight') decide('in'); if (e.key === 'ArrowLeft') decide('pass'); }
 });
 
 applyTheme();
