@@ -686,6 +686,12 @@ label.opt, label.loc-opt { cursor: pointer; }
 .slot.sel { background: var(--brand); border-color: var(--brand); color: #fff; }
 .slot.sel small { color: rgba(255,255,255,.85); }
 
+/* Subscriptions */
+.bill-seg button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.save-tag { font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: var(--volt); color: var(--volt-ink); }
+.plan-save { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 13px; }
+.plan-save s { color: var(--ink-3); }
+
 /* Add players + share */
 .share-card { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r); background: color-mix(in srgb, var(--brand) 8%, var(--surface)); border: 1px dashed color-mix(in srgb, var(--brand) 40%, var(--line)); }
 .ap-row small { display: block; }

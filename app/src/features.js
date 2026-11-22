@@ -651,3 +651,86 @@ Object.assign(A, {
   remindSplit: (el) => { const b = (S.turf || []).find((x) => x.id === el.dataset.id); if (!b) return; const v = VB(b.vid);
     shareAny('Turf payment', `Please pay your share of ${inr(b.share)} for ${v.name}, ${dayLabel(b.d)} ${hourLabel(b.hours[0])}. Booking ${b.id}.`, 'https://letsplay.app/pay/' + b.id); },
 });
+
+/* ═════ 10. SUBSCRIPTIONS: monthly or yearly (yearly saves 20%) ═════ */
+const billing = () => S.billing || 'monthly';
+let billView = null;               /* which billing period the plans sheet is showing */
+const dateFmt = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+function renewDate(period) { const d = new Date(); if (period === 'yearly') d.setFullYear(d.getFullYear() + 1); else d.setMonth(d.getMonth() + 1); return d.getTime(); }
+/* Price of one plan for one period. Per-seat plans are priced per employee. */
+function planPrice(k, period) {
+  const P = PLANS[k]; if (!P.monthly) return { amount: 0, label: 'Free', per: '', note: 'Always free' };
+  const unit = P.perSeat ? '/employee' : '';
+  if (period === 'yearly') {
+    const y = yearlyPrice(P.monthly), full = P.monthly * 12;
+    return { amount: y, label: inr(y), per: `${unit}/year`, full, save: full - y, note: `${inr(Math.floor(y / 12))}${unit}/month, billed yearly` };
+  }
+  return { amount: P.monthly, label: inr(P.monthly), per: `${unit}/month`, note: 'Billed monthly, cancel any time' };
+}
+function billingSeg(act, view) {
+  return `<div class="seg bill-seg" role="group" aria-label="Billing period"><button data-act="${act}" data-id="monthly" aria-pressed="${view === 'monthly'}">Monthly</button><button data-act="${act}" data-id="yearly" aria-pressed="${view === 'yearly'}">Yearly <span class="save-tag">Save 20%</span></button></div>`;
+}
+function plansSheetBilled() {
+  const view = billView || (S.tier === 'lite' ? 'yearly' : billing());
+  sheetSet(`${sheetHead('Choose your plan', 'Example pricing for the prototype')}
+    ${billingSeg('billView', view)}
+    <div style="display:grid;gap:14px;padding-top:4px">${Object.keys(PLANS).map((k) => { const P = PLANS[k], pr = planPrice(k, view); const current = S.tier === k && (k === 'lite' || billing() === view);
+      return `<button class="plan t-${k}" data-act="choosePlan" data-id="${k}" aria-pressed="${S.tier === k}">${current ? '<span class="current">Current</span>' : ''}
+        <div class="plan-top"><span class="tier t-${k}">${ic(P.icon)}${P.name}</span><span class="plan-price num">${pr.label}<small>${pr.per}</small></span></div>
+        ${pr.full ? `<div class="plan-save"><s class="num">${inr(pr.full)}</s><span class="badge volt num">Save ${inr(pr.save)}</span><span class="faint">${pr.note}</span></div>` : `<div class="faint" style="font-size:13px">${pr.note}</div>`}
+        <div class="muted" style="font-size:14px">${P.blurb}</div>
+        <ul class="feat-list">${P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}${P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('')}</ul></button>`; }).join('')}</div>`, 'plans');
+}
+
+let SUB = null;
+function checkoutSheet() {
+  const P = PLANS[SUB.plan], pr = planPrice(SUB.plan, SUB.period), seats = P.perSeat ? SUB.seats : 1;
+  const total = pr.amount * seats, gross = (pr.full || pr.amount) * seats;
+  const same = S.tier === SUB.plan && billing() === SUB.period;
+  sheetSet(`${sheetHead(`${P.name} plan`, P.blurb)}
+    ${billingSeg('subPeriod', SUB.period)}
+    ${P.perSeat ? `<div class="card" style="padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b>Employees</b><div class="faint" style="font-size:13px">Minimum ${P.minSeats}. Add more any time.</div></div><div class="stepper"><button data-act="subSeats" data-d="-10" aria-label="10 fewer employees">${ic('minus', 'ic-sm')}</button><b class="num" style="min-width:36px">${seats}</b><button data-act="subSeats" data-d="10" aria-label="10 more employees">${ic('plus', 'ic-sm')}</button></div></div>` : ''}
+    <div class="sum num card" style="padding:14px">
+      <div><span class="muted">${P.name}${P.perSeat ? ` · ${seats} × ${inr(pr.full || pr.amount)}` : ''}${SUB.period === 'yearly' ? ' · 12 months' : ' · 1 month'}</span><span>${inr(gross)}</span></div>
+      ${SUB.period === 'yearly' ? `<div><span style="color:var(--ok)">Yearly discount (20%)</span><span style="color:var(--ok)">− ${inr(gross - total)}</span></div>` : ''}
+      <div class="total"><span>Due today</span><span>${inr(total)}</span></div>
+      <div><span class="faint">${SUB.period === 'yearly' ? 'Renews' : 'Next payment'} on ${dateFmt.format(renewDate(SUB.period))}</span><span class="faint">${inr(total)}</span></div>
+    </div>
+    ${SUB.period === 'monthly' ? `<button class="row card" style="border-radius:14px" data-act="subPeriod" data-id="yearly">${ic('percent', 'lead')}<div class="grow"><b>Pay yearly and save ${inr((pr.amount * 12 - yearlyPrice(PLANS[SUB.plan].monthly)) * seats)}</b><small>${inr(yearlyPrice(PLANS[SUB.plan].monthly) * seats)} a year instead of ${inr(pr.amount * 12 * seats)}</small></div>${ic('chevron-right')}</button>` : ''}
+    <div class="field"><span class="lbl">${SUB.period === 'monthly' ? 'Pay with UPI AutoPay' : 'Pay once with UPI'}</span><div class="chips" id="subApp">${UPI_APPS.map((u) => `<button type="button" class="chip" data-act="pickOne" data-group="subApp" data-id="${u}" aria-pressed="${u === payApp()}">${ic('smartphone')}${u}</button>`).join('')}</div>
+      <div class="faint" style="font-size:12.5px">${SUB.period === 'monthly' ? `You approve a monthly AutoPay mandate of ${inr(total)} in your UPI app. Cancel any time from Profile.` : `One payment for the year. You get a reminder 7 days before it renews.`}</div></div>
+    <button class="btn btn-primary btn-block" style="min-height:54px" data-act="subPay" id="subGo" ${same ? 'disabled' : ''}>${same ? 'This is your current plan' : `${ic('smartphone')}Pay ${inr(total)} via UPI`}</button>`, 'sub');
+}
+function startCheckout(plan, period) {
+  const P = PLANS[plan];
+  SUB = { plan, period: period || (S.tier === plan ? billing() : 'yearly'), seats: P.perSeat ? Math.max(P.minSeats, S.seats || 50) : 1 };
+  checkoutSheet();
+}
+/* Short price line used on upgrade buttons: always shows the honest monthly figure and the yearly saving. */
+function proPriceLine() { return `from ${inr(Math.floor(yearlyPrice(PLANS.pro.monthly) / 12))}/month yearly or ${inr(PLANS.pro.monthly)} monthly`; }
+function planSummary() {
+  if (S.tier === 'lite') return 'Free plan';
+  const pr = planPrice(S.tier, billing()), seats = PLANS[S.tier].perSeat ? ` · ${S.seats || 50} employees` : '';
+  return `${billing() === 'yearly' ? 'Yearly' : 'Monthly'} · ${pr.label}${pr.per}${seats}${S.renews ? ` · renews ${dateFmt.format(S.renews)}` : ''}`;
+}
+
+Object.assign(A, {
+  plans: () => { billView = null; closeSheet(true); plansSheetBilled(); },
+  billView: (el) => { billView = el.dataset.id; plansSheetBilled(); },
+  choosePlan: (el) => { const k = el.dataset.id; const view = billView || (S.tier === 'lite' ? 'yearly' : billing());
+    if (k === 'lite') { if (S.tier === 'lite') { toast('You are on Lite', 'compass'); return; } closeSheet(true); S.billing = 'monthly'; S.renews = null; setTier('lite'); toast('Switched to Lite. Your paid features end now in this prototype', 'compass'); return; }
+    startCheckout(k, view); },
+  subscribe: (el) => { closeSheet(true); startCheckout(el.dataset.id, el.dataset.period); },
+  subPeriod: (el) => { SUB.period = el.dataset.id; checkoutSheet(); },
+  subSeats: (el) => { const P = PLANS[SUB.plan]; SUB.seats = Math.max(P.minSeats, Math.min(5000, SUB.seats + +el.dataset.d)); checkoutSheet(); },
+  subPay: () => { const app2 = $('#subApp [aria-pressed="true"]'); const go2 = $('#subGo'); go2.disabled = true; go2.innerHTML = `${ic('smartphone')}Waiting for ${app2 ? app2.dataset.id : 'UPI'}…`;
+    setTimeout(() => {
+      const P = PLANS[SUB.plan], pr = planPrice(SUB.plan, SUB.period), total = pr.amount * (P.perSeat ? SUB.seats : 1);
+      S.billing = SUB.period; S.renews = renewDate(SUB.period); if (P.perSeat) S.seats = SUB.seats;
+      const plan = SUB.plan, period = SUB.period; SUB = null; setTier(plan); save(); buzz();
+      openSheet(`<div class="success"><div class="burst">${ic(P.icon)}</div><h2>You’re on ${P.name}</h2>
+        <div class="muted">${period === 'yearly' ? 'Yearly' : 'Monthly'} plan · paid ${inr(total)}<br>${period === 'yearly' ? 'Renews' : 'Next payment'} on ${dateFmt.format(S.renews)}</div></div>
+        <ul class="feat-list card" style="padding:14px">${P.feats.slice(1, 5).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
+        <button class="btn btn-primary btn-block" data-act="closeSheet">Start using ${P.name}</button>`);
+    }, 1100); },
+});

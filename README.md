@@ -27,7 +27,17 @@ Then open `http://localhost:8080` on a desktop browser (it shows a device frame 
 | Company league: department teams, schedule builder, leaderboards, participation insights | – | – | ✓ |
 | Tournament organizer: auto-generated groups, seeded brackets, byes and full match schedule; winners advance to semifinals and final automatically | – | – | ✓ |
 
-Prices shown in the app (₹199/month for Pro, ₹149 per employee per month for Enterprise) are **placeholders** for validation, as the pitch recommends.
+### Billing
+
+Every paid plan can be paid monthly or yearly. Yearly is 12 months less 20%.
+
+| Plan | Monthly | Yearly (20% off) |
+| --- | --- | --- |
+| Lite | Free | Free |
+| Pro | ₹199/month | ₹1,910/year (instead of ₹2,388, about ₹159/month) |
+| Enterprise | ₹149 per employee/month | ₹1,430 per employee/year (instead of ₹1,788), minimum 20 employees |
+
+Choosing a plan opens a checkout with a Monthly/Yearly switch, the yearly saving shown as a line item, the renewal date, and UPI payment (AutoPay mandate for monthly, a single payment for yearly). Monthly subscribers see a "Switch to yearly, save 20%" shortcut on their plan card. All prices are **placeholders** for validation, as the pitch recommends. The plan switcher on the desktop demo panel still changes plans instantly, for demos.
 
 Locked features stay visible to Lite users and lead to an upgrade sheet, so people can see what Pro adds.
 
@@ -67,7 +77,7 @@ app/
     app.js         navigation, map engine, tier gating, every screen and flow
     tournament.js  tournament generator, scheduler, bracket progression and UI (Enterprise)
     features.js    filters, registration steps, waitlist, family calendar, notifications, coach match day, venue booking
-    icons.js       inlined Lucide icon paths (ISC licence) + custom sport glyphs in app.js
+    icons.js       LetsPlay Sport Icons: original icon set and sport glyphs (no third-party library)
   img/             optimised photos (Unsplash licence)
   index.html       built standalone PWA (generated)
   embed.html       built page fragment for hosted previews (generated)
@@ -83,6 +93,7 @@ After editing anything in `app/src`, run `python3 scripts/build.py`.
 - **Type:** a "scoreboard" voice (Barlow Condensed, italic capitals) only on page titles and hero moments. Section headings, sheets and labels use sentence case without wide tracking. Barlow for body text.
 - **Colour:** ink neutrals and cobalt for every action. Volt yellow-green is the single accent and only marks "today", deals and the champion. Sport and plan colours are data encodings. No decorative gradients or glows. Full dark mode.
 - **Identity motif:** thin pitch markings (halfway line, centre circle, boxes) on solid hero cards: plan card, league and tournament heroes, match day, the Pro promo.
+- **Icons:** LetsPlay Sport Icons, an original set drawn for the app. 24px grid, 2.25 stroke, square line ends and sharp corners, octagon "badge" containers, and an 8 degree forward lean that matches the italic titles. Sport glyphs (cricket, kabaddi, shuttle, runner and so on) follow the same rules and appear on map pins, chips and badges.
 - **Mobile:** 40 to 44 px touch targets, press feedback on every tappable item, safe-area insets, bottom tab bar with counts for things that need attention, bottom sheets, and toasts at the top so they never cover the main action.
 - **Accessibility:** secondary text measured at 5.3:1 (light) and 6.5:1 (dark), keyboard focus states, labelled controls, in-app larger text and reduce-motion settings, and status that never relies on colour alone. A full WCAG 2.2 AA audit with assistive technology is still to do.
 - **Honesty:** sample content is labelled as sample in the app, people show initials instead of stock photos, and features that are not built yet say "Coming soon" instead of pretending to work.

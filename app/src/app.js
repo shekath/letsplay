@@ -12,18 +12,11 @@ const IS_IOS = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Andro
 const PAY = 'UPI';
 const UPI_APPS = ['GPay', 'PhonePe', 'Paytm', 'BHIM'];
 
-const SPORT_GLYPHS = {
-  's-football': '<circle cx="12" cy="12" r="9"/><path d="M12 8.2l3.4 2.5-1.3 4h-4.2l-1.3-4z"/><path d="M12 3v5.2M15.4 10.7l5-1.6M14.1 14.7l3 4.2M9.9 14.7l-3 4.2M8.6 10.7l-5-1.6"/>',
-  's-basketball': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18"/><path d="M5.6 5.6c2.3 1.8 3.6 3.9 3.6 6.4s-1.3 4.6-3.6 6.4M18.4 5.6c-2.3 1.8-3.6 3.9-3.6 6.4s1.3 4.6 3.6 6.4"/>',
-  's-tennis': '<circle cx="12" cy="12" r="9"/><path d="M5.2 6c2.4 1.6 3.8 3.6 3.8 6s-1.4 4.4-3.8 6M18.8 6c-2.4 1.6-3.8 3.6-3.8 6s1.4 4.4 3.8 6"/>',
-  's-shuttle': '<path d="M9.5 15.5 6 4h12l-3.5 11.5z"/><path d="M10.5 15.5 10 4M13.5 15.5 14 4M7 8h10"/><path d="M9.5 15.5h5v1.5a2.5 2.5 0 0 1-5 0z"/>',
-  's-cricket': '<path d="M14.5 3.5l4 4-8.8 8.8a1.5 1.5 0 0 1-2.1 0l-1.9-1.9a1.5 1.5 0 0 1 0-2.1z"/><path d="M6.5 15.5 3 19"/><circle cx="18" cy="17.5" r="2.5"/>',
-  's-kabaddi': '<circle cx="12" cy="4.5" r="2"/><path d="M12 7.5v5.5l-4.5 7.5M12 13l4.5 7.5M5 11l7-3 7 3"/>',
-  's-paddle': '<circle cx="14" cy="9.5" r="6"/><path d="M9.8 13.7 4.5 19"/><circle cx="5.5" cy="6" r="1.6"/>',
-};
+/* Icons come from the LetsPlay Sport Icons set (icons.js). The matrix leans every icon 8 degrees
+   forward around its vertical centre, matching the italic scoreboard type. */
 function ic(name, cls = '') {
-  const body = SPORT_GLYPHS[name] || ICONS[name] || ICONS['circle-check'];
-  return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+  const body = ICONS[name] || ICONS.info;
+  return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><g transform="matrix(1 0 -0.14 1 1.68 0)">${body}</g></svg>`;
 }
 const sp = (id) => SPORTS[id];
 const money = (n) => (n === 0 ? 'Free' : inr(n));
@@ -657,7 +650,7 @@ function renderTeams() {
       <div class="section"><div class="section-head"><h2>What Pro adds</h2></div>
         <ul class="feat-list card" style="padding:16px;gap:12px;font-size:15px">${PLANS.pro.feats.slice(1).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
       </div>
-      <div class="section"><button class="btn btn-primary btn-block" data-act="setTier" data-id="pro" style="min-height:54px">${ic('zap')}Try Pro · ${PLANS.pro.price}${PLANS.pro.per}</button><div class="faint" style="text-align:center;font-size:13px">Example pricing for the prototype</div></div>`;
+      <div class="section"><button class="btn btn-primary btn-block" data-act="subscribe" data-id="pro" style="min-height:54px">${ic('zap')}Get Pro</button><div class="faint" style="text-align:center;font-size:13px">${proPriceLine()}. Example pricing.</div></div>`;
     return;
   }
   if (S.tier === 'enterprise') return renderLeague(el);
@@ -873,7 +866,8 @@ function renderMe() {
   $('#scr-me').innerHTML = `
     <div class="me-head">${avatar(ME_USER, 72)}<div style="flex:1;min-width:0"><h1>${esc(ME_USER.name)}</h1><div class="muted" style="display:flex;gap:6px;align-items:center">${ic('map-pin', 'ic-sm')}${AREA} · ${esc((S.favSports || ['cricket', 'football']).map((k) => SPORTS[k].name.toLowerCase()).join(', '))}</div></div></div>
     <div class="me-stats section" style="margin-top:16px"><div class="card"><b class="num">${S.joined.length}</b><span>Games booked</span></div><div class="card"><b class="num">${(S.hosted || []).length}</b><span>Games hosted</span></div><div class="card"><b class="num">${S.tier === 'lite' ? 0 : S.teams.length}</b><span>Teams</span></div></div>
-    <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Your plan</div><h2>${P.name}</h2><div style="opacity:.92;max-width:30ch;position:relative;z-index:1">${P.blurb}</div><button class="btn btn-sm" data-act="plans">${S.tier === 'enterprise' ? 'Manage plan' : 'Compare plans'}</button></div>
+    <div class="plan-card section t-${S.tier}"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Your plan</div><h2>${P.name}</h2><div style="opacity:.92;max-width:32ch;position:relative;z-index:1">${P.blurb}<br><span class="num" style="font-weight:600">${planSummary()}</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1"><button class="btn btn-sm" data-act="plans">${S.tier === 'lite' ? 'See plans' : 'Change plan'}</button>${S.tier !== 'lite' && billing() === 'monthly' ? `<button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff" data-act="subscribe" data-id="${S.tier}" data-period="yearly">Switch to yearly, save 20%</button>` : ''}</div></div>
     <div class="section"><div class="section-head"><h2>Family</h2><button class="link" data-act="addFamily">${ic('plus', 'ic-sm')}Add</button></div>
       <div class="rows">${FAMILY.map((f) => `<div class="row"><div class="avatars">${avatar(f)}</div><div class="grow"><b>${esc(f.name)}</b><small>${esc(f.note)}</small></div></div>`).join('')}</div></div>
     <div class="section"><div class="section-head"><h2>Settings</h2></div>
@@ -887,18 +881,13 @@ function renderMe() {
       </div></div>
     <div class="faint" style="text-align:center;font-size:12.5px;margin-top:18px">LetsPlay prototype. Games, people, venues and prices are sample data.</div>`;
 }
-function plansSheet() {
-  openSheet(`${sheetHead('Choose your plan', 'Switch any time. Example pricing.')}
-    <div style="display:grid;gap:14px;padding-top:6px">${Object.keys(PLANS).map((k) => { const P = PLANS[k]; return `<button class="plan t-${k}" data-act="setTier" data-id="${k}" aria-pressed="${S.tier === k}">${S.tier === k ? '<span class="current">Current</span>' : ''}
-      <div class="plan-top"><span class="tier t-${k}">${ic(P.icon)}${P.name}</span><span class="plan-price num">${P.price}<small>${P.per}</small></span></div>
-      <div class="muted" style="font-size:14px">${P.blurb}</div>
-      <ul class="feat-list">${P.feats.map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}${P.no.map((f) => `<li class="off">${ic('lock')}${f}</li>`).join('')}</ul></button>`; }).join('')}</div>`);
-}
+/* The plan picker and checkout (monthly or yearly billing) live in features.js. */
 function upsell(kind) {
   const m = { pin: ['Add places and host games with Pro', 'Pin or photograph grounds and courts for everyone, and host games at any address.', 'map-pin-plus'], teams: ['Teams are a Pro feature', 'Create teams, invite players and schedule matches.', 'users'] }[kind];
   openSheet(`<div class="success" style="padding-top:4px"><div class="burst" style="background:var(--brand);color:#fff">${ic(m[2])}</div><h2>${m[0]}</h2><div class="muted" style="max-width:32ch">${m[1]}</div></div>
     <ul class="feat-list card" style="padding:14px">${PLANS.pro.feats.slice(1).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
-    <button class="btn btn-primary btn-block" data-act="setTier" data-id="pro" style="min-height:54px">${ic('zap')}Upgrade to Pro · ${PLANS.pro.price}${PLANS.pro.per}</button>
+    <button class="btn btn-primary btn-block" data-act="subscribe" data-id="pro" style="min-height:54px">${ic('zap')}Upgrade to Pro</button>
+    <div class="faint" style="text-align:center;font-size:13px">${proPriceLine()}</div>
     <button class="btn btn-ghost btn-block" data-act="closeSheet">Not now</button>`);
 }
 

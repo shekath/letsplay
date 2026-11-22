@@ -9,13 +9,13 @@ const SPORTS = {
   kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#C05316' },
   basketball: { name: 'Basketball', icon: 's-basketball',    c: '#C2410C' },
   tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#6A7B06' },
-  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#9B6C03' },
-  running:    { name: 'Running',    icon: 'footprints',      c: '#D93065' },
-  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9355DB' },
-  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0A77C3' },
-  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#0C8073' },
+  volleyball: { name: 'Volleyball', icon: 's-volley',        c: '#9B6C03' },
+  running:    { name: 'Running',    icon: 's-run',           c: '#D93065' },
+  yoga:       { name: 'Yoga',       icon: 's-yoga',          c: '#9355DB' },
+  swimming:   { name: 'Swimming',   icon: 's-swim',          c: '#0A77C3' },
+  cycling:    { name: 'Cycling',    icon: 's-bike',          c: '#0C8073' },
   pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#4D7F0A' },
-  climbing:   { name: 'Climbing',   icon: 'mountain',        c: '#8A6A4C' },
+  climbing:   { name: 'Climbing',   icon: 's-climb',         c: '#8A6A4C' },
 };
 /* Default cover photo per sport, used for games people host themselves. */
 const SPORT_IMG = { cricket: 'cricket', football: 'field', badminton: 'badminton', kabaddi: 'field', basketball: 'basketball', tennis: 'tennis', volleyball: 'volley', running: 'running', yoga: 'yoga', swimming: 'swim', cycling: 'cycling', pickleball: 'pickle', climbing: 'climb' };
@@ -136,16 +136,19 @@ const FREE_DELIVERY = 999;
 const DELIVERY_FEE = 49;
 
 const PLANS = {
-  lite: { name: 'Lite', price: 'Free', per: '', icon: 'compass', blurb: 'Find games near you and jump in.',
+  lite: { name: 'Lite', monthly: 0, icon: 'compass', blurb: 'Find games near you and jump in.',
     feats: ['Live map of nearby sports', 'Join games and events', 'Family profiles and calendar', 'Marketplace and deals'],
     no: ['Pin and photograph new places', 'Host games, create teams, invite players', 'Company leagues and leaderboards'] },
-  pro: { name: 'Pro', price: '₹199', per: '/month', icon: 'zap', blurb: 'Organise teams and grow your local scene.',
+  pro: { name: 'Pro', monthly: 199, icon: 'zap', blurb: 'Organise teams and grow your local scene.',
     feats: ['Everything in Lite', 'Pin new places on the map', 'Snap a photo to save a new place', 'Host games at any address', 'Create teams and invite players', '10% off in the marketplace'],
     no: ['Company leagues and leaderboards'] },
-  enterprise: { name: 'Enterprise', price: '₹149', per: '/employee/month', icon: 'building-2', blurb: 'Run sport across your company.',
+  enterprise: { name: 'Enterprise', monthly: 149, perSeat: true, minSeats: 20, icon: 'building-2', blurb: 'Run sport across your company.',
     feats: ['Everything in Pro', 'Tournament organizer: auto groups, brackets and schedule', 'Winners advance to semifinals and final automatically', 'Department teams and rosters', 'League schedule builder', 'Live team leaderboards', 'Participation insights', 'Bulk team-kit orders'],
     no: [] },
 };
+/* Billing: yearly is 12 months less 20%, rounded down to the rupee. Example pricing for the prototype. */
+const YEARLY_DISCOUNT = 0.2;
+const yearlyPrice = (monthly) => Math.floor(monthly * 12 * (1 - YEARLY_DISCOUNT));
 
 /* ── Upgrades data ── */
 ACTIVITIES.push({ id: 'a16', title: 'Kids Swim Lessons (6–12)', sport: 'swimming', venue: 'Westside Aquatic Centre · Learner pool', x: 480, y: 600, d: 6, t: '09:30', mins: 60, level: 'Beginner', ages: '6–12', spots: 4, total: 10, price: 300, host: 'Westside Swim School', img: 'swim', setting: 'Indoor', surface: 'Learner pool, 0.9 m deep', equipment: 'Swimsuit, cap, towel.', access: 'Pool hoist and family changing rooms.', cancel: 'Refund up to 24 hours before.' });
