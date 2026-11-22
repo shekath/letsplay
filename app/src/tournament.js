@@ -214,7 +214,7 @@ function renderGen() {
       <label class="row card" style="gap:12px;cursor:pointer"><input type="checkbox" id="tdThird" data-t="thirdPlace" ${TD.thirdPlace ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--ent)"><div class="grow"><b>Third-place match</b><small>Semifinal losers play before the final</small></div></label>
       <div class="gen-sum" id="genSum"></div>
     </div>
-    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('trophy')}Generate tournament plan</button></div>`;
+    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent-fill)" data-act="tourGenerate">${ic('trophy')}Generate tournament plan</button></div>`;
   v.scrollTop = top; genSummary();
 }
 
@@ -271,7 +271,7 @@ function renderTour() {
       <div class="seg" role="group" aria-label="Tournament view">${tabs.map(([k, n]) => `<button data-act="tourTab" data-id="${k}" aria-pressed="${tourTab === k}">${n}</button>`).join('')}</div>
       <div>${tourTab === 'bracket' ? bracketHTML(T) : tourTab === 'schedule' ? scheduleHTML(T) : groupsHTML(T)}</div>
     </div>
-    ${preview ? `<div class="view-cta"><button class="btn btn-ghost" style="flex:0 0 auto" data-act="tourRegen">${ic('shuffle')}${T.seeding === 'random' ? 'Redraw' : 'Edit'}</button><button class="btn btn-primary" style="background:var(--ent)" data-act="tourPublish">${ic('send')}Publish & notify squads</button></div>` : ''}`;
+    ${preview ? `<div class="view-cta"><button class="btn btn-ghost" style="flex:0 0 auto" data-act="tourRegen">${ic('shuffle')}${T.seeding === 'random' ? 'Redraw' : 'Edit'}</button><button class="btn btn-primary" style="background:var(--ent-fill)" data-act="tourPublish">${ic('send')}Publish & notify squads</button></div>` : ''}`;
   v.scrollTop = top;
 }
 function resultSheet(T, m) {
@@ -286,7 +286,7 @@ function resultSheet(T, m) {
     </div>
     ${m.stage === 'ko' ? `<div class="field"><span class="lbl">If level, who won the ${tbName}?</span><div class="seg" id="tbW"><button type="button" data-act="pickOne" data-group="tbW" data-id="${m.a}" aria-pressed="${m.tb !== m.b}">${A2.name}</button><button type="button" data-act="pickOne" data-group="tbW" data-id="${m.b}" aria-pressed="${m.tb === m.b}">${B2.name}</button></div></div>` : ''}
     ${(() => { const nx = T.matches.find((x) => (x.srcA && x.srcA.ref === m.id && x.srcA.type === 'win') || (x.srcB && x.srcB.ref === m.id && x.srcB.type === 'win')); return nx ? `<div class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">${ic('arrow-right', 'ic-sm')}Winner goes to ${nx.round === 'Final' ? 'the Final' : nx.label} on ${dayLabel(nx.d)} ${dateAt(nx.d, '12:00').getDate()}</div>` : ''; })()}
-    <button class="btn btn-primary btn-block" style="background:var(--ent)" data-act="tourSave" data-id="${m.id}">${ic('check')}Save result</button>`, { onMount: (sh) => { const i = $('#scA', sh); if (i) setTimeout(() => i.focus(), 320); } });
+    <button class="btn btn-primary btn-block" style="background:var(--ent-fill)" data-act="tourSave" data-id="${m.id}">${ic('check')}Save result</button>`, { onMount: (sh) => { const i = $('#scA', sh); if (i) setTimeout(() => i.focus(), 320); } });
 }
 function afterResultToast(T, m) {
   if (m.round === 'Final' && T.champion) return toast(`${teamById(T.champion).name} are champions!`, 'trophy');

@@ -4,17 +4,17 @@ const inr = (n) => '₹' + Math.round(Number(n)).toLocaleString('en-IN');
 
 const SPORTS = {
   cricket:    { name: 'Cricket',    icon: 's-cricket',       c: '#D43B3B' },
-  football:   { name: 'Football',   icon: 's-football',      c: '#13A04B' },
-  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0E9FE0' },
-  kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#E0611A' },
+  football:   { name: 'Football',   icon: 's-football',      c: '#0F863E' },
+  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0A7CAE' },
+  kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#C05316' },
   basketball: { name: 'Basketball', icon: 's-basketball',    c: '#C2410C' },
-  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#98B00A' },
-  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#DE9B05' },
-  running:    { name: 'Running',    icon: 'footprints',      c: '#E3336A' },
-  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9757E0' },
-  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0B7FD0' },
-  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#10A190' },
-  pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#5E9C0D' },
+  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#6A7B06' },
+  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#9B6C03' },
+  running:    { name: 'Running',    icon: 'footprints',      c: '#D93065' },
+  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9355DB' },
+  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0A77C3' },
+  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#0C8073' },
+  pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#4D7F0A' },
   climbing:   { name: 'Climbing',   icon: 'mountain',        c: '#8A6A4C' },
 };
 /* Default cover photo per sport, used for games people host themselves. */
@@ -71,7 +71,7 @@ const FAMILY = [
   { id: 'f2', name: 'Vihaan Mehta', note: 'Age 8 · consent on file' },
 ];
 
-const TEAM_COLORS = ['#13A04B', '#1D4FF2', '#E3336A', '#E0611A', '#6A45F5', '#0E9FE0', '#D43B3B', '#0D1530'];
+const TEAM_COLORS = ['#0F863E', '#1D4FF2', '#D93065', '#C05316', '#6A45F5', '#0A7CAE', '#D43B3B', '#0D1530'];
 
 const SAMPLE_TEAMS = [
   { id: 't1', name: 'Riverfront Strikers', sport: 'cricket', color: '#D43B3B', privacy: 'Invite only',
@@ -84,7 +84,7 @@ const SAMPLE_TEAMS = [
       { name: 'Karthik Reddy', role: 'Player', status: 'yes' },
     ],
     next: { vs: 'Oval Strikers CC', d: 3, t: '19:00', venue: 'Oval Cricket Ground' } },
-  { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0E9FE0', privacy: 'Public',
+  { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0A7CAE', privacy: 'Public',
     members: [
       { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
       { name: 'Kavya Nair', role: 'Player', status: 'yes' },
@@ -101,12 +101,12 @@ const ORG = {
   employees: 412,
   teams: [
     { id: 'e1', name: 'Engineering Eagles', dept: 'Engineering', c: '#1D4FF2', ab: 'EE', w: 6, d: 1, l: 1, form: 'WWDWL', players: 14 },
-    { id: 'e2', name: 'Sales Sharks', dept: 'Sales', c: '#E3336A', ab: 'SS', w: 5, d: 2, l: 1, form: 'WDWWD', players: 12 },
-    { id: 'e3', name: 'Design Dynamos', dept: 'Design', c: '#9757E0', ab: 'DD', w: 5, d: 0, l: 3, form: 'LWWLW', players: 9 },
-    { id: 'e4', name: 'Finance Falcons', dept: 'Finance', c: '#13A04B', ab: 'FF', w: 4, d: 2, l: 2, form: 'DWLWD', players: 10 },
-    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#E0611A', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
-    { id: 'e6', name: 'People Panthers', dept: 'People', c: '#0E9FE0', ab: 'PP', w: 2, d: 3, l: 3, form: 'DDLWL', players: 8 },
-    { id: 'e7', name: 'Marketing Mavericks', dept: 'Marketing', c: '#DE9B05', ab: 'MM', w: 2, d: 1, l: 5, form: 'LLWLD', players: 11 },
+    { id: 'e2', name: 'Sales Sharks', dept: 'Sales', c: '#D93065', ab: 'SS', w: 5, d: 2, l: 1, form: 'WDWWD', players: 12 },
+    { id: 'e3', name: 'Design Dynamos', dept: 'Design', c: '#9355DB', ab: 'DD', w: 5, d: 0, l: 3, form: 'LWWLW', players: 9 },
+    { id: 'e4', name: 'Finance Falcons', dept: 'Finance', c: '#0F863E', ab: 'FF', w: 4, d: 2, l: 2, form: 'DWLWD', players: 10 },
+    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#C05316', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
+    { id: 'e6', name: 'People Panthers', dept: 'People', c: '#0A7CAE', ab: 'PP', w: 2, d: 3, l: 3, form: 'DDLWL', players: 8 },
+    { id: 'e7', name: 'Marketing Mavericks', dept: 'Marketing', c: '#9B6C03', ab: 'MM', w: 2, d: 1, l: 5, form: 'LLWLD', players: 11 },
     { id: 'e8', name: 'Legal Lions', dept: 'Legal', c: '#0D1530', ab: 'LL', w: 1, d: 1, l: 6, form: 'LLLDL', players: 7 },
   ],
   participation: [ ['Engineering', 78], ['Sales', 71], ['Design', 69], ['Operations', 58], ['Finance', 54], ['Marketing', 47], ['People', 44], ['Legal', 31] ],
@@ -159,7 +159,7 @@ const COACH = {
 };
 
 FAMILY[0].age = 34; FAMILY[1].age = 11; FAMILY[2].age = 8;
-const FAMILY_COLORS = { f0: '#1D4FF2', f1: '#E3336A', f2: '#0E9FE0' };
+const FAMILY_COLORS = { f0: '#1D4FF2', f1: '#D93065', f2: '#0A7CAE' };
 const PROFILES = {
   f0: { phone: '98765 43210', ecName: 'Meera Mehta (spouse)', ecPhone: '98765 01234', medical: '' },
   f1: { phone: '', ecName: 'Arjun Mehta (father)', ecPhone: '98765 43210', medical: 'Mild asthma, carries an inhaler' },

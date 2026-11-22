@@ -29,7 +29,8 @@ const sp = (id) => SPORTS[id];
 const money = (n) => (n === 0 ? 'Free' : inr(n));
 const kmFrom = (x, y) => Math.hypot(x - ME.x, y - ME.y) * 0.0025;
 const fmtKm = (k) => (k < 1 ? Math.round(k * 1000 / 10) * 10 + ' m' : k.toFixed(1) + ' km');
-const AV_COLORS = ['#E3336A', '#0E9FE0', '#13A04B', '#E0611A', '#9757E0', '#DE9B05', '#1D4FF2'];
+/* Avatar grounds: every colour keeps white initials above 4.5:1. */
+const AV_COLORS = ['#D93065', '#0A7CAE', '#0F863E', '#C05316', '#9355DB', '#9B6C03', '#1D4FF2'];
 function avatar(p, px) {
   const sz = px ? `width:${px}px;height:${px}px;` : '';
   if (p.img) return `<img src="${IMG + p.img}.jpg" alt="" style="${sz}border-radius:50%;object-fit:cover">`;

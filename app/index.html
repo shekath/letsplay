@@ -36,17 +36,23 @@
   --ink-2: #47506E;
   --ink-3: #626B87;          /* secondary text: 5.2:1 on white, 4.8:1 on --bg */
   --line: #E1E5EE;
-  --brand: #1D4FF2;          /* cobalt: primary actions */
+  --brand: #1D4FF2;          /* cobalt: primary actions (fills under white text) */
+  --brand-text: #1D4FF2;     /* cobalt as text: links, active tab, soft buttons */
   --brand-soft: #E5ECFF;
   --brand-ink: #FFFFFF;
+  /* Fills that carry white text keep 4.5:1 in both themes, so they are not redefined for dark mode. */
+  --hot-fill: #D14023;
+  --ok-fill: #0C8353;
+  --warn-fill: #A06902;
+  --ent-fill: #6A45F5;
   --volt: #D6F23A;           /* the one accent: today, deals, champion */
   --volt-ink: #1A2200;
   --ent-deep: #2E1F7A;       /* solid ground for Enterprise hero cards */
   --motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160' viewBox='0 0 240 160' fill='none' stroke='white' stroke-opacity='.14' stroke-width='2'%3E%3Crect x='1' y='1' width='238' height='158' rx='6'/%3E%3Cpath d='M120 1v158'/%3E%3Ccircle cx='120' cy='80' r='30'/%3E%3Cpath d='M1 45h34v70H1M239 45h-34v70h34'/%3E%3C/svg%3E");
-  --hot: #FF4F2B;            /* urgent, live now */
-  --ok: #0F9D63;
-  --warn: #D98E04;
-  --lite: #0FA89A;
+  --hot: #D14023;            /* urgent, today */
+  --ok: #0C8353;
+  --warn: #A06902;
+  --lite: #0B8378;
   --pro: #1D4FF2;
   --ent: #6A45F5;
   --shadow: 0 8px 28px rgba(13, 21, 48, .12), 0 2px 6px rgba(13, 21, 48, .06);
@@ -74,8 +80,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #080C18; --surface: #111829; --surface-2: #19223A; --ink: #EEF2FF; --ink-2: #ADB6D2; --ink-3: #939CB8;
-    --line: #232D49; --brand: #4E7CFF; --brand-soft: #1A2650; --brand-ink: #FFFFFF; --volt: #D6F23A; --volt-ink: #1A2200;
-    --hot: #FF6B4A; --ok: #2BC584; --warn: #F2B33D; --lite: #2CC9B9; --pro: #4E7CFF; --ent: #8C6CFF; --ent-deep: #241760;
+    --line: #232D49; --brand: #3563F5; --brand-text: #8AA6FF; --brand-soft: #1A2650; --brand-ink: #FFFFFF; --volt: #D6F23A; --volt-ink: #1A2200;
+    --hot: #FF7A5C; --ok: #2BC584; --warn: #F2B33D; --lite: #0B8378; --pro: #3563F5; --ent: #A08AFF; --ent-deep: #241760;
     --shadow: 0 10px 30px rgba(0,0,0,.5); --shadow-sm: 0 2px 10px rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6); --frame: #000;
     --map-land: #141B2C; --map-block: #1A2236; --map-park: #15301F; --map-park-ink: #6FCB8A; --map-water: #0F2B45;
     --map-road: #253049; --map-major: #3A3A2A; --map-casing: #0E1422; --map-label: #8C96B3; --map-halo: #141B2C;
@@ -84,8 +90,8 @@
 }
 :root[data-theme="dark"] {
   --bg: #080C18; --surface: #111829; --surface-2: #19223A; --ink: #EEF2FF; --ink-2: #ADB6D2; --ink-3: #939CB8;
-  --line: #232D49; --brand: #4E7CFF; --brand-soft: #1A2650; --brand-ink: #FFFFFF; --volt: #D6F23A; --volt-ink: #1A2200;
-  --hot: #FF6B4A; --ok: #2BC584; --warn: #F2B33D; --lite: #2CC9B9; --pro: #4E7CFF; --ent: #8C6CFF; --ent-deep: #241760;
+  --line: #232D49; --brand: #3563F5; --brand-text: #8AA6FF; --brand-soft: #1A2650; --brand-ink: #FFFFFF; --volt: #D6F23A; --volt-ink: #1A2200;
+  --hot: #FF7A5C; --ok: #2BC584; --warn: #F2B33D; --lite: #0B8378; --pro: #3563F5; --ent: #A08AFF; --ent-deep: #241760;
   --shadow: 0 10px 30px rgba(0,0,0,.5); --shadow-sm: 0 2px 10px rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6); --frame: #000;
   --map-land: #141B2C; --map-block: #1A2236; --map-park: #15301F; --map-park-ink: #6FCB8A; --map-water: #0F2B45;
   --map-road: #253049; --map-major: #3A3A2A; --map-casing: #0E1422; --map-label: #8C96B3; --map-halo: #141B2C;
@@ -169,30 +175,30 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; }
 .framed .tabbar { padding-bottom: 22px; }
 .tab { display: grid; justify-items: center; gap: 3px; padding: 6px 0; min-height: 52px; color: var(--ink-3); font-size: 12px; font-weight: 600; position: relative; border-radius: 12px; }
 .tab .ic { width: 23px; height: 23px; }
-.tab[aria-current="page"] { color: var(--brand); }
+.tab[aria-current="page"] { color: var(--brand-text); }
 .tab[aria-current="page"]::before { content: ""; position: absolute; top: -7px; width: 28px; height: 3px; border-radius: 3px; background: var(--brand); }
 .tab .dot.lock { background: var(--ink-3); min-width: 16px; width: 16px; height: 16px; padding: 0; margin-left: 5px; top: 1px; }
 .tab .dot.lock .ic { width: 10px; height: 10px; }
-.tab .dot { position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hot); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.tab .dot { position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hot-fill); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .page-head h1 { font-size: 32px; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: 1; }
 .icon-btn { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); position: relative; flex: none; }
 .icon-btn .badge-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; border-radius: 50%; background: var(--hot); border: 2px solid var(--surface); }
-.icon-btn .count { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 5px; background: var(--hot); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.icon-btn .count { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 5px; background: var(--hot-fill); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 
 /* ───────── Controls ───────── */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 18px; border-radius: 14px; font-weight: 600; font-size: 15px; white-space: nowrap; transition: transform .12s, background .2s; }
 .btn:active { transform: scale(.97); }
 .btn-primary { background: var(--brand); color: var(--brand-ink); }
 .btn-volt { background: var(--volt); color: var(--volt-ink); }
-.btn-soft { background: var(--brand-soft); color: var(--brand); }
+.btn-soft { background: var(--brand-soft); color: var(--brand-text); }
 .btn-ghost { background: var(--surface-2); color: var(--ink); }
 .btn-line { border: 1.5px solid var(--line); background: var(--surface); }
 .btn-sm { min-height: 40px; padding: 0 14px; font-size: 14px; border-radius: 11px; }
 .btn-block { width: 100%; }
 .btn[disabled] { opacity: .5; pointer-events: none; }
-.btn.done { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: var(--ok); }
+.btn.done { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); color: color-mix(in srgb, var(--ok) 72%, var(--ink)); }
 
 .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 0; }
 .chips::-webkit-scrollbar { display: none; }
@@ -217,14 +223,14 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 
 .tier { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #fff; background: var(--tc); }
 .tier .ic { width: 13px; height: 13px; }
-.t-lite { --tc: var(--lite); } .t-pro { --tc: var(--pro); } .t-enterprise { --tc: var(--ent); }
+.t-lite { --tc: var(--lite); } .t-pro { --tc: var(--pro); } .t-enterprise { --tc: var(--ent-fill); }
 
 .badge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
 .badge .ic { width: 13px; height: 13px; }
-.badge.live { background: var(--hot); color: #fff; }
+.badge.live { background: var(--hot-fill); color: #fff; }
 .badge.free { background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); }
 .badge.volt { background: var(--volt); color: var(--volt-ink); }
-.badge.brand { background: var(--brand-soft); color: var(--brand); }
+.badge.brand { background: var(--brand-soft); color: var(--brand-text); }
 .badge.ent { background: color-mix(in srgb, var(--ent) 15%, transparent); color: var(--ent); }
 
 .avatars { display: flex; }
@@ -237,7 +243,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .section { display: grid; gap: 12px; margin-top: 22px; }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .section-head h2 { font-size: 22px; font-weight: 700; }
-.link { color: var(--brand); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.link { color: var(--brand-text); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 
 .sport-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: var(--c); flex: none; }
 .sport-ic .ic { width: 22px; height: 22px; }
@@ -398,7 +404,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .opt[aria-pressed="true"] .tick { background: var(--brand); border-color: var(--brand); color: #fff; }
 .opt .tick .ic { width: 14px; height: 14px; }
 .success { display: grid; justify-items: center; text-align: center; gap: 10px; padding: 12px 0 4px; }
-.success .burst { width: 76px; height: 76px; border-radius: 50%; background: var(--ok); color: #fff; display: grid; place-items: center; animation: pop .4s cubic-bezier(.3,1.6,.5,1); }
+.success .burst { width: 76px; height: 76px; border-radius: 50%; background: var(--ok-fill); color: #fff; display: grid; place-items: center; animation: pop .4s cubic-bezier(.3,1.6,.5,1); }
 .success .burst .ic { width: 38px; height: 38px; }
 @keyframes pop { from { transform: scale(.3); } }
 .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -462,7 +468,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .weekstrip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .weekstrip button { display: grid; justify-items: center; gap: 2px; padding: 8px 0; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); font-size: 12px; color: var(--ink-3); font-weight: 600; position: relative; }
 .weekstrip b { font-family: var(--f-display); font-size: 21px; color: var(--ink); line-height: 1; }
-.weekstrip button[aria-pressed="true"] { background: var(--ent); border-color: var(--ent); color: rgba(255,255,255,.8); }
+.weekstrip button[aria-pressed="true"] { background: var(--ent-fill); border-color: var(--ent-fill); color: rgba(255,255,255,.8); }
 .weekstrip button[aria-pressed="true"] b { color: #fff; }
 .weekstrip i { width: 5px; height: 5px; border-radius: 50%; background: var(--ent); }
 .weekstrip button[aria-pressed="true"] i { background: #fff; }
@@ -476,7 +482,7 @@ textarea.input { padding: 12px 14px; min-height: 80px; resize: vertical; }
 .podium { display: grid; grid-template-columns: 1fr 1.1fr 1fr; align-items: end; gap: 8px; text-align: center; }
 .podium > div { display: grid; justify-items: center; gap: 6px; }
 .podium .step { width: 100%; border-radius: 14px 14px 6px 6px; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: 30px; color: #fff; }
-.podium .p1 .step { height: 96px; background: var(--ent); }
+.podium .p1 .step { height: 96px; background: var(--ent-fill); }
 .podium .p2 .step { height: 72px; background: #5E6A8E; }
 .podium .p3 .step { height: 56px; background: #9A6236; }
 .podium .nm { font-size: 13px; font-weight: 700; line-height: 1.1; }
@@ -491,7 +497,7 @@ table.lb td.pts { font-weight: 800; }
 table.lb tr.mine td { background: color-mix(in srgb, var(--ent) 8%, transparent); }
 .form { display: inline-flex; gap: 3px; }
 .form i { width: 18px; height: 18px; border-radius: 4px; font-size: 11px; font-style: normal; font-weight: 800; color: #fff; display: grid; place-items: center; }
-.form .W { background: var(--ok); } .form .D { background: var(--ink-3); } .form .L { background: var(--hot); }
+.form .W { background: var(--ok-fill); } .form .D { background: #5E6A8E; } .form .L { background: var(--hot-fill); }
 .dept-bars { display: grid; gap: 10px; }
 .dept-bars .r { display: grid; grid-template-columns: 96px 1fr 40px; gap: 10px; align-items: center; font-size: 13.5px; }
 .dept-bars .bar { height: 10px; border-radius: 5px; }
@@ -630,7 +636,7 @@ label.opt, label.loc-opt { cursor: pointer; }
 .score-vs { padding-bottom: 20px; font-size: 13px; font-weight: 700; color: var(--ink-3); }
 
 /* ───────── Upgrades ───────── */
-.chip-on { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.chip-on { border-color: var(--brand); color: var(--brand-text); background: var(--brand-soft); }
 .chip-count { min-width: 20px; height: 20px; border-radius: 10px; background: var(--brand); color: #fff; font-size: 12px; display: grid; place-items: center; padding: 0 5px; }
 .seg-sm { padding: 3px; border-radius: 12px; }
 .seg-sm button { min-height: 38px; font-size: 13px; padding: 0 10px; white-space: nowrap; }
@@ -644,7 +650,7 @@ label.opt, label.loc-opt { cursor: pointer; }
 .ns-main small { font-size: 12.5px; }
 .ns-side { display: grid; gap: 6px; flex: none; }
 .ns-pill { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 9px; border-radius: 9px; font-size: 12.5px; font-weight: 700; background: color-mix(in srgb, var(--warn) 18%, var(--surface)); color: color-mix(in srgb, var(--warn) 70%, var(--ink)); white-space: nowrap; }
-.ns-pill.hot { background: color-mix(in srgb, var(--hot) 15%, var(--surface)); color: var(--hot); }
+.ns-pill.hot { background: color-mix(in srgb, var(--hot) 15%, var(--surface)); color: color-mix(in srgb, var(--hot) 72%, var(--ink)); }
 
 .steps { display: grid; grid-auto-flow: column; gap: 6px; }
 .steps i { height: 5px; border-radius: 3px; background: var(--surface-2); }
@@ -680,9 +686,9 @@ label.opt, label.loc-opt { cursor: pointer; }
 
 .att { display: flex; gap: 4px; flex: none; }
 .att button { height: 40px; padding: 0 10px; border-radius: 9px; font-size: 12.5px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); }
-.att .att-present[aria-pressed="true"] { background: var(--ok); color: #fff; }
-.att .att-late[aria-pressed="true"] { background: var(--warn); color: #fff; }
-.att .att-absent[aria-pressed="true"] { background: var(--hot); color: #fff; }
+.att .att-present[aria-pressed="true"] { background: var(--ok-fill); color: #fff; }
+.att .att-late[aria-pressed="true"] { background: var(--warn-fill); color: #fff; }
+.att .att-absent[aria-pressed="true"] { background: var(--hot-fill); color: #fff; }
 .lineup-no { width: 28px; height: 28px; border-radius: 9px; background: var(--surface-2); display: grid; place-items: center; font-weight: 800; flex: none; }
 .icon-btn[aria-pressed="true"] { color: #fff; background: var(--brand); border-color: var(--brand); }
 
@@ -707,7 +713,7 @@ label.opt, label.loc-opt { cursor: pointer; }
 .ap-row small { display: block; }
 .ap-row[aria-disabled="true"] { opacity: .65; cursor: default; }
 .ap-side { display: grid; justify-items: end; gap: 6px; flex: none; }
-.ap-side .km { font-size: 12.5px; font-weight: 700; color: var(--brand); background: var(--brand-soft); padding: 2px 8px; border-radius: 7px; }
+.ap-side .km { font-size: 12.5px; font-weight: 700; color: var(--brand-text); background: var(--brand-soft); padding: 2px 8px; border-radius: 7px; }
 .share-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px; }
 .share-app { display: grid; justify-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--ink); text-decoration: none; text-align: center; }
 .share-app span { width: 52px; height: 52px; border-radius: 16px; background: var(--c); color: #fff; display: grid; place-items: center; }
@@ -757,17 +763,17 @@ const inr = (n) => '₹' + Math.round(Number(n)).toLocaleString('en-IN');
 
 const SPORTS = {
   cricket:    { name: 'Cricket',    icon: 's-cricket',       c: '#D43B3B' },
-  football:   { name: 'Football',   icon: 's-football',      c: '#13A04B' },
-  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0E9FE0' },
-  kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#E0611A' },
+  football:   { name: 'Football',   icon: 's-football',      c: '#0F863E' },
+  badminton:  { name: 'Badminton',  icon: 's-shuttle',       c: '#0A7CAE' },
+  kabaddi:    { name: 'Kabaddi',    icon: 's-kabaddi',       c: '#C05316' },
   basketball: { name: 'Basketball', icon: 's-basketball',    c: '#C2410C' },
-  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#98B00A' },
-  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#DE9B05' },
-  running:    { name: 'Running',    icon: 'footprints',      c: '#E3336A' },
-  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9757E0' },
-  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0B7FD0' },
-  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#10A190' },
-  pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#5E9C0D' },
+  tennis:     { name: 'Tennis',     icon: 's-tennis',        c: '#6A7B06' },
+  volleyball: { name: 'Volleyball', icon: 'volleyball',      c: '#9B6C03' },
+  running:    { name: 'Running',    icon: 'footprints',      c: '#D93065' },
+  yoga:       { name: 'Yoga',       icon: 'person-standing', c: '#9355DB' },
+  swimming:   { name: 'Swimming',   icon: 'waves',           c: '#0A77C3' },
+  cycling:    { name: 'Cycling',    icon: 'bike',            c: '#0C8073' },
+  pickleball: { name: 'Pickleball', icon: 's-paddle',        c: '#4D7F0A' },
   climbing:   { name: 'Climbing',   icon: 'mountain',        c: '#8A6A4C' },
 };
 /* Default cover photo per sport, used for games people host themselves. */
@@ -824,7 +830,7 @@ const FAMILY = [
   { id: 'f2', name: 'Vihaan Mehta', note: 'Age 8 · consent on file' },
 ];
 
-const TEAM_COLORS = ['#13A04B', '#1D4FF2', '#E3336A', '#E0611A', '#6A45F5', '#0E9FE0', '#D43B3B', '#0D1530'];
+const TEAM_COLORS = ['#0F863E', '#1D4FF2', '#D93065', '#C05316', '#6A45F5', '#0A7CAE', '#D43B3B', '#0D1530'];
 
 const SAMPLE_TEAMS = [
   { id: 't1', name: 'Riverfront Strikers', sport: 'cricket', color: '#D43B3B', privacy: 'Invite only',
@@ -837,7 +843,7 @@ const SAMPLE_TEAMS = [
       { name: 'Karthik Reddy', role: 'Player', status: 'yes' },
     ],
     next: { vs: 'Oval Strikers CC', d: 3, t: '19:00', venue: 'Oval Cricket Ground' } },
-  { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0E9FE0', privacy: 'Public',
+  { id: 't2', name: 'Net Ninjas', sport: 'badminton', color: '#0A7CAE', privacy: 'Public',
     members: [
       { name: 'Arjun Mehta', role: 'Captain', status: 'yes' },
       { name: 'Kavya Nair', role: 'Player', status: 'yes' },
@@ -854,12 +860,12 @@ const ORG = {
   employees: 412,
   teams: [
     { id: 'e1', name: 'Engineering Eagles', dept: 'Engineering', c: '#1D4FF2', ab: 'EE', w: 6, d: 1, l: 1, form: 'WWDWL', players: 14 },
-    { id: 'e2', name: 'Sales Sharks', dept: 'Sales', c: '#E3336A', ab: 'SS', w: 5, d: 2, l: 1, form: 'WDWWD', players: 12 },
-    { id: 'e3', name: 'Design Dynamos', dept: 'Design', c: '#9757E0', ab: 'DD', w: 5, d: 0, l: 3, form: 'LWWLW', players: 9 },
-    { id: 'e4', name: 'Finance Falcons', dept: 'Finance', c: '#13A04B', ab: 'FF', w: 4, d: 2, l: 2, form: 'DWLWD', players: 10 },
-    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#E0611A', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
-    { id: 'e6', name: 'People Panthers', dept: 'People', c: '#0E9FE0', ab: 'PP', w: 2, d: 3, l: 3, form: 'DDLWL', players: 8 },
-    { id: 'e7', name: 'Marketing Mavericks', dept: 'Marketing', c: '#DE9B05', ab: 'MM', w: 2, d: 1, l: 5, form: 'LLWLD', players: 11 },
+    { id: 'e2', name: 'Sales Sharks', dept: 'Sales', c: '#D93065', ab: 'SS', w: 5, d: 2, l: 1, form: 'WDWWD', players: 12 },
+    { id: 'e3', name: 'Design Dynamos', dept: 'Design', c: '#9355DB', ab: 'DD', w: 5, d: 0, l: 3, form: 'LWWLW', players: 9 },
+    { id: 'e4', name: 'Finance Falcons', dept: 'Finance', c: '#0F863E', ab: 'FF', w: 4, d: 2, l: 2, form: 'DWLWD', players: 10 },
+    { id: 'e5', name: 'Ops Otters', dept: 'Operations', c: '#C05316', ab: 'OO', w: 3, d: 2, l: 3, form: 'WLDLW', players: 13 },
+    { id: 'e6', name: 'People Panthers', dept: 'People', c: '#0A7CAE', ab: 'PP', w: 2, d: 3, l: 3, form: 'DDLWL', players: 8 },
+    { id: 'e7', name: 'Marketing Mavericks', dept: 'Marketing', c: '#9B6C03', ab: 'MM', w: 2, d: 1, l: 5, form: 'LLWLD', players: 11 },
     { id: 'e8', name: 'Legal Lions', dept: 'Legal', c: '#0D1530', ab: 'LL', w: 1, d: 1, l: 6, form: 'LLLDL', players: 7 },
   ],
   participation: [ ['Engineering', 78], ['Sales', 71], ['Design', 69], ['Operations', 58], ['Finance', 54], ['Marketing', 47], ['People', 44], ['Legal', 31] ],
@@ -912,7 +918,7 @@ const COACH = {
 };
 
 FAMILY[0].age = 34; FAMILY[1].age = 11; FAMILY[2].age = 8;
-const FAMILY_COLORS = { f0: '#1D4FF2', f1: '#E3336A', f2: '#0E9FE0' };
+const FAMILY_COLORS = { f0: '#1D4FF2', f1: '#D93065', f2: '#0A7CAE' };
 const PROFILES = {
   f0: { phone: '98765 43210', ecName: 'Meera Mehta (spouse)', ecPhone: '98765 01234', medical: '' },
   f1: { phone: '', ecName: 'Arjun Mehta (father)', ecPhone: '98765 43210', medical: 'Mild asthma, carries an inhaler' },
@@ -1007,7 +1013,8 @@ const sp = (id) => SPORTS[id];
 const money = (n) => (n === 0 ? 'Free' : inr(n));
 const kmFrom = (x, y) => Math.hypot(x - ME.x, y - ME.y) * 0.0025;
 const fmtKm = (k) => (k < 1 ? Math.round(k * 1000 / 10) * 10 + ' m' : k.toFixed(1) + ' km');
-const AV_COLORS = ['#E3336A', '#0E9FE0', '#13A04B', '#E0611A', '#9757E0', '#DE9B05', '#1D4FF2'];
+/* Avatar grounds: every colour keeps white initials above 4.5:1. */
+const AV_COLORS = ['#D93065', '#0A7CAE', '#0F863E', '#C05316', '#9355DB', '#9B6C03', '#1D4FF2'];
 function avatar(p, px) {
   const sz = px ? `width:${px}px;height:${px}px;` : '';
   if (p.img) return `<img src="${IMG + p.img}.jpg" alt="" style="${sz}border-radius:50%;object-fit:cover">`;
@@ -2178,7 +2185,7 @@ function renderGen() {
       <label class="row card" style="gap:12px;cursor:pointer"><input type="checkbox" id="tdThird" data-t="thirdPlace" ${TD.thirdPlace ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--ent)"><div class="grow"><b>Third-place match</b><small>Semifinal losers play before the final</small></div></label>
       <div class="gen-sum" id="genSum"></div>
     </div>
-    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent)" data-act="tourGenerate">${ic('trophy')}Generate tournament plan</button></div>`;
+    <div class="view-cta"><button class="btn btn-primary" style="background:var(--ent-fill)" data-act="tourGenerate">${ic('trophy')}Generate tournament plan</button></div>`;
   v.scrollTop = top; genSummary();
 }
 
@@ -2235,7 +2242,7 @@ function renderTour() {
       <div class="seg" role="group" aria-label="Tournament view">${tabs.map(([k, n]) => `<button data-act="tourTab" data-id="${k}" aria-pressed="${tourTab === k}">${n}</button>`).join('')}</div>
       <div>${tourTab === 'bracket' ? bracketHTML(T) : tourTab === 'schedule' ? scheduleHTML(T) : groupsHTML(T)}</div>
     </div>
-    ${preview ? `<div class="view-cta"><button class="btn btn-ghost" style="flex:0 0 auto" data-act="tourRegen">${ic('shuffle')}${T.seeding === 'random' ? 'Redraw' : 'Edit'}</button><button class="btn btn-primary" style="background:var(--ent)" data-act="tourPublish">${ic('send')}Publish & notify squads</button></div>` : ''}`;
+    ${preview ? `<div class="view-cta"><button class="btn btn-ghost" style="flex:0 0 auto" data-act="tourRegen">${ic('shuffle')}${T.seeding === 'random' ? 'Redraw' : 'Edit'}</button><button class="btn btn-primary" style="background:var(--ent-fill)" data-act="tourPublish">${ic('send')}Publish & notify squads</button></div>` : ''}`;
   v.scrollTop = top;
 }
 function resultSheet(T, m) {
@@ -2250,7 +2257,7 @@ function resultSheet(T, m) {
     </div>
     ${m.stage === 'ko' ? `<div class="field"><span class="lbl">If level, who won the ${tbName}?</span><div class="seg" id="tbW"><button type="button" data-act="pickOne" data-group="tbW" data-id="${m.a}" aria-pressed="${m.tb !== m.b}">${A2.name}</button><button type="button" data-act="pickOne" data-group="tbW" data-id="${m.b}" aria-pressed="${m.tb === m.b}">${B2.name}</button></div></div>` : ''}
     ${(() => { const nx = T.matches.find((x) => (x.srcA && x.srcA.ref === m.id && x.srcA.type === 'win') || (x.srcB && x.srcB.ref === m.id && x.srcB.type === 'win')); return nx ? `<div class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">${ic('arrow-right', 'ic-sm')}Winner goes to ${nx.round === 'Final' ? 'the Final' : nx.label} on ${dayLabel(nx.d)} ${dateAt(nx.d, '12:00').getDate()}</div>` : ''; })()}
-    <button class="btn btn-primary btn-block" style="background:var(--ent)" data-act="tourSave" data-id="${m.id}">${ic('check')}Save result</button>`, { onMount: (sh) => { const i = $('#scA', sh); if (i) setTimeout(() => i.focus(), 320); } });
+    <button class="btn btn-primary btn-block" style="background:var(--ent-fill)" data-act="tourSave" data-id="${m.id}">${ic('check')}Save result</button>`, { onMount: (sh) => { const i = $('#scA', sh); if (i) setTimeout(() => i.focus(), 320); } });
 }
 function afterResultToast(T, m) {
   if (m.round === 'Final' && T.champion) return toast(`${teamById(T.champion).name} are champions!`, 'trophy');
