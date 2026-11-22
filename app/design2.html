@@ -206,7 +206,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .app.framed .llist { padding-bottom: 108px; }
 /* Games sit as rows on one panel, split by hairlines: photo, text and action on the same three columns. */
 .grows { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
-.gitem { display: grid; grid-template-columns: 1fr 38px; align-items: center; column-gap: 10px; padding: 12px 12px 12px 14px; transition: background-color .2s ease; }
+.gitem { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; padding: 12px 12px 12px 14px; transition: background-color .2s ease; }
 .gitem + .gitem { border-top: 1px solid var(--line); }
 .gitem.on { background: color-mix(in srgb, var(--c) 8%, var(--surface)); }
 .gi-main { min-width: 0; display: grid; grid-template-columns: 60px minmax(0, 1fr); align-items: center; column-gap: 12px; text-align: left; }
@@ -215,11 +215,14 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .gi-text { min-width: 0; display: grid; gap: 3px; }
 .gi-title { font: 800 18px var(--f-display); line-height: 1.15; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Day · time in bold, distance as a chip with a pin. */
-.gi-when { display: flex; align-items: center; gap: 6px; min-width: 0; font: 800 15px var(--f-body); letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+/* On narrow phones the distance drops under the time instead of being cut or running into the join button. */
+.gi-when { display: flex; flex-wrap: wrap; align-items: center; gap: 1px 6px; min-width: 0; font: 800 15px var(--f-body); letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+@media (max-width: 374px) { .gi-when { font-size: 14px; gap: 1px 5px; } .gi-dist { font-size: 13px; margin-left: 2px; } }
 .gi-when .today { color: #C9362C; }
 .gi-when .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3); flex: none; }
-.gi-dist { display: inline-flex; align-items: center; gap: 4px; flex: none; margin-left: 2px; padding: 2px 8px 2px 6px; border-radius: 999px; font-size: 13px; background: var(--surface-2); }
-.gi-dist .ic { width: 13px; height: 13px; color: #C9362C; }
+/* Distance: the map-pin icon and the figure inline, no pill, so the line stays short and never meets the join button. */
+.gi-dist { display: inline-flex; align-items: center; gap: 3px; flex: none; margin-left: 4px; font-size: 14px; font-weight: 700; color: var(--ink-2); }
+.gi-dist .ic { width: 14px; height: 14px; color: #C9362C; }
 .gi-meta { font-size: 13px; font-weight: 600; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gi-act { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line); color: var(--ink); background: var(--surface); transition: transform .12s ease; }
 button.gi-act:active { transform: scale(.92); }
