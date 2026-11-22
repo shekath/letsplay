@@ -62,7 +62,9 @@ input { font: inherit; color: inherit; }
 .num { font-variant-numeric: tabular-nums; }
 h1, h2, h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-style: italic; letter-spacing: 0; line-height: 1.05; text-wrap: balance; }
 /* Every display-face element leans forward: names, scores, counts and badges read like a scoreboard. */
-.app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window, .tab .lbl) { font-style: italic; }
+.app :is(.gi-title, .big-num, .xp-burst .big, .player .stats b, .goal-ring b, .streak, .venue b, .pos .dot, .player .ava, .window) { font-style: italic; }
+/* The tab bar stays upright and plain so navigation reads calmly. */
+.tab, .tab .lbl { font-style: normal; }
 .muted { color: var(--ink-2); }
 .faint { color: var(--ink-3); }
 button:disabled { cursor: not-allowed; opacity: .5; }
