@@ -132,6 +132,7 @@ Object.assign(A, {
       S.billing = period; S.renews = renewDate(period); if (P.perSeat) S.seats = SUB.seats; SUB = null; setTier(plan); buzz(30); confetti('#5B3FE6');
       sheet(`<div class="xp-burst"><span class="up-ic t-${plan}">${ic(P.icon)}</span><h2>You’re on ${P.name}</h2><div class="muted">${period === 'yearly' ? 'Yearly' : 'Monthly'} plan · paid ${inr(total)}<br>${period === 'yearly' ? 'Renews' : 'Next payment'} on ${dateFmt.format(S.renews)}</div></div>
         <ul class="feats card" style="padding:14px">${P.feats.slice(1, 5).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
+        ${unlockedRowHTML(badgeCheck(true))}
         <button class="pill block" data-act="close">Start using ${P.name}</button>`);
     }, 1100); },
   pickOne: (el) => { $$(`#${el.dataset.group} [aria-pressed]`).forEach((b) => b.setAttribute('aria-pressed', b === el)); if (el.dataset.group !== 'regApp' && el.dataset.group !== 'subApp' && el.dataset.group !== 'cartApp') return; S.payApp = el.dataset.id; save(); },

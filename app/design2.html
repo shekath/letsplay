@@ -331,15 +331,82 @@ button.gi-act:active { transform: scale(.92); }
 .player .stats div { padding: 10px; border-radius: 14px; background: rgba(255,255,255,.08); text-align: center; }
 .player .stats b { display: block; font: 800 22px var(--f-display); }
 .player .stats span { font-size: 12px; color: rgba(255,255,255,.8); }
-.weeks { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; align-items: end; height: 84px; }
-.weeks div { display: grid; gap: 4px; justify-items: center; font-size: 11.5px; color: var(--ink-3); font-weight: 700; }
-.weeks i { width: 100%; border-radius: 8px; background: var(--surface-2); }
-.weeks i.hit { background: var(--you); }
-.badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.badge { display: grid; justify-items: center; gap: 6px; padding: 14px 8px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); text-align: center; font-size: 12.5px; font-weight: 700; }
-.badge .medal { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: var(--you-soft); color: var(--you-text); }
-.badge.locked { color: var(--ink-3); }
-.badge.locked .medal { background: var(--surface-2); color: var(--ink-3); }
+/* ── Streak card: an ember-dark card with a flame, a chain of weeks and milestones ── */
+:root { --lk-hi: #EDEEE9; --lk-lo: #CDD0C8; --lk-rim: #A8ABA3; --lk-core: #B7BAB2; --lk-glyph: #F7F8F4; }
+:root[data-theme="dark"] { --lk-hi: #3B3E46; --lk-lo: #2C2E35; --lk-rim: #1D1E23; --lk-core: #34373E; --lk-glyph: #757A85; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --lk-hi: #3B3E46; --lk-lo: #2C2E35; --lk-rim: #1D1E23; --lk-core: #34373E; --lk-glyph: #757A85; } }
+.streak-card { padding: 18px; border-radius: var(--r-lg); background: #2A1409; color: #fff; gap: 14px; }
+:root[data-theme="dark"] .streak-card { border: 1px solid #3A2213; }
+.streak-card { --lk-lo: rgba(255,255,255,.16); }
+.sc-top { display: flex; align-items: center; gap: 12px; }
+.sc-num { flex: 1; display: grid; line-height: 1; }
+.sc-num b { font: 800 54px var(--f-display); font-style: italic; color: #FFC24B; }
+.sc-num span { font-weight: 800; font-size: 15px; margin-top: 4px; }
+.sc-best { display: grid; justify-items: center; padding: 8px 12px; border-radius: 16px; background: rgba(255,255,255,.08); }
+.sc-best small { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.75); }
+.sc-best b { font: 800 22px var(--f-display); font-style: italic; }
+.sc-msg { font-size: 14px; color: rgba(255,255,255,.88); }
+.sc-msg b { color: #FFC24B; }
+.flame { flex: none; overflow: visible; }
+.flame.lit { filter: drop-shadow(0 4px 14px rgba(255,120,30,.45)); }
+.flame.lit .fmid { transform-origin: 50% 90%; animation: flick 1.6s ease-in-out 3 alternate; }
+@keyframes flick { 50% { transform: scale(.94, 1.06); } }
+.chain { position: relative; display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.chain::before { content: ""; position: absolute; left: 6%; right: 6%; top: 17px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.12); }
+.link { position: relative; display: grid; justify-items: center; gap: 4px; }
+.link .node { position: relative; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #3A2213; }
+.link.hit .node { background: #5A2A10; box-shadow: 0 0 0 2px #E2621D inset; }
+.link.miss .node i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); }
+.link small { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.7); }
+.link.now small { color: #FFC24B; }
+.ringp { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ringp circle { fill: none; stroke-width: 3; }
+.ringp .tr { stroke: rgba(255,255,255,.14); }
+.ringp .vl { stroke: #FFC24B; stroke-linecap: round; }
+.miles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; border-radius: 18px; background: rgba(255,255,255,.06); }
+.mile { display: grid; justify-items: center; gap: 4px; opacity: .6; }
+.mile.done { opacity: 1; }
+.mile small { font-size: 11.5px; font-weight: 800; color: rgba(255,255,255,.85); }
+.xpmile { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 800 10.5px var(--f-display); color: #FFC24B; border: 2px dashed rgba(255,194,75,.5); }
+.mile.done .xpmile { background: #FFC24B; color: #2A1409; border-style: solid; }
+.sc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); }
+.freeze { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; background: rgba(120,190,255,.16); color: #B8DCFF; }
+.freeze .ic { width: 15px; height: 15px; }
+
+/* ── Badges: medal art on a 3-column shelf ── */
+.bgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.bdg { display: grid; justify-items: center; align-content: start; gap: 5px; padding: 12px 6px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); text-align: center; transition: transform .15s ease; }
+.bdg:active { transform: scale(.96); }
+.bdg b { font-size: 12.5px; line-height: 1.2; min-height: 2.4em; display: grid; place-items: center; }
+.bdg small { font-size: 11.5px; font-weight: 700; color: var(--ink-3); }
+.bdg:not(.on) b { color: var(--ink-2); }
+.bart { display: block; overflow: visible; }
+.bart.on { filter: drop-shadow(0 6px 10px rgba(15,16,20,.22)); }
+.bart.on.t-epic { filter: drop-shadow(0 6px 16px rgba(91,63,230,.45)); }
+.bart.on.t-gold { filter: drop-shadow(0 6px 14px rgba(224,154,18,.35)); }
+.bart .spark { transform-origin: center; transform-box: fill-box; animation: twinkle 1.4s ease-in-out 4 alternate; }
+@keyframes twinkle { 50% { transform: scale(.5); opacity: .6; } }
+.tier-lbl { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+.tier-lbl.t-bronze { background: #F8E3D2; color: #8A4517; } .tier-lbl.t-silver { background: #E8EBEF; color: #4B5563; }
+.tier-lbl.t-gold { background: #FFF0C2; color: #7A5300; } .tier-lbl.t-epic { background: #ECE8FF; color: #4A30D0; }
+:root[data-theme="dark"] .tier-lbl.t-bronze { background: #3A2414; color: #F7C894; } :root[data-theme="dark"] .tier-lbl.t-silver { background: #2A2E35; color: #D5DAE1; }
+:root[data-theme="dark"] .tier-lbl.t-gold { background: #3A2E0D; color: #FFDC73; } :root[data-theme="dark"] .tier-lbl.t-epic { background: #251F47; color: #B3A5FF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tier-lbl.t-bronze { background: #3A2414; color: #F7C894; } :root:not([data-theme="light"]) .tier-lbl.t-silver { background: #2A2E35; color: #D5DAE1; }
+  :root:not([data-theme="light"]) .tier-lbl.t-gold { background: #3A2E0D; color: #FFDC73; } :root:not([data-theme="light"]) .tier-lbl.t-epic { background: #251F47; color: #B3A5FF; } }
+.bprog { display: block; width: 70%; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.bprog i { display: block; height: 100%; border-radius: 3px; background: var(--you); }
+.bprog.lg { width: 100%; height: 8px; }
+.bhero { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 4px 0 6px; }
+.bhero h2 { font-size: 26px; }
+.bhero .bart { animation: medalIn .7s cubic-bezier(.3, 1.4, .5, 1); }
+.bhero.unlock .bart { animation: medalSpin 1.1s cubic-bezier(.2, .9, .3, 1.2); }
+@keyframes medalIn { from { transform: scale(.4) rotate(-12deg); opacity: 0; } }
+@keyframes medalSpin { 0% { transform: scale(.2) rotateY(0); opacity: 0; } 60% { transform: scale(1.08) rotateY(360deg); opacity: 1; } 100% { transform: scale(1) rotateY(360deg); } }
+.bbar { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 4px; }
+.bbar b { white-space: nowrap; }
+.unlocked { display: grid; gap: 8px; }
+.unlocked .lrow { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.unlocked .bart { width: 52px; height: 52px; }
 .goal-set { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; }
 
 /* ═════ Plans and plan features ═════ */
@@ -1073,13 +1140,15 @@ function bindMapDrag() {
 const joinSheet = (id) => regStart(id);
 function celebrateJoin(id, who) {
   const a = actById(id); const before = level();
-  S.week += 1; S.xp += 50; S.streak[S.streak.length - 1] = 1; save();
+  S.week += 1; S.xp += 50; if (S.week >= S.goal) S.streak[S.streak.length - 1] = 1; save();
+  const nb = badgeCheck(true);
   const lvlUp = level() > before; const goalHit = S.week === S.goal;
   const names = who.map(firstName);
   sheet(`<div class="xp-burst"><span class="big num">+50 XP</span><h2>${lvlUp ? `Level ${level()}! You’re a ${TITLES[Math.min(level() - 1, TITLES.length - 1)].toLowerCase()} now` : 'You’re in!'}</h2>
       <div class="muted">${esc(a.title)} · ${when(a)}<br>Playing: ${esc(names.join(', '))}. Added to the family calendar, with a reminder 2 hours before.</div></div>
     <div class="card" style="padding:14px;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;font-weight:700"><span>Level ${level()}</span><span class="num">${S.xp % LV}/${LV} XP</span></div><div class="xpbar" style="background:var(--surface-2)"><i style="width:0%" id="xpFill"></i></div>
       <div class="muted" style="font-size:13.5px">${goalHit ? 'Weekly goal reached. Your streak is safe.' : `Weekly goal: ${Math.min(S.week, S.goal)} of ${S.goal} games`}</div></div>
+    ${unlockedRowHTML(nb)}
     <div style="display:flex;gap:10px"><button class="pill soft" style="flex:1" data-act="shareGame" data-id="${a.id}">${ic('share-2')}Invite friends</button><button class="pill" style="flex:1" data-act="close">Done</button></div>`);
   requestAnimationFrame(() => setTimeout(() => { const f = $('#xpFill'); if (f) f.style.width = ((S.xp % LV) / LV) * 100 + '%'; }, 60));
   confetti(sp(a.sport).c); buzz(30);
@@ -1165,19 +1234,16 @@ function renderBook() {
   $('#players').addEventListener('change', save);
 }
 
-/* ═════ ME: player card, goal, streak, badges ═════ */
-const BADGES = [['First whistle', 'award', 'Join your first game', () => S.joined.length >= 1], ['Early bird', 'clock', 'Play a game before 7 am', () => S.joined.some((id) => +((actById(id) || { t: '12' }).t.split(':')[0]) < 7)], ['Captain', 'crown', 'Captain a team', () => true],
-  ['Hat-trick', 'flame', 'Hit your weekly goal 3 weeks running', () => streakWeeks() >= 3], ['Explorer', 'compass', 'Play 4 different sports', () => new Set(S.joined.map((id) => (actById(id) || {}).sport)).size >= 4], ['Court boss', 'calendar-days', 'Book a court for your crew', () => !!S.booked]];
+/* ═════ ME: player card, goal, streak, badges (badge art and streak card in d2-badges.js) ═════ */
 function renderMe() {
   const lv = level(), title = TITLES[Math.min(lv - 1, TITLES.length - 1)];
-  const weeks = S.streak.map((v, i) => ({ v, l: i === S.streak.length - 1 ? 'Now' : `-${S.streak.length - 1 - i}w` }));
   $('#scr-me').innerHTML = `<div class="player"><div class="row1"><span class="ava">AM</span><div><h2>Arjun Mehta</h2><div class="lvl">Level ${lv} · ${title}</div></div></div>
       <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:6px"><span>${S.xp % LV} / ${LV} XP to level ${lv + 1}</span><span class="num">${S.xp} total</span></div><div class="xpbar"><i style="width:${((S.xp % LV) / LV) * 100}%"></i></div></div>
-      <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter((b) => b[3]()).length}</b><span>Badges</span></div></div></div>
+      <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter(badgeEarned).length}/${BADGES.length}</b><span>Badges</span></div></div></div>
     ${planCardHTML()}
     <div class="section card goal-set"><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div><b>Weekly goal</b><div class="muted" style="font-size:13.5px">${Math.min(S.week, S.goal)} of ${S.goal} games this week</div></div></div><div class="stepper"><button data-act="goal" data-d="-1" aria-label="Lower goal">${ic('minus')}</button><b class="num">${S.goal}</b><button data-act="goal" data-d="1" aria-label="Raise goal">${ic('plus')}</button></div></div>
-    <div class="section"><h2>Streak</h2><div class="weeks" aria-label="Weeks you hit your goal">${weeks.map((w) => `<div><i class="${w.v ? 'hit' : ''}" style="height:${w.v ? 56 : 18}px"></i>${w.l}</div>`).join('')}</div></div>
-    <div class="section"><h2>Badges</h2><div class="badges">${BADGES.map(([n, i, how, got], k) => `<button class="badge ${got() ? '' : 'locked'}" data-act="badge" data-i="${k}"><span class="medal">${ic(got() ? i : 'lock')}</span>${n}</button>`).join('')}</div></div>
+    ${streakCardHTML()}
+    ${badgesHTML()}
     ${meSettingsHTML()}
     <div class="section"><h2>Appearance</h2><div class="seg">${[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join('')}</div></div>
     <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks, people and prices are sample data.</div></div>`;
@@ -1207,10 +1273,9 @@ const A = {
   book: () => { const v = VB(S.venue); S.booked = true; const before = level(); S.xp += 30;
     const b = { id: 'b' + Date.now(), vid: v.id, d: S.bookDay, start: S.start, dur: S.dur, players: S.players }; S.turf.push(b); save(); buzz(25); confetti('#5B3FE6');
     sheet(`<div class="xp-burst"><span class="big num">+30 XP</span><h2>${esc(v.name)} is yours</h2><div class="muted">${dayLabel(S.bookDay)}, ${S.dur} h from ${new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(S.start).padStart(2, '0') + ':00'))}<br>UPI requests sent to ${S.players - 1} players. Unpaid shares get a WhatsApp reminder.${level() > before ? `<br><b>Level ${level()} reached.</b>` : ''}</div></div>
+      ${unlockedRowHTML(badgeCheck(true))}
       ${S.players > 1 ? `<button class="pill block soft" data-act="postSpots" data-id="${b.id}">${ic('megaphone')}Post open spots as a game${can.pin() ? '' : ' · Pro'}</button>` : ''}<button class="pill block" data-act="close">Done</button>`); renderTabbar(); },
   goal: (el) => { S.goal = Math.max(1, Math.min(7, S.goal + +el.dataset.d)); save(); renderMe(); },
-  badge: (el) => { const [n, i, how, got] = BADGES[+el.dataset.i];
-    sheet(`${head(n, got() ? 'Earned' : 'Not yet earned')}<div style="display:grid;justify-items:center;gap:10px;text-align:center"><span class="medal" style="width:80px;height:80px;border-radius:24px;display:grid;place-items:center;background:${got() ? 'var(--you-soft)' : 'var(--surface-2)'};color:${got() ? 'var(--you-text)' : 'var(--ink-3)'}">${ic(got() ? i : 'lock')}</span><div class="muted">${how}</div></div><button class="pill block" data-act="${got() ? 'close' : 'tab'}" data-id="play">${got() ? 'Nice' : 'Find a game'}</button>`); },
   reset: () => { S = fresh(); save(); applyTheme(); applyPrefs(); renderNote(); go('play'); toast('Demo reset', 'rotate-ccw'); },
 };
 
@@ -1501,6 +1566,7 @@ Object.assign(A, {
       S.billing = period; S.renews = renewDate(period); if (P.perSeat) S.seats = SUB.seats; SUB = null; setTier(plan); buzz(30); confetti('#5B3FE6');
       sheet(`<div class="xp-burst"><span class="up-ic t-${plan}">${ic(P.icon)}</span><h2>You’re on ${P.name}</h2><div class="muted">${period === 'yearly' ? 'Yearly' : 'Monthly'} plan · paid ${inr(total)}<br>${period === 'yearly' ? 'Renews' : 'Next payment'} on ${dateFmt.format(S.renews)}</div></div>
         <ul class="feats card" style="padding:14px">${P.feats.slice(1, 5).map((f) => `<li>${ic('circle-check')}${f}</li>`).join('')}</ul>
+        ${unlockedRowHTML(badgeCheck(true))}
         <button class="pill block" data-act="close">Start using ${P.name}</button>`);
     }, 1100); },
   pickOne: (el) => { $$(`#${el.dataset.group} [aria-pressed]`).forEach((b) => b.setAttribute('aria-pressed', b === el)); if (el.dataset.group !== 'regApp' && el.dataset.group !== 'subApp' && el.dataset.group !== 'cartApp') return; S.payApp = el.dataset.id; save(); },
@@ -1965,6 +2031,7 @@ function publishHost() {
     spots: H.players, total: H.players, price: H.fee, host: 'Arjun Mehta', img: SPORT_IMG[H.sport] || 'field', photo: H.loc.photo || null, setting: 'Outdoor', surface: 'As described by the host', equipment: 'Ask the host in the game chat.', access: 'Ask the host about access.', cancel: 'Free cancellation up to 2 hours before.', hostedByYou: true, vis: H.vis };
   S.hosted.push(a); HOST = null; S.xp += 40; save(); closeSheet();
   focused = id; S.mood = 'all'; go('play'); setTimeout(() => focusGame(id, true), 80); confetti(sp(a.sport).c); buzz(25);
+  badgeCheck();
   toast(H.vis === 'invited' ? `Published to ${invitees || 'your'} invitees with the address and map pin` : `Published. ${invitees ? invitees + ' teammates invited, and ' : ''}players nearby can join`, 'megaphone');
 }
 
@@ -2087,7 +2154,7 @@ Object.assign(A, {
     const p = { id: 'c' + Date.now(), name: NP.name.trim(), sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photo, by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
     S.places.push(p); S.xp += 20; save(); const ret = NP.ret; NP = null;
     if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
-    closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); },
+    closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); badgeCheck(); },
   pickUse: () => { const [x, y] = pickXY(), p = endPick();
     if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else hostStart({ id: null, x, y, address: addrOf(x, y) }); },
   pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
@@ -2137,7 +2204,7 @@ Object.assign(A, {
   apKm: (el) => { AP.km = el.dataset.id; apSheet(); },
   apLft: () => { AP.lft = !AP.lft; apSheet(); },
   apAdd: () => { const t = teamOf(AP.tid), add = PLAYERS.filter((p) => AP.sel.includes(p.id)); add.forEach((p) => t.members.push({ name: p.name, role: 'Player', status: 'invited', pid: p.id }));
-    const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); },
+    const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); badgeCheck(); },
   shareTeam: (el) => { const t = teamOf(el.dataset.id); shareAny(`Join ${t.name} on LetsPlay`, `Join my ${sp(t.sport).name.toLowerCase()} team ${t.name} on LetsPlay. Team code ${teamCode(t)}.`, teamLink(t)); },
 });
 
@@ -2297,6 +2364,119 @@ Object.assign(A, {
   rsTb: (el) => { const T = curTour(), m = T.matches.find((x) => x.id === RS.id); RS.tb = el.dataset.id; resultSheet(T, m); },
   rsSave: () => { const T = curTour(), m = T.matches.find((x) => x.id === RS.id); playMatch(T, m, RS.sa, RS.sb, RS.tb); RS = null; if (!PREV || PREV.id !== T.id) save(); closeSheet(); renderTour(); afterResult(T, m); },
 });
+
+/* ═════ BADGES AND STREAKS: game-style medals drawn as SVG ═════
+   Each badge has a metal tier (bronze, silver, gold, epic), its own shape and an emblem.
+   Locked badges are drawn in neutral tones that follow the theme, with progress towards them. */
+const TIERS = {
+  bronze: { name: 'Bronze', xp: 25, hi: '#F7C894', lo: '#B5622C', rim: '#6E3714', core: '#7F4219', rib: ['#C8402F', '#8E2A20'] },
+  silver: { name: 'Silver', xp: 50, hi: '#F7F9FB', lo: '#9EA8B6', rim: '#525B68', core: '#5E6876', rib: ['#2F6BDA', '#1E4AA0'] },
+  gold: { name: 'Gold', xp: 100, hi: '#FFEDA8', lo: '#E09A12', rim: '#7E5404', core: '#9A6905', rib: ['#5B3FE6', '#3E27B5'] },
+  epic: { name: 'Epic', xp: 250, hi: '#D6CCFF', lo: '#6A4BEF', rim: '#26157A', core: '#34209E', rib: ['#E0503F', '#A9301F'] },
+};
+const countIf = (n, goal) => [Math.min(n, goal), goal];
+const BADGES = [
+  { id: 'first', name: 'First whistle', how: 'Join your first game', tier: 'bronze', shape: 'round', glyph: 'award', prog: () => countIf(S.joined.length, 1), cta: ['tab', 'play', 'Find a game'] },
+  { id: 'early', name: 'Early bird', how: 'Join a game that starts before 7 am', tier: 'silver', shape: 'hex', glyph: 'cloud-sun', prog: () => countIf(S.joined.filter((id) => +((actById(id) || { t: '12' }).t.split(':')[0]) < 7).length, 1), cta: ['tab', 'play', 'Find a morning game'] },
+  { id: 'hattrick', name: 'Hat-trick', how: 'Hit your weekly goal 3 weeks running', tier: 'gold', shape: 'star', glyph: 'flame', prog: () => countIf(streakWeeks(), 3), cta: ['tab', 'play', 'Find a game'] },
+  { id: 'explorer', name: 'Explorer', how: 'Play 4 different sports', tier: 'silver', shape: 'hex', glyph: 'compass', prog: () => countIf(new Set(S.joined.map((id) => (actById(id) || {}).sport)).size, 4), cta: ['tab', 'play', 'Try a new sport'] },
+  { id: 'court', name: 'Court boss', how: 'Book a court for your crew', tier: 'bronze', shape: 'shield', glyph: 'calendar-days', prog: () => countIf(S.turf.length, 1), cta: ['openBook', '', 'Book a court'] },
+  { id: 'family', name: 'Family captain', how: 'Book games for 3 people in your family', tier: 'silver', shape: 'round', glyph: 'users', prog: () => countIf(new Set(Object.values(S.bookings).flat()).size, 3), cta: ['tab', 'play', 'Find a family game'] },
+  { id: 'captain', name: 'Captain', how: 'Captain a team (Pro)', tier: 'gold', shape: 'shield', glyph: 'crown', prog: () => countIf(can.teams() ? S.teams.filter((t) => t.members[0].role === 'Captain').length : 0, 1), cta: ['tab', 'team', 'Go to Team'] },
+  { id: 'mapper', name: 'Map maker', how: 'Put a new place on the map (Pro)', tier: 'silver', shape: 'hex', glyph: 'map-pin-plus', prog: () => countIf(S.places.length, 1), cta: ['placeNew', '', 'Add a place'] },
+  { id: 'host', name: 'Host with the most', how: 'Host a game (Pro)', tier: 'gold', shape: 'round', glyph: 'megaphone', prog: () => countIf(S.hosted.length, 1), cta: ['hostStart', '', 'Host a game'] },
+  { id: 'recruit', name: 'Recruiter', how: 'Invite 5 players to your teams (Pro)', tier: 'bronze', shape: 'shield', glyph: 'user-plus', prog: () => countIf(S.teams.flatMap((t) => t.members).filter((m) => m.status === 'invited').length, 5), cta: ['tab', 'team', 'Add players'] },
+  { id: 'iron', name: 'Iron streak', how: 'Keep your streak going for 8 weeks', tier: 'epic', shape: 'star', glyph: 'zap', prog: () => countIf(streakWeeks(), 8), cta: ['tab', 'play', 'Keep it going'] },
+  { id: 'legend', name: 'Local legend', how: 'Reach level 8', tier: 'epic', shape: 'round', glyph: 'star', prog: () => countIf(level(), 8), cta: ['tab', 'play', 'Earn XP'] },
+];
+const badgeEarned = (b) => { const [c, g] = b.prog(); return c >= g; };
+
+/* Shapes are centred on (50, 46) in a 100 × 100 box. */
+const poly = (n, r, rot, r2) => { const pts = []; const k = r2 ? 2 * n : n; for (let i = 0; i < k; i++) { const a = rot + (i * Math.PI * 2) / k, rr = r2 && i % 2 ? r2 : r; pts.push((50 + rr * Math.cos(a)).toFixed(1) + ',' + (46 + rr * Math.sin(a)).toFixed(1)); } return `<polygon points="${pts.join(' ')}"`; };
+const SHIELD = 'M50 4 L87 16 V44 C87 68 71 84 50 95 C29 84 13 68 13 44 V16 Z';
+function shapeEl(shape, s) {
+  if (shape === 'round') return `<circle cx="50" cy="46" r="${40 * s}"`;
+  if (shape === 'hex') return poly(6, 42 * s, -Math.PI / 2);
+  if (shape === 'star') return poly(12, 44 * s, -Math.PI / 2, 37 * s);
+  return `<path d="${SHIELD}" transform="translate(${50 - 50 * s} ${50 - 50 * s}) scale(${s})"`;
+}
+let badgeUid = 0;
+function badgeSVG(b, earned, px) {
+  const T = earned ? TIERS[b.tier] : null, u = 'bg' + (++badgeUid);
+  const c = T ? { hi: T.hi, lo: T.lo, rim: T.rim, core: T.core, r1: T.rib[0], r2: T.rib[1], g: '#fff' }
+    : { hi: 'var(--lk-hi)', lo: 'var(--lk-lo)', rim: 'var(--lk-rim)', core: 'var(--lk-core)', r1: 'var(--lk-lo)', r2: 'var(--lk-rim)', g: 'var(--lk-glyph)' };
+  const glyph = GLYPHS[b.glyph] || ICONS[b.glyph] || ICONS.award;
+  const ribbon = b.shape !== 'shield' ? `<path d="M34 62 L46 66 L42 97 L35 89 L27 95 Z" style="fill:${c.r1}"/><path d="M66 62 L54 66 L58 97 L65 89 L73 95 Z" style="fill:${c.r2}"/>` : '';
+  const sparkle = earned && b.tier === 'epic' ? ['M86 12 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z', 'M12 22 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5 -4.5 -4.5 -1.5 4.5 -1.5z', 'M90 70 l1.2 3.6 3.6 1.2 -3.6 1.2 -1.2 3.6 -1.2 -3.6 -3.6 -1.2 3.6 -1.2z'].map((d) => `<path class="spark" d="${d}" fill="#FFE9A3"/>`).join('') : '';
+  return `<svg class="bart ${earned ? 'on t-' + b.tier : 'off'}" width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true">
+    <defs><linearGradient id="${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:${c.hi}"/><stop offset="1" style="stop-color:${c.lo}"/></linearGradient>
+      <linearGradient id="${u}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${c.lo}"/><stop offset="1" style="stop-color:${c.rim}"/></linearGradient></defs>
+    ${ribbon}
+    ${shapeEl(b.shape, 1)} fill="url(#${u}r)"/>
+    ${shapeEl(b.shape, 0.86)} fill="url(#${u})"/>
+    ${shapeEl(b.shape, 0.76)} fill="none" style="stroke:${c.rim}" stroke-opacity=".35" stroke-width="1.5"/>
+    <circle cx="50" cy="46" r="18" style="fill:${c.core}" stroke="#fff" stroke-opacity=".28" stroke-width="2"/>
+    <g transform="translate(35.6 31.6) scale(1.2)" fill="none" style="stroke:${c.g}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${glyph}</g>
+    ${earned ? '<path d="M24 30 C30 16 44 10 58 12 C46 16 34 22 28 34 Z" fill="#fff" opacity=".42"/>' : ''}
+    ${sparkle}
+  </svg>`;
+}
+
+/* ── Streak ── */
+const FLAME = { outer: 'M50 4c6 16 26 26 26 52a26 26 0 0 1-52 0c0-14 8-22 12-32 3 9 8 13 12 14-2-12-2-22 2-34z', mid: 'M50 34c4 10 16 16 16 30a16 16 0 0 1-32 0c0-8 5-13 8-19 2 5 5 7 7 8-1-7 0-13 1-19z', core: 'M50 58c2 5 8 8 8 14a8 8 0 0 1-16 0c0-5 4-8 8-14z' };
+function flameSVG(px, lit = true) {
+  const u = 'fl' + (++badgeUid);
+  return `<svg class="flame ${lit ? 'lit' : ''}" width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB13B"/><stop offset="1" stop-color="#E2391D"/></linearGradient></defs>
+    <path d="${FLAME.outer}" fill="${lit ? `url(#${u})` : 'var(--lk-lo)'}"/>${lit ? `<path class="fmid" d="${FLAME.mid}" fill="#FFD449"/><path class="fcore" d="${FLAME.core}" fill="#FFF6D6"/>` : ''}</svg>`;
+}
+const bestStreak = () => { let best = 0, run = 0; S.streak.forEach((v) => { run = v ? run + 1 : 0; best = Math.max(best, run); }); return Math.max(best, S.bestStreak || 0); };
+function streakCardHTML() {
+  const n = streakWeeks(), left = Math.max(0, S.goal - S.week), last = S.streak.length - 1;
+  const miles = [[3, 'hattrick'], [5, null], [8, 'iron'], [12, null]];
+  const next = miles.find(([w]) => w > n);
+  return `<div class="section streak-card">
+    <div class="sc-top">${flameSVG(84, n > 0)}<div class="sc-num"><b class="num">${n}</b><span>week streak</span></div><div class="sc-best"><small>Best</small><b class="num">${bestStreak()}</b></div></div>
+    <div class="sc-msg">${left ? `Play <b>${left} more game${left > 1 ? 's' : ''}</b> this week to keep your streak alive.` : '<b>This week is done.</b> Your streak is safe.'}</div>
+    <div class="chain" aria-label="Weeks you hit your goal">${S.streak.map((v, i) => { const now = i === last; const pct = Math.min(1, S.week / S.goal);
+      return `<div class="link ${v ? 'hit' : 'miss'} ${now ? 'now' : ''}"><span class="node">${now && !v ? `<svg viewBox="0 0 36 36" class="ringp"><circle cx="18" cy="18" r="15" class="tr"/><circle cx="18" cy="18" r="15" class="vl" stroke-dasharray="${(94.2 * pct).toFixed(1)} 94.2"/></svg>` : ''}${v ? flameSVG(22) : now ? flameSVG(18, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
+    <div class="miles">${miles.map(([w, id]) => { const b = id && BADGES.find((x) => x.id === id), done = n >= w; return `<div class="mile ${done ? 'done' : ''}">${b ? badgeSVG(b, done, 34) : `<span class="xpmile">+${w * 20}</span>`}<small class="num">${w} wk</small></div>`; }).join('')}</div>
+    <div class="sc-foot"><span class="freeze">${ic('shield-check')}1 streak freeze</span><span>${next ? `Next: ${next[0]} weeks${next[1] ? ' · ' + BADGES.find((x) => x.id === next[1]).name : ` · +${next[0] * 20} XP`}` : 'Every milestone reached'}</span></div>
+  </div>`;
+}
+
+/* ── Badge grid and detail ── */
+function badgesHTML() {
+  const got = BADGES.filter(badgeEarned).length;
+  return `<div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Badges</h2><span class="faint num" style="font-weight:700;font-size:13px">${got} of ${BADGES.length} earned</span></div>
+    <div class="bgrid">${BADGES.map((b, k) => { const on = badgeEarned(b), [c, g] = b.prog();
+      return `<button class="bdg ${on ? 'on' : ''}" data-act="badge" data-i="${k}" aria-label="${esc(b.name)}: ${on ? TIERS[b.tier].name + ' badge earned' : `${c} of ${g}, not yet earned`}">${badgeSVG(b, on, 78)}<b>${esc(b.name)}</b>${on ? `<span class="tier-lbl t-${b.tier}">${TIERS[b.tier].name}</span>` : `<span class="bprog"><i style="width:${Math.round((c / g) * 100)}%"></i></span><small class="num">${c}/${g}</small>`}</button>`; }).join('')}</div></div>`;
+}
+function badgeSheet(b, unlocked) {
+  const on = badgeEarned(b), [c, g] = b.prog(), T = TIERS[b.tier];
+  sheet(`${unlocked ? '' : head('', '')}
+    <div class="bhero ${on ? 't-' + b.tier : ''} ${unlocked ? 'unlock' : ''}">${unlocked ? '<span class="eyebrow">Badge unlocked</span>' : ''}${badgeSVG(b, on, 168)}<h2>${esc(b.name)}</h2><span class="tier-lbl t-${b.tier}">${T.name} · +${T.xp} XP</span><div class="muted">${esc(b.how)}</div>
+      ${on ? '' : `<div class="bbar"><span class="bprog lg"><i style="width:${Math.round((c / g) * 100)}%"></i></span><b class="num">${c} / ${g}</b></div>`}</div>
+    ${on ? `<button class="pill block" data-act="shareBadge" data-id="${b.id}">${ic('share-2')}Share your badge</button><button class="pill block soft" data-act="close">Nice</button>`
+      : `<button class="pill block" data-act="${b.cta[0]}" data-id="${b.cta[1]}">${esc(b.cta[2])}</button>`}`);
+  if (unlocked && !REDUCED) { confetti(T.hi); buzz(30); }
+}
+/* Badges earned since last time pay out XP and get a moment of their own. */
+function badgeCheck(inline) {
+  if (!S.badges) { S.badges = BADGES.filter(badgeEarned).map((b) => b.id); save(); return []; }
+  const newly = BADGES.filter((b) => badgeEarned(b) && !S.badges.includes(b.id));
+  if (!newly.length) return [];
+  newly.forEach((b) => { S.badges.push(b.id); S.xp += TIERS[b.tier].xp; }); save();
+  if (!inline) setTimeout(() => { if (!$('.sheet')) badgeSheet(newly[0], true); else toast(`Badge unlocked: ${newly[0].name}`, 'award'); }, 1400);
+  return newly;
+}
+const unlockedRowHTML = (list) => (list.length ? `<div class="unlocked">${list.map((b) => `<button class="lrow" data-act="badgeId" data-id="${b.id}">${badgeSVG(b, true, 52)}<span class="ltext"><small class="eyebrow">Badge unlocked</small><b>${esc(b.name)}</b><small>${TIERS[b.tier].name} · +${TIERS[b.tier].xp} XP</small></span>${ic('chevron-right')}</button>`).join('')}</div>` : '');
+
+Object.assign(A, {
+  badge: (el) => badgeSheet(BADGES[+el.dataset.i]),
+  badgeId: (el) => badgeSheet(BADGES.find((b) => b.id === el.dataset.id), true),
+  shareBadge: (el) => { const b = BADGES.find((x) => x.id === el.dataset.id); shareAny(`${b.name} badge`, `I just earned the ${TIERS[b.tier].name.toLowerCase()} ${b.name} badge on LetsPlay. ${b.how}. Come play:`, 'https://letsplay.app/b/' + b.id); },
+});
+badgeCheck();
 
 
 document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });

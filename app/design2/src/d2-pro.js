@@ -82,6 +82,7 @@ function publishHost() {
     spots: H.players, total: H.players, price: H.fee, host: 'Arjun Mehta', img: SPORT_IMG[H.sport] || 'field', photo: H.loc.photo || null, setting: 'Outdoor', surface: 'As described by the host', equipment: 'Ask the host in the game chat.', access: 'Ask the host about access.', cancel: 'Free cancellation up to 2 hours before.', hostedByYou: true, vis: H.vis };
   S.hosted.push(a); HOST = null; S.xp += 40; save(); closeSheet();
   focused = id; S.mood = 'all'; go('play'); setTimeout(() => focusGame(id, true), 80); confetti(sp(a.sport).c); buzz(25);
+  badgeCheck();
   toast(H.vis === 'invited' ? `Published to ${invitees || 'your'} invitees with the address and map pin` : `Published. ${invitees ? invitees + ' teammates invited, and ' : ''}players nearby can join`, 'megaphone');
 }
 
@@ -204,7 +205,7 @@ Object.assign(A, {
     const p = { id: 'c' + Date.now(), name: NP.name.trim(), sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photo, by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
     S.places.push(p); S.xp += 20; save(); const ret = NP.ret; NP = null;
     if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
-    closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); },
+    closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); badgeCheck(); },
   pickUse: () => { const [x, y] = pickXY(), p = endPick();
     if (p.purpose === 'place') { NP.x = x; NP.y = y; addPlaceSheet(); } else hostStart({ id: null, x, y, address: addrOf(x, y) }); },
   pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
@@ -254,6 +255,6 @@ Object.assign(A, {
   apKm: (el) => { AP.km = el.dataset.id; apSheet(); },
   apLft: () => { AP.lft = !AP.lft; apSheet(); },
   apAdd: () => { const t = teamOf(AP.tid), add = PLAYERS.filter((p) => AP.sel.includes(p.id)); add.forEach((p) => t.members.push({ name: p.name, role: 'Player', status: 'invited', pid: p.id }));
-    const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); },
+    const n = add.length; AP = null; save(); closeSheet(); TV = t.id; teamTab = 'roster'; renderTeam(); toast(`${n} player${n > 1 ? 's' : ''} invited. They’ll get a notification`, 'user-plus'); badgeCheck(); },
   shareTeam: (el) => { const t = teamOf(el.dataset.id); shareAny(`Join ${t.name} on LetsPlay`, `Join my ${sp(t.sport).name.toLowerCase()} team ${t.name} on LetsPlay. Team code ${teamCode(t)}.`, teamLink(t)); },
 });

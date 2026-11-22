@@ -309,15 +309,82 @@ button.gi-act:active { transform: scale(.92); }
 .player .stats div { padding: 10px; border-radius: 14px; background: rgba(255,255,255,.08); text-align: center; }
 .player .stats b { display: block; font: 800 22px var(--f-display); }
 .player .stats span { font-size: 12px; color: rgba(255,255,255,.8); }
-.weeks { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; align-items: end; height: 84px; }
-.weeks div { display: grid; gap: 4px; justify-items: center; font-size: 11.5px; color: var(--ink-3); font-weight: 700; }
-.weeks i { width: 100%; border-radius: 8px; background: var(--surface-2); }
-.weeks i.hit { background: var(--you); }
-.badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.badge { display: grid; justify-items: center; gap: 6px; padding: 14px 8px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); text-align: center; font-size: 12.5px; font-weight: 700; }
-.badge .medal { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: var(--you-soft); color: var(--you-text); }
-.badge.locked { color: var(--ink-3); }
-.badge.locked .medal { background: var(--surface-2); color: var(--ink-3); }
+/* ── Streak card: an ember-dark card with a flame, a chain of weeks and milestones ── */
+:root { --lk-hi: #EDEEE9; --lk-lo: #CDD0C8; --lk-rim: #A8ABA3; --lk-core: #B7BAB2; --lk-glyph: #F7F8F4; }
+:root[data-theme="dark"] { --lk-hi: #3B3E46; --lk-lo: #2C2E35; --lk-rim: #1D1E23; --lk-core: #34373E; --lk-glyph: #757A85; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --lk-hi: #3B3E46; --lk-lo: #2C2E35; --lk-rim: #1D1E23; --lk-core: #34373E; --lk-glyph: #757A85; } }
+.streak-card { padding: 18px; border-radius: var(--r-lg); background: #2A1409; color: #fff; gap: 14px; }
+:root[data-theme="dark"] .streak-card { border: 1px solid #3A2213; }
+.streak-card { --lk-lo: rgba(255,255,255,.16); }
+.sc-top { display: flex; align-items: center; gap: 12px; }
+.sc-num { flex: 1; display: grid; line-height: 1; }
+.sc-num b { font: 800 54px var(--f-display); font-style: italic; color: #FFC24B; }
+.sc-num span { font-weight: 800; font-size: 15px; margin-top: 4px; }
+.sc-best { display: grid; justify-items: center; padding: 8px 12px; border-radius: 16px; background: rgba(255,255,255,.08); }
+.sc-best small { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.75); }
+.sc-best b { font: 800 22px var(--f-display); font-style: italic; }
+.sc-msg { font-size: 14px; color: rgba(255,255,255,.88); }
+.sc-msg b { color: #FFC24B; }
+.flame { flex: none; overflow: visible; }
+.flame.lit { filter: drop-shadow(0 4px 14px rgba(255,120,30,.45)); }
+.flame.lit .fmid { transform-origin: 50% 90%; animation: flick 1.6s ease-in-out 3 alternate; }
+@keyframes flick { 50% { transform: scale(.94, 1.06); } }
+.chain { position: relative; display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.chain::before { content: ""; position: absolute; left: 6%; right: 6%; top: 17px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.12); }
+.link { position: relative; display: grid; justify-items: center; gap: 4px; }
+.link .node { position: relative; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #3A2213; }
+.link.hit .node { background: #5A2A10; box-shadow: 0 0 0 2px #E2621D inset; }
+.link.miss .node i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); }
+.link small { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.7); }
+.link.now small { color: #FFC24B; }
+.ringp { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ringp circle { fill: none; stroke-width: 3; }
+.ringp .tr { stroke: rgba(255,255,255,.14); }
+.ringp .vl { stroke: #FFC24B; stroke-linecap: round; }
+.miles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; border-radius: 18px; background: rgba(255,255,255,.06); }
+.mile { display: grid; justify-items: center; gap: 4px; opacity: .6; }
+.mile.done { opacity: 1; }
+.mile small { font-size: 11.5px; font-weight: 800; color: rgba(255,255,255,.85); }
+.xpmile { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 800 10.5px var(--f-display); color: #FFC24B; border: 2px dashed rgba(255,194,75,.5); }
+.mile.done .xpmile { background: #FFC24B; color: #2A1409; border-style: solid; }
+.sc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); }
+.freeze { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; background: rgba(120,190,255,.16); color: #B8DCFF; }
+.freeze .ic { width: 15px; height: 15px; }
+
+/* ── Badges: medal art on a 3-column shelf ── */
+.bgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.bdg { display: grid; justify-items: center; align-content: start; gap: 5px; padding: 12px 6px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); text-align: center; transition: transform .15s ease; }
+.bdg:active { transform: scale(.96); }
+.bdg b { font-size: 12.5px; line-height: 1.2; min-height: 2.4em; display: grid; place-items: center; }
+.bdg small { font-size: 11.5px; font-weight: 700; color: var(--ink-3); }
+.bdg:not(.on) b { color: var(--ink-2); }
+.bart { display: block; overflow: visible; }
+.bart.on { filter: drop-shadow(0 6px 10px rgba(15,16,20,.22)); }
+.bart.on.t-epic { filter: drop-shadow(0 6px 16px rgba(91,63,230,.45)); }
+.bart.on.t-gold { filter: drop-shadow(0 6px 14px rgba(224,154,18,.35)); }
+.bart .spark { transform-origin: center; transform-box: fill-box; animation: twinkle 1.4s ease-in-out 4 alternate; }
+@keyframes twinkle { 50% { transform: scale(.5); opacity: .6; } }
+.tier-lbl { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+.tier-lbl.t-bronze { background: #F8E3D2; color: #8A4517; } .tier-lbl.t-silver { background: #E8EBEF; color: #4B5563; }
+.tier-lbl.t-gold { background: #FFF0C2; color: #7A5300; } .tier-lbl.t-epic { background: #ECE8FF; color: #4A30D0; }
+:root[data-theme="dark"] .tier-lbl.t-bronze { background: #3A2414; color: #F7C894; } :root[data-theme="dark"] .tier-lbl.t-silver { background: #2A2E35; color: #D5DAE1; }
+:root[data-theme="dark"] .tier-lbl.t-gold { background: #3A2E0D; color: #FFDC73; } :root[data-theme="dark"] .tier-lbl.t-epic { background: #251F47; color: #B3A5FF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tier-lbl.t-bronze { background: #3A2414; color: #F7C894; } :root:not([data-theme="light"]) .tier-lbl.t-silver { background: #2A2E35; color: #D5DAE1; }
+  :root:not([data-theme="light"]) .tier-lbl.t-gold { background: #3A2E0D; color: #FFDC73; } :root:not([data-theme="light"]) .tier-lbl.t-epic { background: #251F47; color: #B3A5FF; } }
+.bprog { display: block; width: 70%; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.bprog i { display: block; height: 100%; border-radius: 3px; background: var(--you); }
+.bprog.lg { width: 100%; height: 8px; }
+.bhero { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 4px 0 6px; }
+.bhero h2 { font-size: 26px; }
+.bhero .bart { animation: medalIn .7s cubic-bezier(.3, 1.4, .5, 1); }
+.bhero.unlock .bart { animation: medalSpin 1.1s cubic-bezier(.2, .9, .3, 1.2); }
+@keyframes medalIn { from { transform: scale(.4) rotate(-12deg); opacity: 0; } }
+@keyframes medalSpin { 0% { transform: scale(.2) rotateY(0); opacity: 0; } 60% { transform: scale(1.08) rotateY(360deg); opacity: 1; } 100% { transform: scale(1) rotateY(360deg); } }
+.bbar { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 4px; }
+.bbar b { white-space: nowrap; }
+.unlocked { display: grid; gap: 8px; }
+.unlocked .lrow { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.unlocked .bart { width: 52px; height: 52px; }
 .goal-set { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; }
 
 /* ═════ Plans and plan features ═════ */

@@ -207,13 +207,15 @@ function bindMapDrag() {
 const joinSheet = (id) => regStart(id);
 function celebrateJoin(id, who) {
   const a = actById(id); const before = level();
-  S.week += 1; S.xp += 50; S.streak[S.streak.length - 1] = 1; save();
+  S.week += 1; S.xp += 50; if (S.week >= S.goal) S.streak[S.streak.length - 1] = 1; save();
+  const nb = badgeCheck(true);
   const lvlUp = level() > before; const goalHit = S.week === S.goal;
   const names = who.map(firstName);
   sheet(`<div class="xp-burst"><span class="big num">+50 XP</span><h2>${lvlUp ? `Level ${level()}! You’re a ${TITLES[Math.min(level() - 1, TITLES.length - 1)].toLowerCase()} now` : 'You’re in!'}</h2>
       <div class="muted">${esc(a.title)} · ${when(a)}<br>Playing: ${esc(names.join(', '))}. Added to the family calendar, with a reminder 2 hours before.</div></div>
     <div class="card" style="padding:14px;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;font-weight:700"><span>Level ${level()}</span><span class="num">${S.xp % LV}/${LV} XP</span></div><div class="xpbar" style="background:var(--surface-2)"><i style="width:0%" id="xpFill"></i></div>
       <div class="muted" style="font-size:13.5px">${goalHit ? 'Weekly goal reached. Your streak is safe.' : `Weekly goal: ${Math.min(S.week, S.goal)} of ${S.goal} games`}</div></div>
+    ${unlockedRowHTML(nb)}
     <div style="display:flex;gap:10px"><button class="pill soft" style="flex:1" data-act="shareGame" data-id="${a.id}">${ic('share-2')}Invite friends</button><button class="pill" style="flex:1" data-act="close">Done</button></div>`);
   requestAnimationFrame(() => setTimeout(() => { const f = $('#xpFill'); if (f) f.style.width = ((S.xp % LV) / LV) * 100 + '%'; }, 60));
   confetti(sp(a.sport).c); buzz(30);
@@ -299,19 +301,16 @@ function renderBook() {
   $('#players').addEventListener('change', save);
 }
 
-/* ═════ ME: player card, goal, streak, badges ═════ */
-const BADGES = [['First whistle', 'award', 'Join your first game', () => S.joined.length >= 1], ['Early bird', 'clock', 'Play a game before 7 am', () => S.joined.some((id) => +((actById(id) || { t: '12' }).t.split(':')[0]) < 7)], ['Captain', 'crown', 'Captain a team', () => true],
-  ['Hat-trick', 'flame', 'Hit your weekly goal 3 weeks running', () => streakWeeks() >= 3], ['Explorer', 'compass', 'Play 4 different sports', () => new Set(S.joined.map((id) => (actById(id) || {}).sport)).size >= 4], ['Court boss', 'calendar-days', 'Book a court for your crew', () => !!S.booked]];
+/* ═════ ME: player card, goal, streak, badges (badge art and streak card in d2-badges.js) ═════ */
 function renderMe() {
   const lv = level(), title = TITLES[Math.min(lv - 1, TITLES.length - 1)];
-  const weeks = S.streak.map((v, i) => ({ v, l: i === S.streak.length - 1 ? 'Now' : `-${S.streak.length - 1 - i}w` }));
   $('#scr-me').innerHTML = `<div class="player"><div class="row1"><span class="ava">AM</span><div><h2>Arjun Mehta</h2><div class="lvl">Level ${lv} · ${title}</div></div></div>
       <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:6px"><span>${S.xp % LV} / ${LV} XP to level ${lv + 1}</span><span class="num">${S.xp} total</span></div><div class="xpbar"><i style="width:${((S.xp % LV) / LV) * 100}%"></i></div></div>
-      <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter((b) => b[3]()).length}</b><span>Badges</span></div></div></div>
+      <div class="stats"><div><b class="num">${S.joined.length}</b><span>Games</span></div><div><b class="num">${streakWeeks()}</b><span>Week streak</span></div><div><b class="num">${BADGES.filter(badgeEarned).length}/${BADGES.length}</b><span>Badges</span></div></div></div>
     ${planCardHTML()}
     <div class="section card goal-set"><div style="display:flex;gap:14px;align-items:center">${goalRing()}<div><b>Weekly goal</b><div class="muted" style="font-size:13.5px">${Math.min(S.week, S.goal)} of ${S.goal} games this week</div></div></div><div class="stepper"><button data-act="goal" data-d="-1" aria-label="Lower goal">${ic('minus')}</button><b class="num">${S.goal}</b><button data-act="goal" data-d="1" aria-label="Raise goal">${ic('plus')}</button></div></div>
-    <div class="section"><h2>Streak</h2><div class="weeks" aria-label="Weeks you hit your goal">${weeks.map((w) => `<div><i class="${w.v ? 'hit' : ''}" style="height:${w.v ? 56 : 18}px"></i>${w.l}</div>`).join('')}</div></div>
-    <div class="section"><h2>Badges</h2><div class="badges">${BADGES.map(([n, i, how, got], k) => `<button class="badge ${got() ? '' : 'locked'}" data-act="badge" data-i="${k}"><span class="medal">${ic(got() ? i : 'lock')}</span>${n}</button>`).join('')}</div></div>
+    ${streakCardHTML()}
+    ${badgesHTML()}
     ${meSettingsHTML()}
     <div class="section"><h2>Appearance</h2><div class="seg">${[['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([k, l]) => `<button data-act="theme" data-id="${k}" aria-pressed="${S.theme === k}">${l}</button>`).join('')}</div></div>
     <div class="section"><button class="pill block soft" data-act="reset">${ic('rotate-ccw')}Reset demo</button><div class="faint" style="font-size:12.5px;text-align:center">Prototype. XP, streaks, people and prices are sample data.</div></div>`;
@@ -341,10 +340,9 @@ const A = {
   book: () => { const v = VB(S.venue); S.booked = true; const before = level(); S.xp += 30;
     const b = { id: 'b' + Date.now(), vid: v.id, d: S.bookDay, start: S.start, dur: S.dur, players: S.players }; S.turf.push(b); save(); buzz(25); confetti('#5B3FE6');
     sheet(`<div class="xp-burst"><span class="big num">+30 XP</span><h2>${esc(v.name)} is yours</h2><div class="muted">${dayLabel(S.bookDay)}, ${S.dur} h from ${new Intl.DateTimeFormat('en-IN', { hour: 'numeric' }).format(dateAt(0, String(S.start).padStart(2, '0') + ':00'))}<br>UPI requests sent to ${S.players - 1} players. Unpaid shares get a WhatsApp reminder.${level() > before ? `<br><b>Level ${level()} reached.</b>` : ''}</div></div>
+      ${unlockedRowHTML(badgeCheck(true))}
       ${S.players > 1 ? `<button class="pill block soft" data-act="postSpots" data-id="${b.id}">${ic('megaphone')}Post open spots as a game${can.pin() ? '' : ' · Pro'}</button>` : ''}<button class="pill block" data-act="close">Done</button>`); renderTabbar(); },
   goal: (el) => { S.goal = Math.max(1, Math.min(7, S.goal + +el.dataset.d)); save(); renderMe(); },
-  badge: (el) => { const [n, i, how, got] = BADGES[+el.dataset.i];
-    sheet(`${head(n, got() ? 'Earned' : 'Not yet earned')}<div style="display:grid;justify-items:center;gap:10px;text-align:center"><span class="medal" style="width:80px;height:80px;border-radius:24px;display:grid;place-items:center;background:${got() ? 'var(--you-soft)' : 'var(--surface-2)'};color:${got() ? 'var(--you-text)' : 'var(--ink-3)'}">${ic(got() ? i : 'lock')}</span><div class="muted">${how}</div></div><button class="pill block" data-act="${got() ? 'close' : 'tab'}" data-id="play">${got() ? 'Nice' : 'Find a game'}</button>`); },
   reset: () => { S = fresh(); save(); applyTheme(); applyPrefs(); renderNote(); go('play'); toast('Demo reset', 'rotate-ccw'); },
 };
 
@@ -354,6 +352,7 @@ const A = {
 /*@@d2-lite.js@@*/
 /*@@d2-pro.js@@*/
 /*@@d2-corp.js@@*/
+/*@@d2-badges.js@@*/
 
 document.addEventListener('click', (e) => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el); } });
 document.addEventListener('keydown', (e) => {
