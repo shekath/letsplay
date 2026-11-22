@@ -113,7 +113,7 @@ function adminHome() {
 }
 function approvalCard(t) {
   const m = members(t.id), by = empById(t.by);
-  return `<div class="card appr"><div style="display:flex;gap:12px;align-items:center">${crest(t.id, 'lg')}<div style="flex:1;min-width:0"><b>${esc(t.name)}</b><div class="faint" style="font-size:13px">${sp(t.sport).name} · ${m.length} players · ${esc(t.dept)}</div><div class="faint" style="font-size:12.5px">Registered by ${esc(by ? by.name : 'an employee')} · ${esc(t.when)}</div></div></div>
+  return `<div class="card appr"><div style="display:flex;gap:12px;align-items:center">${crest(t.id, 'lg')}<div style="flex:1;min-width:0"><b>${esc(t.name)}</b><div class="faint" style="font-size:13px">${sp(t.sport).name} · ${m.length} players · ${esc(t.dept)}</div><div class="faint" style="font-size:12.5px">Registered by ${esc(by ? by.name : 'an employee')} · ${esc(t.when)}${captainOf(t.id) ? ` · captain ${esc(captainOf(t.id).name)}` : ''}</div></div></div>
     <div class="avrow">${m.slice(0, 8).map((e) => avatar(e.name)).join('')}</div>
     ${m.length < W().reg.min ? `<div class="errbox">${ic('info')}<div>Below the minimum of ${W().reg.min} players.</div></div>` : ''}
     <div style="display:flex;gap:8px"><button class="pill sm soft" style="flex:1" data-act="teamDecline" data-id="${t.id}">Decline</button><button class="pill sm" style="flex:1" data-act="teamApprove" data-id="${t.id}">${ic('check')}Approve</button></div></div>`;
@@ -225,17 +225,28 @@ function adminTeams() {
 }
 function ctSheet(id) {
   const t = teamById(id), m = members(id), capId = W().caps[id];
-  sheet(`${head(esc(t.name), `${esc(t.dept)}${t.sport ? ' · ' + sp(t.sport).name : ''} · ${m.length} players`)}
+  const cap = empById(capId);
+  sheetUpdate(`${head(esc(t.name), `${esc(t.dept)}${t.sport ? ' · ' + sp(t.sport).name : ''} · ${m.length} players`)}
     ${t.status === 'pending' ? approvalCard(t) : ''}
-    <div class="lrows">${m.map((e) => rowHTML({ lead: avatar(e.name), title: esc(e.name), sub: `${esc(e.dept)}${e.id === capId ? ' · captain' : ''}`, end: e.id === capId ? `<span class="okchip">${ic('crown')}C</span>` : `<button class="pill sm soft" data-act="ctRemove" data-id="${e.id}" data-t="${id}">Remove</button>` })).join('')}</div>
+    <div class="caprow">${ic('crown')}<div><b>${cap ? esc(cap.name) : 'No captain yet'}</b><small>${cap ? 'Captain · leads lineups and team messages' : 'Tap the crown next to a player to make them captain'}</small></div></div>
+    <div class="lrows">${m.map((e) => rowHTML({ lead: avatar(e.name), title: esc(e.name), sub: `${esc(e.dept)}${e.id === capId ? ' · captain' : ''}`, end: e.id === capId ? `<span class="okchip">${ic('crown')}Captain</span>`
+      : `<span class="rowbtns"><button class="round sm" data-act="ctCap" data-id="${e.id}" data-t="${id}" aria-label="Make ${esc(e.name)} captain">${ic('crown')}</button><button class="pill sm soft" data-act="ctRemove" data-id="${e.id}" data-t="${id}">Remove</button></span>` })).join('')}</div>
     <div class="two"><button class="pill soft" data-act="ctAdd" data-id="${id}">${ic('user-plus')}Add people</button><button class="pill" data-act="annNew" data-id="team:${id}">${ic('megaphone')}Message team</button></div>`);
 }
 let PK = null;   /* people picker for creating, registering or adding to a team */
+/* Captain choice while creating (admin) or registering (employee): any player on the team, you included when registering. */
+function capPickHTML(reg) {
+  const cands = (reg ? [you()] : []).concat(PK.sel.map(empById));
+  if (!PK.cap || !cands.some((e) => e.id === PK.cap)) PK.cap = cands.length ? cands[0].id : null;
+  return `<div class="fgrp capbox"><b>${ic('crown')}Captain</b>${cands.length ? `<div class="chips wrap">${cands.map((e) => `<button class="chip neutral" data-act="pkCap" data-id="${e.id}" aria-pressed="${PK.cap === e.id}">${avatar(e.name)}${esc(e.you ? 'Me' : e.name.split(' ')[0] + ' ' + e.name.split(' ')[1][0] + '.')}</button>`).join('')}</div>` : ''}
+    <small class="faint">${cands.length ? 'The captain confirms lineups, gets fixture updates first and can message the team. You can change it later.' : 'Pick players below, then choose who captains the team.'}</small></div>`;
+}
 function pickerSheet() {
   const q = PK.q.trim().toLowerCase(), list = emps().filter((e) => e.status === 'active' && !e.you && !(PK.tid && e.teams.includes(PK.tid)) && (PK.dept === 'all' || e.dept === PK.dept) && (!q || e.name.toLowerCase().includes(q))).sort((a, b) => a.teams.length - b.teams.length || a.name.localeCompare(b.name));
   const reg = PK.mode === 'register', R = W().reg;
   sheetUpdate(`${head(PK.mode === 'add' ? 'Add people' : reg ? 'Register a team' : 'Create a team', reg ? `Your company’s admin approves it. ${R.min}–${R.max} players.` : `${esc(ORG.name)} only`)}
     ${PK.mode !== 'add' ? `<label class="fld"><span>Team name</span><input id="pkName" value="${esc(PK.name)}" placeholder="For example Night Owls FC"></label>
+      ${capPickHTML(reg)}
       <div class="fgrp"><b>Sport</b><div class="chips">${(reg ? R.sports : TOUR_SPORTS).map((k) => `<button class="chip" style="--c:${sp(k).c}" data-act="pkSport" data-id="${k}" aria-pressed="${PK.sport === k}">${ic(sp(k).icon)}${sp(k).name}</button>`).join('')}</div></div>` : ''}
     <label class="search">${ic('search')}<input id="pkQ" type="search" placeholder="Search colleagues" value="${esc(PK.q)}" aria-label="Search colleagues"></label>
     <div class="chips"><button class="chip neutral" data-act="pkDept" data-id="all" aria-pressed="${PK.dept === 'all'}">Everyone</button>${depts().map((d) => `<button class="chip neutral" data-act="pkDept" data-id="${esc(d)}" aria-pressed="${PK.dept === d}">${esc(d)}</button>`).join('')}</div>
@@ -457,6 +468,10 @@ Object.assign(A, {
   regNew: () => { PK = { mode: 'register', name: '', sport: W().reg.sports[0], q: '', dept: you().dept, sel: [] }; pickerSheet(); },
   pkSport: (el) => { PK.sport = el.dataset.id; pickerSheet(); },
   pkDept: (el) => { PK.dept = el.dataset.id; pickerSheet(); },
+  pkCap: (el) => { PK.cap = el.dataset.id; pickerSheet(); },
+  ctCap: (el) => { const t = el.dataset.t, e = empById(el.dataset.id); W().caps[t] = e.id; save(); ctSheet(t); renderCorp(); toast(`${e.name} is now captain of ${teamById(t).name}. The team was told`, 'crown');
+    if (e.you) companyNote('crown', `You’re captain of ${teamById(t).name}`, 'You can confirm lineups, reply to fixture changes and message the team.', 'action'); },
+  empCap: (el) => { const t = el.dataset.t, e = empById(el.dataset.id); W().caps[t] = e.id; save(); closeSheet(); renderCorp(); toast(`${e.name.split(' ')[0]} is now captain. You’re a player in the team`, 'crown'); },
   pkToggle: (el) => { const id = el.dataset.id; PK.sel = PK.sel.includes(id) ? PK.sel.filter((x) => x !== id) : PK.sel.concat(id); pickerSheet(); },
   pkDone: () => { const ws = W(), err = $('#pkErr'), fail = (m) => { err.hidden = false; err.lastElementChild.textContent = m; err.scrollIntoView({ block: 'nearest' }); };
     if (PK.mode === 'add') { PK.sel.forEach((id) => empById(id).teams.push(PK.tid)); const t = PK.tid, n = PK.sel.length; PK = null; save(); ctSheet(t); renderCorp(); toast(`${n} added. They’ve been notified`, 'user-plus'); return; }
@@ -466,7 +481,8 @@ Object.assign(A, {
     if (reg && (size < ws.reg.min || size > ws.reg.max)) return fail(`Teams need ${ws.reg.min}–${ws.reg.max} players, including you. You have ${size}.`);
     const id = 'ct' + Date.now().toString(36), status = reg && ws.reg.approve ? 'pending' : 'approved';
     ws.cteams.push({ id, name: PK.name.trim(), dept: [...new Set(PK.sel.map((x) => empById(x).dept))].length > 1 ? 'Mixed' : empById(PK.sel[0]).dept, sport: PK.sport, c: TEAM_COLORS[ws.cteams.length % TEAM_COLORS.length], ab: PK.name.trim().split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase(), status, by: reg ? you().id : null, when: 'Just now', w: 0, d: 0, l: 0, form: '' });
-    PK.sel.forEach((x) => empById(x).teams.push(id)); if (reg) { you().teams.push(id); ws.caps[id] = you().id; } else ws.caps[id] = PK.sel[0];
+    PK.sel.forEach((x) => empById(x).teams.push(id)); if (reg) you().teams.push(id);
+    ws.caps[id] = PK.cap || (reg ? you().id : PK.sel[0]);
     const nm = PK.name.trim(); PK = null; save(); closeSheet(); renderCorp();
     if (reg) { toast(status === 'pending' ? `${nm} sent to the admin for approval` : `${nm} is registered`, 'send'); companyNote('users', `${nm}: ${status === 'pending' ? 'waiting for approval' : 'registered'}`, status === 'pending' ? 'Your company’s sports admin will review it. Your teammates were told they’ve been added.' : 'Your team is in. Teammates have been notified.'); }
     else toast(`${nm} created. Players were notified`, 'users'); },
@@ -496,7 +512,8 @@ Object.assign(A, {
   /* Employee */
   rsvp: (el) => { const ws = W(); ws.rsvp[el.dataset.id] = ws.rsvp[el.dataset.id] === el.dataset.v ? null : el.dataset.v; save(); renderCorp(); if (ws.rsvp[el.dataset.id]) toast({ yes: 'You’re in. Your captain can see it', maybe: 'Marked as maybe', no: 'Your captain knows you can’t make it' }[el.dataset.v], 'check'); },
   empTeamOpen: (el) => { const t = teamById(el.dataset.id), m = members(t.id), capId = W().caps[t.id], fx = S.fixtures.filter((f) => f.a === t.id || f.b === t.id);
-    sheet(`${head(esc(t.name), `${esc(t.dept)} · ${m.length} players`)}<div class="lrows">${m.map((e) => rowHTML({ lead: avatar(e.name), title: esc(e.name) + (e.you ? ' (you)' : ''), sub: esc(e.dept) + (e.id === capId ? ' · captain' : ''), end: e.id === capId ? `<span class="okchip">${ic('crown')}C</span>` : '' })).join('')}</div>
+    sheet(`${head(esc(t.name), `${esc(t.dept)} · ${m.length} players`)}<div class="lrows">${m.map((e) => rowHTML({ lead: avatar(e.name), title: esc(e.name) + (e.you ? ' (you)' : ''), sub: esc(e.dept) + (e.id === capId ? ' · captain' : ''), end: e.id === capId ? `<span class="okchip">${ic('crown')}Captain</span>` : capId === you().id ? `<button class="round sm" data-act="empCap" data-id="${e.id}" data-t="${t.id}" aria-label="Hand captaincy to ${esc(e.name)}">${ic('crown')}</button>` : '' })).join('')}</div>
+      ${capId === you().id && m.length > 1 ? '<div class="faint" style="font-size:12.5px">You’re the captain. Tap the crown next to a teammate to hand over captaincy.</div>' : ''}
       ${fx.length ? `<div class="fgrp"><b>Fixtures</b><div class="lrows">${fx.map(fixtureRow).join('')}</div></div>` : ''}
       ${capId === you().id ? `<button class="pill block" data-act="annNew" data-id="team:${t.id}">${ic('megaphone')}Message the team</button>` : ''}`); },
   /* Fixtures and tournaments */
