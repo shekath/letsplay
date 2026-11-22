@@ -108,7 +108,7 @@ function planCardHTML() {
 const TRY = {
   lite: ['Tap + on a game: step-by-step registration with family members', 'Games → Family: two kids’ drop-offs clash', 'Tap the pin button on the map to see what Pro adds'],
   pro: ['Map pin button → Add a place: snap a photo of a new court', 'Map pin button → Host a game at any address', 'Team → Create a team → add players nearest first and share'],
-  corporate: ['League: standings, insights and Add fixture', 'League → Cups → Create a tournament', 'Open Monsoon Cricket Cup and enter a semifinal result'],
+  corporate: ['Company → People → Import sheet → try the sample sheet', 'Teams: approve Night Owls FC, or switch to Employee and register a team', 'Events → Tournaments → create and publish, then check the bell as an employee'],
 };
 function renderNote() {
   const t = $('#noteTier'); if (t) t.innerHTML = Object.keys(PLANS).map((k) => `<button data-act="setTier" data-id="${k}" aria-pressed="${S.tier === k}">${PLANS[k].name}</button>`).join('');

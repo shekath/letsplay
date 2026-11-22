@@ -39,7 +39,7 @@ const clone = (o) => JSON.parse(JSON.stringify(o));
 /* Sample week: your 5K run, plus Vihaan's futsal and Aanya's swim lesson on Saturday morning, which clash for drop-offs. */
 const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7', 'a13', 'a16'], taken: { a7: 1, a13: 1, a16: 1 }, bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], freezes: 1, bestStreak: 4,
   venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10,
-  tier: 'lite', billing: 'monthly', renews: null, seats: 50, payApp: 'GPay',
+  tier: 'lite', billing: 'monthly', renews: null, seats: 150, payApp: 'GPay', corpRole: 'admin',
   waitlist: [], turf: [], hosted: [], places: [], teams: clone(SAMPLE_TEAMS), tm: {}, fixtures: clone(SAMPLE_FIXTURES),
   cart: [], shopCat: 'all', shopQ: '', gamesView: 'upcoming', calWho: 'all', calDay: 0, corpView: 'league', bigText: false });
 let S = fresh();
@@ -84,7 +84,7 @@ function go(t) {
 /* Corporate swaps Team for League. Counts show what needs attention. */
 function renderTabbar() {
   const todo = notes().filter((n) => !n.done && noteVisible(n) && (n.pri === 'urgent' || n.pri === 'action')).length;
-  const tabs = [['play', 'compass', 'Play'], ['games', 'calendar-days', 'Games', todo], ['team', can.org() ? 'trophy' : 'users', can.org() ? 'League' : 'Team'], ['shop', 'shopping-bag', 'Shop', S.cart.length], ['me', 'user', 'Me']];
+  const tabs = [['play', 'compass', 'Play'], ['games', 'calendar-days', 'Games', todo], ['team', can.org() ? 'building-2' : 'users', can.org() ? 'Company' : 'Team'], ['shop', 'shopping-bag', 'Shop', S.cart.length], ['me', 'user', 'Me']];
   $('#tabbar').innerHTML = tabs.map(([k, i, l, n]) => `<button class="tab" data-act="tab" data-id="${k}" aria-label="${l}${n ? `, ${n} ${k === 'shop' ? 'in bag' : 'to do'}` : ''}" ${tab === k ? 'aria-current="page"' : ''}><span class="tic">${ic(i)}${n ? `<i class="tcount num">${n}</i>` : ''}</span><span class="lbl">${l}</span></button>`).join('');
 }
 
@@ -324,7 +324,7 @@ function renderMe() {
 
 /* ── Actions ── */
 const A = {
-  tab: (el) => go(el.dataset.id),
+  tab: (el) => { if (el.dataset.id === 'team' && tab === 'team') S.corpPersonal = false; go(el.dataset.id); },
   close: () => closeSheet(),
   theme: (el) => { S.theme = el.dataset.id; save(); applyTheme(); if (tab === 'me') renderMe(); },
   mood: (el) => { S.mood = el.dataset.id; save(); renderPlay(); },

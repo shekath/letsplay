@@ -94,7 +94,7 @@ const teamCode = (t) => t.name.replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase
 const teamLink = (t) => 'https://letsplay.app/join/' + teamCode(t).toLowerCase();
 const crestTxt = (t) => t.name.split(' ').map((w) => w[0]).join('').slice(0, 2);
 function renderTeam() {
-  if (can.org()) { renderCorp(); return; }
+  if (can.org() && !S.corpPersonal) { renderCorp(); return; }
   if (TV && teamOf(TV) && can.teams()) { renderTeamView(); return; }
   const el = $('#scr-team');
   if (!can.teams()) {
@@ -104,7 +104,7 @@ function renderTeam() {
       <div class="section"><button class="pill block" style="min-height:56px" data-act="subscribe" data-id="pro" data-period="yearly">Get Pro · ${inr(Math.floor(yearlyPrice(PLANS.pro.monthly) / 12))}/month, billed yearly</button><button class="pill block soft" data-act="plans">Compare plans</button></div>`;
     return;
   }
-  el.innerHTML = `<div class="head"><div><h1>Your teams</h1><div class="sub">${S.teams.length} team${S.teams.length === 1 ? '' : 's'} · you captain ${S.teams.filter((t) => t.members[0].role === 'Captain').length}</div></div><button class="pill sm" data-act="newTeam">${ic('plus')}New team</button></div>
+  el.innerHTML = `${can.org() ? `<button class="pill sm soft" style="margin-bottom:12px" data-act="backToCompany">${ic('arrow-left')}Company</button>` : ''}<div class="head"><div><h1>Your teams</h1><div class="sub">${S.teams.length} team${S.teams.length === 1 ? '' : 's'} · you captain ${S.teams.filter((t) => t.members[0].role === 'Captain').length}</div></div><button class="pill sm" data-act="newTeam">${ic('plus')}New team</button></div>
     <div class="tcards">${S.teams.map((t) => { const yes = t.members.filter((m) => m.status === 'yes').length; return `<button class="tcard" style="--c:${t.color}" data-act="openTeam" data-id="${t.id}">
       <span class="crest lg" style="--c:${t.color}">${esc(crestTxt(t))}</span><span class="ltext"><b>${esc(t.name)}</b><small>${sp(t.sport).name} · ${t.members.length} members · ${esc(t.privacy)}</small>
       ${t.next ? `<small class="tnext">${ic('calendar-days')}v ${esc(t.next.vs)} · ${dayLabel(t.next.d)} ${fmtT(t.next.d, t.next.t)}</small>` : '<small class="tnext">No match scheduled</small>'}</span>
@@ -231,6 +231,7 @@ Object.assign(A, {
     S.teams.push(t); save(); NT = null; TV = t.id; teamTab = 'roster'; renderTeam(); openAddPlayers(t.id, true); },
   openTeam: (el) => openTeam(el.dataset.id),
   teamBack: () => { TV = null; picking = null; renderTeam(); },
+  backToCompany: () => { S.corpPersonal = false; TV = null; save(); renderTeam(); },
   teamTab: (el) => { teamTab = el.dataset.id; renderTeamView(); },
   tVote: (el) => { const t = teamOf(TV); t.members[0].status = el.dataset.id; save(); renderTeamView(); },
   tNudge: () => toast('Reminder sent to everyone who hasn’t replied', 'send'),

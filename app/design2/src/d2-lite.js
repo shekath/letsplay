@@ -172,6 +172,7 @@ function noteAct(id, k) {
   const res = { keep: 'Your spot is kept. We’ll update you at 5 am.', cancelSpot: 'Place cancelled. Refund on its way.', ack: 'Noted.', yes: 'You’re marked as playing.', no: 'Captain told you can’t make it.', snooze: 'We’ll remind you tomorrow.', pay: 'Paid ₹300 via UPI.' };
   if (k === 'view') { if (actById(n.ref)) openDetail(n.ref); return; }
   if (k === 'shop') { go('shop'); return; }
+  if (k === 'company') { n.read = true; save(); closeSheet(); A.company(); return; }
   if (k === 'cancelSpot') { S.joined = S.joined.filter((x) => x !== n.ref); delete S.bookings[n.ref]; S.taken[n.ref] = Math.max(0, (S.taken[n.ref] || 1) - 1); }
   if (k === 'yes' || k === 'no') { const t = S.teams.find((x) => x.id === n.ref); if (t) t.members[0].status = k; }
   n.done = res[k] || 'Done'; n.read = true; save(); notesSheet(); renderTabbar(); toast(n.done, 'check');
