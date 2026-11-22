@@ -183,9 +183,9 @@ function noteAct(id, k) {
 function gamesHead() {
   const v = S.gamesView;
   return `<div class="head"><div><h1>My games</h1></div>${bellHTML()}</div>
-    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">${can.pin() ? 'Book' : 'Book a court'}</button>${can.pin() ? `<button data-act="gamesView" data-id="hosting" aria-pressed="${v === 'hosting'}">Hosting</button>` : ''}</div>`;
+    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">Book</button><button data-act="gamesView" data-id="hosting" aria-pressed="${v === 'hosting'}">Hosting</button></div>`;
 }
-function renderGames() { if (S.gamesView === 'hosting' && !can.pin()) S.gamesView = 'upcoming'; if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else if (S.gamesView === 'hosting') renderHosting(); else renderUpcoming(); }
+function renderGames() { if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else if (S.gamesView === 'hosting') renderHosting(); else renderUpcoming(); }
 function famEvents() {
   const ev = [];
   allActs().filter((a) => S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'g' + a.id, ref: a.id, kind: 'game', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: S.bookings[a.id] || ['f0'], sport: a.sport }));
@@ -224,7 +224,7 @@ function renderUpcoming() {
       ${clashes.length ? rowHTML({ act: 'gamesView', id: 'family', icon: 'calendar-days', c: 'var(--live)', title: `${clashes.length} clash${clashes.length > 1 ? 'es' : ''} in the family calendar`, sub: `${dayLabel(clashes[0].a.d)}: ${esc(clashes[0].a.title)} overlaps ${esc(clashes[0].b.title)}` }) : ''}</div></div>` : ''}
     ${days.length ? days.map((d) => `<div class="section"><h2>${dayLabel(d)} <span class="faint" style="font:600 13px var(--f-body)">${longFmt.format(dateAt(d, '12:00'))}</span></h2><div class="lrows">${ev.filter((e) => e.d === d).map((e) => evRow(e, clashes.some((c) => c.a.key === e.key || c.b.key === e.key))).join('')}</div></div>`).join('')
       : `<div class="empty section">${ic('calendar-days')}<b>Nothing booked this week</b><button class="pill sm" data-act="tab" data-id="play">Find a game</button></div>`}
-    ${can.pin() ? `<div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>` : ''}`;
+    ${can.pin() || !activeHosted().length ? `<div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>` : ''}`;
 }
 function renderFamily() {
   const ev = famEvents(), who = S.calWho, day = S.calDay, clashes = findClashes(ev);
@@ -301,7 +301,7 @@ function meSettingsHTML() {
   return `<div class="section"><h2>Family and settings</h2><div class="lrows">
     ${rowHTML({ act: 'familySheet', icon: 'users', title: 'Family profiles', sub: family().map((f) => esc(firstName(f.id))).join(', ') })}
     ${rowHTML({ act: 'sportsList', icon: 'g-carrom', title: 'Your sports', sub: can.pin() ? (customSports().length ? customSports().map((c) => esc(c.name)).join(', ') : 'Add carrom, table tennis and more') : 'Add your own sports with Pro' })}
-    ${can.pin() ? rowHTML({ act: 'gamesView', id: 'hosting', icon: 'megaphone', title: 'Games you host', sub: `${S.hosted.filter((a) => a.hostedByYou && a.d >= 0).length} upcoming · ${S.hosted.filter((a) => a.hostedByYou && a.d < 0).length} finished` }) : ''}
+    ${rowHTML({ act: 'gamesView', id: 'hosting', icon: 'megaphone', title: 'Games you host', sub: `${S.hosted.filter((a) => a.hostedByYou && a.d >= 0).length} upcoming · ${S.hosted.filter((a) => a.hostedByYou && a.d < 0).length} finished${can.pin() ? '' : ' · one at a time on Lite'}` })}
     ${rowHTML({ act: 'paySheet', icon: 'wallet', title: 'Payments', sub: `UPI · ${S.payApp} by default` })}
     ${rowHTML({ act: 'notePrefs', icon: 'bell', title: 'Notifications', sub: 'Choose updates, offers and suggestions' })}
     ${rowHTML({ act: 'bigText', icon: 'accessibility', pressed: !!S.bigText, title: 'Larger text', sub: 'Easier reading across the app', end: `<span class="tickbox">${ic('check')}</span>` })}</div></div>`;

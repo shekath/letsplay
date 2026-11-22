@@ -793,6 +793,9 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .hrow > img { width: 56px; height: 56px; border-radius: 14px; object-fit: cover; }
 .hrow.past > img { filter: grayscale(.85); opacity: .8; }
 .hact { display: flex; gap: 6px; }
+.hbtns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.hbtns .pill.sm { min-height: 34px; padding: 0 11px; font-size: 13px; }
+.hbtns .pill .ic { width: 15px; height: 15px; }
 .pill.danger { color: color-mix(in srgb, var(--live) 75%, var(--ink)); }
 .pill.danger-fill { background: #C9362C; color: #fff; }
 
@@ -1313,7 +1316,8 @@ function openDetail(id) {
     <div class="facts"><div class="fact"><b>${when(a)}</b><span>${a.mins} min</span></div><div class="fact"><b>${money(a.price)}</b><span>${spotsLeft(a)} of ${a.total} spots left</span></div><div class="fact"><b>${a.level}</b><span>Ages ${a.ages}</span></div><div class="fact"><b>${a.setting}</b><span>${esc(a.surface)}</span></div></div>
     <div class="host-row">${avatar(a.host)}<div style="flex:1;min-width:0"><b>${esc(a.host)}</b><div class="faint" style="font-size:13px">${COACH[a.id] ? `Coach ${esc(COACH[a.id][0])} · ${esc(COACH[a.id][1])}` : a.hostedByYou ? 'You’re hosting' : 'Host'}</div></div><button class="round" data-act="shareGame" data-id="${a.id}" aria-label="Share this game">${ic('share-2')}</button></div>
     <div class="muted" style="font-size:14px"><b style="color:var(--ink)">Bring:</b> ${esc(a.equipment)}<br><b style="color:var(--ink)">Access:</b> ${esc(a.access)}<br><b style="color:var(--ink)">Cancellation:</b> ${esc(a.cancel || 'Free cancellation up to 2 hours before.')}</div>
-    ${joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : spotsLeft(a) === 0 ? `<button class="pill block soft" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('timer')}${S.waitlist.includes(a.id) ? 'You’re on the waitlist' : 'Full · join the waitlist'}</button>` : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
+    ${a.hostedByYou && a.d >= 0 ? `<div class="okbox">${ic('megaphone')}<div><b>You’re hosting this game</b><br>${a.total - spotsLeft(a)} of ${a.total} players have joined.</div></div><div class="two"><button class="pill soft" data-act="hostEdit" data-id="${a.id}">${ic('pencil')}Edit game</button><button class="pill soft danger" data-act="hostCancel" data-id="${a.id}">${ic('trash-2')}Delete game</button></div>`
+      : joined ? `<button class="pill block soft" disabled>${ic('check')}You’re in</button>` : spotsLeft(a) === 0 ? `<button class="pill block soft" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('timer')}${S.waitlist.includes(a.id) ? 'You’re on the waitlist' : 'Full · join the waitlist'}</button>` : `<button class="pill block" data-act="joinFromDetail" data-id="${a.id}" style="min-height:56px">${ic('check')}I’m in · ${money(a.price)}</button>`}`);
 }
 
 /* Stories: games starting soon, full screen, auto-advancing (manual when motion is reduced). */
@@ -1577,9 +1581,9 @@ function tours() { if (!S.tournaments) { S.tournaments = [sampleTournament()]; s
    Locked features stay visible and lead to an upgrade sheet, so people can see what a plan adds. */
 
 /* What Lite and Pro offer in this design (Design 1 keeps its own lists). */
-PLANS.lite.feats = ['Live map of nearby sports', 'Join games and events', 'One team: cricket, football, volleyball, cycling, badminton or tennis', 'Add grounds and play zones with photos and an address', 'Family profiles and calendar', 'Marketplace and deals'];
-PLANS.lite.no = ['More teams and every sport', 'Host games and add custom sports', 'Company workspace'];
-PLANS.pro.feats = ['Everything in Lite', 'Unlimited teams in every sport', 'Custom sports and indoor games', 'Host games at any address', 'Add players nearest first and invite to any app', '10% off in the marketplace'];
+PLANS.lite.feats = ['Live map of nearby sports', 'Join games and events', 'One team: cricket, football, volleyball, cycling, badminton or tennis', 'Host one game at a time, then edit or delete it', 'Add grounds and play zones with photos and an address', 'Family profiles and calendar', 'Marketplace and deals'];
+PLANS.lite.no = ['More teams and every sport', 'Host more than one game, custom sports', 'Company workspace'];
+PLANS.pro.feats = ['Everything in Lite', 'Unlimited teams in every sport', 'Host as many games as you like', 'Custom sports and indoor games', 'Add players nearest first and invite to any app', '10% off in the marketplace'];
 PLANS.pro.no = ['Company workspace'];
 
 /* Shared helpers used by the plan modules */
@@ -1666,7 +1670,7 @@ function checkoutSheet() {
 /* What a locked feature needs, and what the plan adds. */
 const UPSELL = {
   pin: ['pro', 'megaphone', 'Host games and add your own sports with Pro', 'Host games at any address, and add sports like carrom or table tennis with their own icon.'],
-  host: ['pro', 'megaphone', 'Host games with Pro', 'Pick any address, set the fee and players needed, and publish it to people nearby or just your invitees.'],
+  host: ['pro', 'megaphone', 'Host more games with Pro', 'Lite hosts one game at a time. Pro hosts as many as you like, in every sport, including your own custom sports.'],
   teams: ['pro', 'users', 'Build your team with Pro', 'Create teams, add players near you, run match day with availability, lineups and team chat.'],
   org: ['corporate', 'trophy', 'Run sport across your company', 'Department teams, a league with live standings, a schedule builder and a tournament organizer that builds brackets for you.'],
 };
@@ -1687,7 +1691,7 @@ function planCardHTML() {
 
 /* ── Desktop side note: plan switcher and things to try ── */
 const TRY = {
-  lite: ['Team → Create a team (one on Lite), then edit or delete it', 'Map pin button → Add a ground or play zone with photos and an address', 'Tap + on a game: step-by-step registration with family members'],
+  lite: ['Map pin button → Host a game (one at a time on Lite), then edit or delete it in Games → Hosting', 'Team → Create a team (one on Lite), then edit or delete it', 'Map pin button → Add a ground or play zone with photos and an address', 'Tap + on a game: step-by-step registration with family members'],
   pro: ['Map pin button → Add a place: snap a photo of a new court', 'Map pin button → Host a game at any address', 'Team → Create a team → add players nearest first and share'],
   corporate: ['Company → People → Import sheet → try the sample sheet', 'Teams: approve Night Owls FC, or switch to Employee and register a team', 'Events → Tournaments → create and publish, then check the bell as an employee'],
 };
@@ -1907,9 +1911,9 @@ function noteAct(id, k) {
 function gamesHead() {
   const v = S.gamesView;
   return `<div class="head"><div><h1>My games</h1></div>${bellHTML()}</div>
-    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">${can.pin() ? 'Book' : 'Book a court'}</button>${can.pin() ? `<button data-act="gamesView" data-id="hosting" aria-pressed="${v === 'hosting'}">Hosting</button>` : ''}</div>`;
+    <div class="seg" role="group" aria-label="View" style="margin-bottom:14px"><button data-act="gamesView" data-id="upcoming" aria-pressed="${v === 'upcoming'}">Upcoming</button><button data-act="gamesView" data-id="family" aria-pressed="${v === 'family'}">Family${findClashes(famEvents()).length ? ' <i class="dotlive"></i>' : ''}</button><button data-act="gamesView" data-id="book" aria-pressed="${v === 'book'}">Book</button><button data-act="gamesView" data-id="hosting" aria-pressed="${v === 'hosting'}">Hosting</button></div>`;
 }
-function renderGames() { if (S.gamesView === 'hosting' && !can.pin()) S.gamesView = 'upcoming'; if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else if (S.gamesView === 'hosting') renderHosting(); else renderUpcoming(); }
+function renderGames() { if (S.gamesView === 'book') renderBook(); else if (S.gamesView === 'family') renderFamily(); else if (S.gamesView === 'hosting') renderHosting(); else renderUpcoming(); }
 function famEvents() {
   const ev = [];
   allActs().filter((a) => S.joined.includes(a.id)).forEach((a) => ev.push({ key: 'g' + a.id, ref: a.id, kind: 'game', title: a.title, d: a.d, t: a.t, mins: a.mins, venue: a.venue, who: S.bookings[a.id] || ['f0'], sport: a.sport }));
@@ -1948,7 +1952,7 @@ function renderUpcoming() {
       ${clashes.length ? rowHTML({ act: 'gamesView', id: 'family', icon: 'calendar-days', c: 'var(--live)', title: `${clashes.length} clash${clashes.length > 1 ? 'es' : ''} in the family calendar`, sub: `${dayLabel(clashes[0].a.d)}: ${esc(clashes[0].a.title)} overlaps ${esc(clashes[0].b.title)}` }) : ''}</div></div>` : ''}
     ${days.length ? days.map((d) => `<div class="section"><h2>${dayLabel(d)} <span class="faint" style="font:600 13px var(--f-body)">${longFmt.format(dateAt(d, '12:00'))}</span></h2><div class="lrows">${ev.filter((e) => e.d === d).map((e) => evRow(e, clashes.some((c) => c.a.key === e.key || c.b.key === e.key))).join('')}</div></div>`).join('')
       : `<div class="empty section">${ic('calendar-days')}<b>Nothing booked this week</b><button class="pill sm" data-act="tab" data-id="play">Find a game</button></div>`}
-    ${can.pin() ? `<div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>` : ''}`;
+    ${can.pin() || !activeHosted().length ? `<div class="section"><button class="pill block soft" data-act="hostStart">${ic('megaphone')}Host a game</button></div>` : ''}`;
 }
 function renderFamily() {
   const ev = famEvents(), who = S.calWho, day = S.calDay, clashes = findClashes(ev);
@@ -2025,7 +2029,7 @@ function meSettingsHTML() {
   return `<div class="section"><h2>Family and settings</h2><div class="lrows">
     ${rowHTML({ act: 'familySheet', icon: 'users', title: 'Family profiles', sub: family().map((f) => esc(firstName(f.id))).join(', ') })}
     ${rowHTML({ act: 'sportsList', icon: 'g-carrom', title: 'Your sports', sub: can.pin() ? (customSports().length ? customSports().map((c) => esc(c.name)).join(', ') : 'Add carrom, table tennis and more') : 'Add your own sports with Pro' })}
-    ${can.pin() ? rowHTML({ act: 'gamesView', id: 'hosting', icon: 'megaphone', title: 'Games you host', sub: `${S.hosted.filter((a) => a.hostedByYou && a.d >= 0).length} upcoming · ${S.hosted.filter((a) => a.hostedByYou && a.d < 0).length} finished` }) : ''}
+    ${rowHTML({ act: 'gamesView', id: 'hosting', icon: 'megaphone', title: 'Games you host', sub: `${S.hosted.filter((a) => a.hostedByYou && a.d >= 0).length} upcoming · ${S.hosted.filter((a) => a.hostedByYou && a.d < 0).length} finished${can.pin() ? '' : ' · one at a time on Lite'}` })}
     ${rowHTML({ act: 'paySheet', icon: 'wallet', title: 'Payments', sub: `UPI · ${S.payApp} by default` })}
     ${rowHTML({ act: 'notePrefs', icon: 'bell', title: 'Notifications', sub: 'Choose updates, offers and suggestions' })}
     ${rowHTML({ act: 'bigText', icon: 'accessibility', pressed: !!S.bigText, title: 'Larger text', sub: 'Easier reading across the app', end: `<span class="tickbox">${ic('check')}</span>` })}</div></div>`;
@@ -2156,17 +2160,36 @@ function placeSheet(id) {
   sheet(`${photos.length ? `<div class="gallery">${photos.map((ph, i) => `<img src="${ph}" alt="Photo ${i + 1} of ${esc(p.name)}">`).join('')}</div>` : ''}${head(esc(p.name), `${esc(p.kind || 'Place')} · ${p.setting} · ${esc(p.address || addrOf(p.x, p.y))}`)}
     ${p.landmark ? `<div class="faint" style="font-size:13.5px;margin-top:-8px">${ic('map-pin')} ${esc(p.landmark)}</div>` : ''}
     <div class="lrows">${rowHTML({ icon: s.icon, c: s.c, title: `Good for ${s.name.toLowerCase()}`, sub: esc(p.note || 'No notes yet') })}${rowHTML({ icon: 'user', title: `Added by ${esc(p.by)}`, sub: `Visible to ${esc(p.visibility || 'everyone').toLowerCase()}` })}</div>
-    <button class="pill block" data-act="hostHere" data-id="${p.id}">${ic('megaphone')}Host a game here${can.pin() ? '' : ' · Pro'}</button>`);
+    <button class="pill block" data-act="hostHere" data-id="${p.id}">${ic('megaphone')}Host a game here</button>`);
 }
 
 /* ── Host a game at any address ── */
 let HOST = null;
 function hostFresh(loc) { return { loc: loc || null, title: '', sport: 'football', d: 1, t: '18:30', mins: 90, players: 10, fee: 100, vis: 'everyone', landmark: '', invites: [] }; }
-function hostStart(loc) { if (!can.pin()) { upsell('host'); return; } HOST = HOST && !loc ? HOST : hostFresh(loc); if (loc) HOST.loc = loc; hostSheet(); }
+/* Lite hosts one upcoming game at a time; once it has happened or is deleted, they can host another. */
+const activeHosted = () => S.hosted.filter((a) => a.hostedByYou && a.d >= 0);
+function hostLimitSheet() {
+  const a = activeHosted()[0];
+  sheet(`${head('Lite includes one hosted game', `You’re hosting ${esc(a.title)}, ${dayLabel(a.d)} ${fmtT(a.d, a.t)}`)}
+    <div class="muted" style="font-size:14px">Edit it, or delete it to host a different game. You can host again once it has taken place. Pro hosts as many games as you like.</div>
+    <div class="two"><button class="pill soft" data-act="hostEdit" data-id="${a.id}">${ic('pencil')}Edit game</button><button class="pill soft danger" data-act="hostCancel" data-id="${a.id}">${ic('trash-2')}Delete game</button></div>
+    <button class="pill block" data-act="subscribe" data-id="pro" data-period="yearly">Get Pro for more games</button>`);
+}
+function hostStart(loc) {
+  if (!can.pin() && activeHosted().length && !(HOST && HOST.id)) { hostLimitSheet(); return; }
+  HOST = HOST && !loc ? HOST : hostFresh(loc); if (loc) HOST.loc = loc; hostSheet();
+}
+function hostEdit(id) {
+  const a = actById(id); if (!a) return;
+  HOST = { id, loc: { id: null, x: a.x, y: a.y, address: a.venue, photo: a.photo || null }, title: a.title, sport: a.sport, d: a.d, t: a.t, mins: a.mins, players: a.total, fee: a.price, vis: a.vis || 'everyone', landmark: a.landmark || '', invites: [], joined: a.total - spotsLeft(a), was: { d: a.d, t: a.t, venue: a.venue } };
+  hostSheet();
+}
 function hostSheet() {
-  const H = HOST, sports = customIds().concat(['football', 'cricket', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'pickleball']);
+  const H = HOST, sports = can.pin() ? customIds().concat(['football', 'cricket', 'badminton', 'basketball', 'volleyball', 'kabaddi', 'tennis', 'pickleball']) : LITE_SPORTS;
+  if (!sports.includes(H.sport)) H.sport = sports[0];
   const venues = VENUES_BOOK.map((v) => ({ id: v.id, name: v.name, x: v.x, y: v.y, photo: null })).concat(S.places.map((p) => ({ id: p.id, name: p.name, x: p.x, y: p.y, photo: p.photo })));
-  sheetUpdate(`${head('Host a game', 'Publish it to people nearby or just your invitees')}
+  const teams = can.teams() ? S.teams : S.teams.filter((t) => t.mine);
+  sheetUpdate(`${head(H.id ? 'Edit your game' : 'Host a game', H.id ? (H.joined ? `${H.joined} player${H.joined > 1 ? 's have' : ' has'} joined. They’ll be told about changes.` : 'No one has joined yet') : can.pin() ? 'Publish it to people nearby or just your invitees' : 'Lite includes one hosted game at a time')}
     <div class="fgrp"><b>Where</b>
       ${addrBox('host')}
       ${H.loc ? `<div class="card loccard"><span class="ltile">${ic('map-pin')}</span><div style="flex:1;min-width:0;display:grid;gap:8px"><label class="fld"><span>Address players will see</span><input id="hAddr" value="${esc(H.loc.address)}"></label><label class="fld"><span>Landmark (optional)</span><input id="hLand" value="${esc(H.landmark)}" placeholder="Gate 2, opposite the chai stall"></label></div></div>` : ''}
@@ -2179,15 +2202,25 @@ function hostSheet() {
     <div class="two"><div class="fgrp"><b>Players needed</b><div class="stepper"><button data-act="hostN" data-k="players" data-d="-1" aria-label="One fewer player">${ic('minus')}</button><b class="num">${H.players}</b><button data-act="hostN" data-k="players" data-d="1" aria-label="One more player">${ic('plus')}</button></div></div>
       <div class="fgrp"><b>Fee each</b><div class="stepper"><button data-act="hostN" data-k="fee" data-d="-50" aria-label="₹50 less">${ic('minus')}</button><b class="num">${H.fee ? inr(H.fee) : 'Free'}</b><button data-act="hostN" data-k="fee" data-d="50" aria-label="₹50 more">${ic('plus')}</button></div></div></div>
     <div class="fgrp"><b>Who can see it</b><div class="seg" role="group" aria-label="Visibility"><button data-act="hostVis" data-id="everyone" aria-pressed="${H.vis === 'everyone'}">Everyone nearby</button><button data-act="hostVis" data-id="invited" aria-pressed="${H.vis === 'invited'}">Invited only</button></div></div>
-    ${S.teams.length ? `<div class="fgrp"><b>Invite your teams</b><div class="chips wrap">${S.teams.map((t) => `<button class="chip" style="--c:${t.color}" data-act="hostInv" data-id="${t.id}" aria-pressed="${H.invites.includes(t.id)}">${ic('users')}${esc(t.name)} · ${t.members.length}</button>`).join('')}</div></div>` : ''}
+    ${teams.length ? `<div class="fgrp"><b>Invite your team${teams.length > 1 ? 's' : ''}</b><div class="chips wrap">${teams.map((t) => `<button class="chip" style="--c:${t.color}" data-act="hostInv" data-id="${t.id}" aria-pressed="${H.invites.includes(t.id)}">${ic('users')}${esc(t.name)} · ${t.members.length}</button>`).join('')}</div></div>` : ''}
     <div class="errbox" id="hErr" hidden>${ic('info')}<div></div></div>
-    <button class="pill block" style="min-height:56px" data-act="hostPublish">${ic('megaphone')}Publish game</button>`);
+    <button class="pill block" style="min-height:56px" data-act="hostPublish">${H.id ? `${ic('check')}Save changes` : `${ic('megaphone')}Publish game`}</button>
+    ${H.id ? `<button class="pill block soft danger" data-act="hostCancel" data-id="${H.id}">${ic('trash-2')}Delete game</button>` : ''}`);
   [['hTitle', 'title'], ['hAddr', 'address'], ['hLand', 'landmark']].forEach(([id, k]) => { const el = $('#' + id); if (el) el.addEventListener('input', () => { if (k === 'address') H.loc.address = el.value; else H[k] = el.value; }); });
 }
 function publishHost() {
   const H = HOST, err = $('#hErr');
   const bad = !H.loc ? 'Choose where the game is.' : !H.title.trim() ? 'Give the game a title.' : !H.loc.address.trim() ? 'Add the address players will see.' : '';
   if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; err.scrollIntoView({ block: 'nearest' }); return; }
+  if (H.id) {   /* edit: update in place, keep who joined, tell them if the when or where changed */
+    const a = actById(H.id), cust = allCustom().find((c) => c.id === H.sport) || {};
+    Object.assign(a, { title: H.title.trim(), sport: H.sport, venue: H.loc.address.trim(), landmark: H.landmark.trim(), x: H.loc.x, y: H.loc.y, d: H.d, date: ymd(dateAt(H.d, '12:00')), t: H.t,
+      spots: H.players, total: H.players, price: H.fee, vis: H.vis, img: SPORT_IMG[H.sport] || 'gym', photo: H.loc.photo || cust.cover || a.photo || null });
+    const moved = H.was.d !== H.d || H.was.t !== H.t || H.was.venue !== a.venue, n = H.joined; HOST = null; save(); closeSheet();
+    if (tab === 'games') renderGames(); else { focused = a.id; go('play'); setTimeout(() => focusGame(a.id, true), 80); }
+    toast(moved && n ? `Changes saved. ${n} player${n > 1 ? 's were' : ' was'} told about the new ${H.was.venue !== a.venue ? 'place' : 'time'}` : 'Changes saved', 'check');
+    return;
+  }
   const id = 'h' + Date.now(), invitees = H.invites.reduce((n, tid) => n + S.teams.find((t) => t.id === tid).members.length - 1, 0);
   const a = { id, title: H.title.trim(), sport: H.sport, venue: H.loc.address.trim(), landmark: H.landmark.trim(), x: H.loc.x, y: H.loc.y, d: H.d, t: H.t, mins: H.mins, level: 'All levels', ages: '16+',
     date: ymd(dateAt(H.d, '12:00')),
@@ -2195,7 +2228,7 @@ function publishHost() {
   S.hosted.push(a); HOST = null; S.xp += 40; save(); closeSheet();
   focused = id; S.mood = 'all'; go('play'); setTimeout(() => focusGame(id, true), 80); confetti(sp(a.sport).c); buzz(25);
   badgeCheck();
-  toast(H.vis === 'invited' ? `Published to ${invitees || 'your'} invitees with the address and map pin` : `Published. ${invitees ? invitees + ' teammates invited, and ' : ''}players nearby can join`, 'megaphone');
+  toast(H.vis === 'invited' ? `Published to ${invitees || 'your'} invitees with the address and map pin` : `Published. ${invitees ? invitees + ' teammates invited, and players' : 'Players'} nearby can join`, 'megaphone');
 }
 
 /* ── Teams ── */
@@ -2318,7 +2351,7 @@ function scheduleSheet() {
 let SCH = null;
 
 Object.assign(A, {
-  addToMap: () => sheet(`${head('Add to the map')}<div class="lrows">${rowHTML({ act: 'placeNew', icon: 'camera', title: 'Add a ground or play zone', sub: 'Photos, address and pin. Everyone nearby will see it.' })}${rowHTML({ act: 'hostStart', icon: 'megaphone', title: 'Host a game', sub: can.pin() ? 'At any address, published to people nearby or invitees' : 'At any address · Pro', end: can.pin() ? null : `<span class="tierword t-pro">${ic('lock')}Pro</span>` })}</div>`),
+  addToMap: () => sheet(`${head('Add to the map')}<div class="lrows">${rowHTML({ act: 'placeNew', icon: 'camera', title: 'Add a ground or play zone', sub: 'Photos, address and pin. Everyone nearby will see it.' })}${rowHTML({ act: 'hostStart', icon: 'megaphone', title: 'Host a game', sub: can.pin() ? 'At any address, published to people nearby or invitees' : activeHosted().length ? `You’re hosting ${esc(activeHosted()[0].title)}. Lite hosts one at a time` : 'At any address. Lite hosts one game at a time' })}</div>`),
   place: (el) => placeSheet(el.dataset.id),
   placeNew: (el) => { NP = { photos: [], name: '', kind: 'Ground', sport: 'football', setting: 'Outdoor', note: '', address: '', landmark: '', x: 0, y: 0, ret: el.dataset.id || null }; addPlaceSheet(); },
   npKind: (el) => { NP.kind = el.dataset.id; addPlaceSheet(); },
@@ -2330,24 +2363,35 @@ Object.assign(A, {
     if (bad) { err.hidden = false; err.lastElementChild.textContent = bad; err.scrollIntoView({ block: 'nearest' }); return; }
     const p = { id: 'c' + Date.now(), name: NP.name.trim(), kind: NP.kind, sport: NP.sport, x: NP.x, y: NP.y, photo: NP.photos[0] || null, photos: NP.photos.slice(), address: NP.address.trim(), landmark: NP.landmark.trim(), by: 'You', setting: NP.setting, note: NP.note.trim(), visibility: 'Everyone' };
     S.places.push(p); S.xp += 20; save(); const ret = NP.ret; NP = null;
-    if (ret === 'host') { hostStart({ id: p.id, x: p.x, y: p.y, address: addrOf(p.x, p.y), photo: p.photo }); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
+    if (ret === 'host') { const loc = { id: p.id, x: p.x, y: p.y, address: p.address || addrOf(p.x, p.y), photo: p.photo }; if (HOST) { HOST.loc = loc; HOST.landmark = HOST.landmark || p.landmark; hostSheet(); } else hostStart(loc); toast('Place saved for everyone. Now finish your game', 'map-pin-plus'); return; }
     closeSheet(); go('play'); toast('Place saved. Everyone nearby can see it', 'map-pin-plus'); badgeCheck(); },
   pickUse: () => { const [x, y] = pickXY(), p = endPick();
-    if (p.purpose === 'place') { NP.x = x; NP.y = y; NP.address = addrOf(x, y); addPlaceSheet(); } else { const keep = HOST && HOST.loc && Math.hypot(HOST.loc.x - x, HOST.loc.y - y) < 30; hostStart(keep ? Object.assign({}, HOST.loc, { x, y }) : { id: null, x, y, address: addrOf(x, y) }); } },
+    if (p.purpose === 'place') { NP.x = x; NP.y = y; NP.address = addrOf(x, y); addPlaceSheet(); return; }
+    const keep = HOST && HOST.loc && Math.hypot(HOST.loc.x - x, HOST.loc.y - y) < 30, loc = keep ? Object.assign({}, HOST.loc, { x, y }) : { id: null, x, y, address: addrOf(x, y) };
+    if (HOST) { HOST.loc = loc; hostSheet(); } else hostStart(loc); },
   pickCancel: () => { const p = endPick(); if (p.purpose === 'place') addPlaceSheet(); else hostSheet(); },
-  hostStart: () => hostStart(),
-  hostHere: (el) => { const p = placeById(el.dataset.id); hostStart({ id: p.id, x: p.x, y: p.y, address: `${p.name}, ${addrOf(p.x, p.y)}`, photo: p.photo }); },
+  hostStart: () => { if (HOST && HOST.id) HOST = null; hostStart(); },
+  hostHere: (el) => { const p = placeById(el.dataset.id); HOST = null; hostStart({ id: p.id, x: p.x, y: p.y, address: `${p.name}, ${addrOf(p.x, p.y)}`, photo: p.photo }); },
   hostPick: () => startPick('host', HOST.loc),
   hostMe: () => { HOST.loc = { id: 'me', x: ME.x + 6, y: ME.y + 6, address: addrOf(ME.x, ME.y) }; hostSheet(); },
   hostVenue: (el) => { const v = VENUES_BOOK.find((x) => x.id === el.dataset.id) || placeById(el.dataset.id); HOST.loc = { id: el.dataset.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}`, photo: v.photo || null }; if (v.sports) HOST.sport = v.sports[0]; hostSheet(); },
   hostSport: (el) => { HOST.sport = el.dataset.id; hostSheet(); },
   hostDay: (el) => { HOST.d = +el.dataset.id; hostSheet(); },
   hostTime: (el) => { HOST.t = el.dataset.id; hostSheet(); },
-  hostN: (el) => { const k = el.dataset.k; HOST[k] = k === 'fee' ? Math.max(0, Math.min(1000, HOST.fee + +el.dataset.d)) : Math.max(2, Math.min(30, HOST.players + +el.dataset.d)); hostSheet(); },
+  hostN: (el) => { const k = el.dataset.k, min = Math.max(2, HOST.joined || 0);
+    if (k === 'players' && HOST.players + +el.dataset.d < min) { toast(`${HOST.joined} players have joined, so it can’t go below ${min}`, 'info'); return; }
+    HOST[k] = k === 'fee' ? Math.max(0, Math.min(1000, HOST.fee + +el.dataset.d)) : Math.max(min, Math.min(30, HOST.players + +el.dataset.d)); hostSheet(); },
+  hostEdit: (el) => hostEdit(el.dataset.id),
+  hostCancel: (el) => { const a = actById(el.dataset.id), n = a.total - spotsLeft(a);
+    sheet(`${head(`Delete ${esc(a.title)}?`, `${dayLabel(a.d)} ${fmtT(a.d, a.t)} · ${esc(a.venue.split(',')[0])}`)}
+      <div class="muted" style="font-size:14px">${n ? `${n} player${n > 1 ? 's have' : ' has'} joined. They’ll get a cancellation notice${a.price ? ' and a full UPI refund' : ''}.` : 'No one has joined yet.'} The game comes off the map.${can.pin() ? '' : ' You can host a new game straight after.'}</div>
+      <div style="display:flex;gap:10px"><button class="pill soft" style="flex:1" data-act="close">Keep it</button><button class="pill danger-fill" style="flex:1" data-act="hostCancelGo" data-id="${a.id}">${ic('trash-2')}Delete</button></div>`); },
+  hostCancelGo: (el) => { const a = actById(el.dataset.id), n = a.total - spotsLeft(a); deleteHosted([a.id]); if (HOST && HOST.id === a.id) HOST = null; if (focused === a.id) focused = null; closeSheet();
+    if (tab === 'games') renderGames(); else if (tab === 'play') renderPlay(); toast(`${a.title} deleted${n ? `. ${n} player${n > 1 ? 's were' : ' was'} told${a.price ? ' and refunded' : ''}` : ''}`, 'trash-2'); },
   hostVis: (el) => { HOST.vis = el.dataset.id; hostSheet(); },
   hostInv: (el) => { const id = el.dataset.id; HOST.invites = HOST.invites.includes(id) ? HOST.invites.filter((x) => x !== id) : HOST.invites.concat(id); hostSheet(); },
   hostPublish: () => publishHost(),
-  postSpots: (el) => { if (!can.pin()) { upsell('host'); return; } const b = S.turf.find((x) => x.id === el.dataset.id), v = VB(b.vid);
+  postSpots: (el) => { if (!can.pin() && activeHosted().length) { hostLimitSheet(); return; } const b = S.turf.find((x) => x.id === el.dataset.id), v = VB(b.vid);
     HOST = hostFresh({ id: v.id, x: v.x, y: v.y, address: `${v.name}, ${addrOf(v.x, v.y)}` }); Object.assign(HOST, { sport: v.sports[0], d: b.d, t: pad2(b.start) + ':00', mins: b.dur * 60, players: Math.max(2, b.players - 1), fee: Math.ceil((b.dur * v.peak) / b.players / 10) * 10, title: `Open spots at ${v.name}` }); hostSheet(); },
   newTeam: () => { if (!can.teams() && myTeams().length) { const t = myTeams()[0];
       sheet(`${head('Lite includes one team', `You already have ${esc(t.name)}`)}<div class="muted" style="font-size:14px">Delete it to create a different team, or get Pro for as many teams as you like, in every sport.</div>
@@ -3061,7 +3105,7 @@ const BADGES = [
   { id: 'family', name: 'Family captain', how: 'Book games for 3 people in your family', tier: 'silver', shape: 'round', glyph: 'users', prog: () => countIf(new Set(Object.values(S.bookings).flat()).size, 3), cta: ['tab', 'play', 'Find a family game'] },
   { id: 'captain', name: 'Captain', how: 'Captain a team', tier: 'gold', shape: 'shield', glyph: 'crown', prog: () => countIf((can.teams() ? S.teams : S.teams.filter((t) => t.mine)).filter((t) => t.members[0].role === 'Captain').length, 1), cta: ['tab', 'team', 'Go to Team'] },
   { id: 'mapper', name: 'Map maker', how: 'Add a ground or play zone to the map', tier: 'silver', shape: 'hex', glyph: 'map-pin-plus', prog: () => countIf(S.places.length, 1), cta: ['placeNew', '', 'Add a place'] },
-  { id: 'host', name: 'Host with the most', how: 'Host a game (Pro)', tier: 'gold', shape: 'round', glyph: 'megaphone', prog: () => countIf(S.hosted.length, 1), cta: ['hostStart', '', 'Host a game'] },
+  { id: 'host', name: 'Host with the most', how: 'Host a game', tier: 'gold', shape: 'round', glyph: 'megaphone', prog: () => countIf(S.hosted.length, 1), cta: ['hostStart', '', 'Host a game'] },
   { id: 'recruit', name: 'Recruiter', how: 'Invite 5 players to your teams (Pro)', tier: 'bronze', shape: 'shield', glyph: 'user-plus', prog: () => countIf(S.teams.flatMap((t) => t.members).filter((m) => m.status === 'invited').length, 5), cta: ['tab', 'team', 'Add players'] },
   { id: 'iron', name: 'Iron streak', how: 'Keep your streak going for 8 weeks', tier: 'epic', shape: 'star', glyph: 'zap', prog: () => countIf(streakWeeks(), 8), cta: ['tab', 'play', 'Keep it going'] },
   { id: 'legend', name: 'Local legend', how: 'Reach level 8', tier: 'epic', shape: 'round', glyph: 'star', prog: () => countIf(level(), 8), cta: ['tab', 'play', 'Earn XP'] },
@@ -3310,12 +3354,13 @@ function renderHosting() {
   const up = mine.filter((a) => a.d >= 0), past = mine.filter((a) => a.d < 0).reverse(), del = past.filter(canDelete);
   const row = (a) => { const s = sp(a.sport) || { c: '#4B5563', icon: 'trophy', name: 'Sport' }, joined = a.total - spotsLeft(a), when = a.d >= 0 ? `${dayLabel(a.d)} · ${fmtT(a.d, a.t)}` : `${fullDate.format(dateAt(a.d, '12:00'))} · ${fmtT(a.d, a.t)}`;
     return `<div class="hrow ${a.d < 0 ? 'past' : ''}" style="--c:${s.c}"><img src="${imgOf(a)}" alt=""><div class="ltext"><b>${esc(a.title)}</b><small><span class="evtag" style="--c:${s.c}">${esc(s.name)}</span>${when}</small><small>${joined} of ${a.total} joined · ${money(a.price)}</small>
-      ${a.d >= 0 ? `<small class="faint">Can be deleted from ${fullDate.format(dateAt(a.d + 1, '12:00'))}</small>` : ''}</div>
-      <div class="hact">${a.d >= 0 ? `<button class="round sm" data-act="shareGame" data-id="${a.id}" aria-label="Share ${esc(a.title)}">${ic('share-2')}</button><button class="round sm" data-act="hostView" data-id="${a.id}" aria-label="Open ${esc(a.title)}">${ic('chevron-right')}</button>`
+      ${a.d >= 0 ? `<span class="hbtns"><button class="pill sm soft" data-act="hostEdit" data-id="${a.id}">${ic('pencil')}Edit</button><button class="pill sm soft" data-act="shareGame" data-id="${a.id}">${ic('share-2')}Share</button><button class="pill sm soft danger" data-act="hostCancel" data-id="${a.id}">${ic('trash-2')}Delete</button></span>` : ''}</div>
+      <div class="hact">${a.d >= 0 ? `<button class="round sm" data-act="hostView" data-id="${a.id}" aria-label="Open ${esc(a.title)}">${ic('chevron-right')}</button>`
         : `<button class="pill sm soft danger" data-act="hostDelete" data-id="${a.id}" ${canDelete(a) ? '' : 'disabled'}>${ic('trash-2')}Delete</button>`}</div></div>`; };
   $('#scr-games').innerHTML = `${gamesHead()}
     <div class="hstats"><div><b class="num">${up.length}</b><small>Upcoming</small></div><div><b class="num">${past.length}</b><small>Finished</small></div><div><b class="num">${mine.reduce((n, a) => n + a.total - spotsLeft(a), 0)}</b><small>Players hosted</small></div></div>
-    <button class="pill block" style="margin-top:12px" data-act="hostStart">${ic('megaphone')}Host a game</button>
+    ${can.pin() || !up.length ? `<button class="pill block" style="margin-top:12px" data-act="hostStart">${ic('megaphone')}Host a game</button>` : ''}
+    ${can.pin() ? '' : `<div class="faint" style="font-size:12.5px;margin-top:8px">Lite hosts one game at a time. ${up.length ? 'Edit or delete it, or host again once it has taken place.' : 'Pro hosts as many as you like.'}</div>`}
     <div class="section"><h2>Upcoming</h2>${up.length ? `<div class="hlist">${up.map(row).join('')}</div>` : `<div class="empty">${ic('calendar-days')}<b>Nothing hosted yet</b><span class="muted">Your games appear here and on the map.</span></div>`}</div>
     <div class="section"><div class="shead"><h2>Finished</h2>${del.length > 1 ? `<button class="pill sm soft danger" data-act="hostDeleteAll">${ic('trash-2')}Delete all ${del.length}</button>` : ''}</div>
       ${past.length ? `<div class="hlist">${past.map(row).join('')}</div><div class="faint" style="font-size:12.5px">A game can be deleted from the day after it took place. Players keep their receipts.</div>` : `<div class="faint" style="font-size:13.5px">Finished games stay here until you delete them.</div>`}</div>`;

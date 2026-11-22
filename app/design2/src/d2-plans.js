@@ -2,9 +2,9 @@
    Locked features stay visible and lead to an upgrade sheet, so people can see what a plan adds. */
 
 /* What Lite and Pro offer in this design (Design 1 keeps its own lists). */
-PLANS.lite.feats = ['Live map of nearby sports', 'Join games and events', 'One team: cricket, football, volleyball, cycling, badminton or tennis', 'Add grounds and play zones with photos and an address', 'Family profiles and calendar', 'Marketplace and deals'];
-PLANS.lite.no = ['More teams and every sport', 'Host games and add custom sports', 'Company workspace'];
-PLANS.pro.feats = ['Everything in Lite', 'Unlimited teams in every sport', 'Custom sports and indoor games', 'Host games at any address', 'Add players nearest first and invite to any app', '10% off in the marketplace'];
+PLANS.lite.feats = ['Live map of nearby sports', 'Join games and events', 'One team: cricket, football, volleyball, cycling, badminton or tennis', 'Host one game at a time, then edit or delete it', 'Add grounds and play zones with photos and an address', 'Family profiles and calendar', 'Marketplace and deals'];
+PLANS.lite.no = ['More teams and every sport', 'Host more than one game, custom sports', 'Company workspace'];
+PLANS.pro.feats = ['Everything in Lite', 'Unlimited teams in every sport', 'Host as many games as you like', 'Custom sports and indoor games', 'Add players nearest first and invite to any app', '10% off in the marketplace'];
 PLANS.pro.no = ['Company workspace'];
 
 /* Shared helpers used by the plan modules */
@@ -91,7 +91,7 @@ function checkoutSheet() {
 /* What a locked feature needs, and what the plan adds. */
 const UPSELL = {
   pin: ['pro', 'megaphone', 'Host games and add your own sports with Pro', 'Host games at any address, and add sports like carrom or table tennis with their own icon.'],
-  host: ['pro', 'megaphone', 'Host games with Pro', 'Pick any address, set the fee and players needed, and publish it to people nearby or just your invitees.'],
+  host: ['pro', 'megaphone', 'Host more games with Pro', 'Lite hosts one game at a time. Pro hosts as many as you like, in every sport, including your own custom sports.'],
   teams: ['pro', 'users', 'Build your team with Pro', 'Create teams, add players near you, run match day with availability, lineups and team chat.'],
   org: ['corporate', 'trophy', 'Run sport across your company', 'Department teams, a league with live standings, a schedule builder and a tournament organizer that builds brackets for you.'],
 };
@@ -112,7 +112,7 @@ function planCardHTML() {
 
 /* ── Desktop side note: plan switcher and things to try ── */
 const TRY = {
-  lite: ['Team → Create a team (one on Lite), then edit or delete it', 'Map pin button → Add a ground or play zone with photos and an address', 'Tap + on a game: step-by-step registration with family members'],
+  lite: ['Map pin button → Host a game (one at a time on Lite), then edit or delete it in Games → Hosting', 'Team → Create a team (one on Lite), then edit or delete it', 'Map pin button → Add a ground or play zone with photos and an address', 'Tap + on a game: step-by-step registration with family members'],
   pro: ['Map pin button → Add a place: snap a photo of a new court', 'Map pin button → Host a game at any address', 'Team → Create a team → add players nearest first and share'],
   corporate: ['Company → People → Import sheet → try the sample sheet', 'Teams: approve Night Owls FC, or switch to Employee and register a team', 'Events → Tournaments → create and publish, then check the bell as an employee'],
 };

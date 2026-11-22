@@ -787,6 +787,9 @@ button.lrow[aria-pressed="true"] { background: color-mix(in srgb, var(--you) 6%,
 .hrow > img { width: 56px; height: 56px; border-radius: 14px; object-fit: cover; }
 .hrow.past > img { filter: grayscale(.85); opacity: .8; }
 .hact { display: flex; gap: 6px; }
+.hbtns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.hbtns .pill.sm { min-height: 34px; padding: 0 11px; font-size: 13px; }
+.hbtns .pill .ic { width: 15px; height: 15px; }
 .pill.danger { color: color-mix(in srgb, var(--live) 75%, var(--ink)); }
 .pill.danger-fill { background: #C9362C; color: #fff; }
 
