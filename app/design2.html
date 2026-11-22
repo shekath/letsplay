@@ -370,8 +370,24 @@ button.gi-act:active { transform: scale(.92); }
 .xpmile { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 800 10.5px var(--f-display); color: #FFC24B; border: 2px dashed rgba(255,194,75,.5); }
 .mile.done .xpmile { background: #FFC24B; color: #2A1409; border-style: solid; }
 .sc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); }
-.freeze { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; background: rgba(120,190,255,.16); color: #B8DCFF; }
-.freeze .ic { width: 15px; height: 15px; }
+.freeze { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 12px; border-radius: 999px; background: rgba(120,190,255,.16); color: #B8DCFF; font-weight: 800; font-size: 13px; }
+.freeze:active { transform: scale(.96); }
+.sc-earn { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,.72); }
+.sc-earn .snow { color: #B8DCFF; }
+/* Frozen weeks: ice instead of fire */
+.link.ice .node { background: #173049; box-shadow: 0 0 0 2px #5AA9F0 inset; color: #CFE8FF; }
+.frz-hero { display: grid; justify-items: center; gap: 4px; padding: 18px; border-radius: var(--r-lg); background: #10243A; color: #fff; text-align: center; }
+.frz-hero > b { font: 800 26px var(--f-display); font-style: italic; }
+.frz-hero > span { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.8); }
+.frz-slots { display: flex; gap: 10px; margin-bottom: 6px; }
+.frz-slots span { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; border: 2px dashed rgba(184,220,255,.35); color: rgba(184,220,255,.35); }
+.frz-slots span.full { border: 0; background: linear-gradient(160deg, #6EC1FF, #2C7BD0); color: #fff; box-shadow: 0 6px 16px rgba(44,123,208,.45), inset 0 1px 0 rgba(255,255,255,.5); }
+.frz-big { width: 110px; height: 110px; border-radius: 34px; display: grid; place-items: center; background: linear-gradient(160deg, #6EC1FF, #2C7BD0); color: #fff; box-shadow: 0 10px 26px rgba(44,123,208,.45); animation: pop .5s cubic-bezier(.3, 1.6, .5, 1); }
+.week-end .flame { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1); }
+.week-end.broken .flame { opacity: .8; }
+.frz-earned .snow { color: #2C7BD0; flex: none; }
+.demo-box { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; border: 1px dashed var(--line); }
+.demo-box small { display: block; font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
 
 /* ── Badges: medal art on a 3-column shelf ── */
 .bgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -970,7 +986,7 @@ function buzz(ms = 12) { try { if (navigator.vibrate) navigator.vibrate(ms); } c
 const KEY = 'letsplay-d2-v2';
 const clone = (o) => JSON.parse(JSON.stringify(o));
 /* Sample week: your 5K run, plus Vihaan's futsal and Aanya's swim lesson on Saturday morning, which clash for drop-offs. */
-const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7', 'a13', 'a16'], taken: { a7: 1, a13: 1, a16: 1 }, bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0],
+const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7', 'a13', 'a16'], taken: { a7: 1, a13: 1, a16: 1 }, bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], freezes: 1, bestStreak: 4,
   venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10,
   tier: 'lite', billing: 'monthly', renews: null, seats: 50, payApp: 'GPay',
   waitlist: [], turf: [], hosted: [], places: [], teams: clone(SAMPLE_TEAMS), tm: {}, fixtures: clone(SAMPLE_FIXTURES),
@@ -1040,7 +1056,9 @@ function goalRing() {
   return `<button class="goal-ring" data-act="tab" data-id="me" aria-label="Weekly goal: ${done} of ${S.goal} games"><svg viewBox="0 0 48 48"><circle class="track" cx="24" cy="24" r="${r}"/><circle class="val" cx="24" cy="24" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - done / S.goal)}"/></svg><b class="num">${done}/${S.goal}</b></button>`;
 }
 /* Weeks in a row with the goal hit. The current week only counts once it is hit, so it never breaks the streak early. */
-function streakWeeks() { let i = S.streak.length - 1, n = 0; if (!S.streak[i]) i--; for (; i >= 0 && S.streak[i]; i--) n++; return n; }
+/* S.streak holds one value per week: 1 goal hit, 2 protected by a streak freeze, 0 missed.
+   A frozen week keeps the streak alive but doesn't add to it. */
+function streakWeeks() { let i = S.streak.length - 1, n = 0; if (!S.streak[i]) i--; for (; i >= 0 && S.streak[i]; i--) n += S.streak[i] === 1 ? 1 : 0; return n; }
 function renderPlay() {
   const el = $('#scr-play');
   if (!$('#map')) {
@@ -1140,7 +1158,11 @@ function bindMapDrag() {
 const joinSheet = (id) => regStart(id);
 function celebrateJoin(id, who) {
   const a = actById(id); const before = level();
-  S.week += 1; S.xp += 50; if (S.week >= S.goal) S.streak[S.streak.length - 1] = 1; save();
+  S.week += 1; S.xp += 50;
+  let refund = false;   /* hitting the goal in a week you froze gives the freeze back */
+  if (S.week >= S.goal) { if (S.streak[S.streak.length - 1] === 2) { S.freezes = Math.min(3, S.freezes + 1); refund = true; } S.streak[S.streak.length - 1] = 1; }
+  save();
+  if (refund) setTimeout(() => toast('Goal hit, so your streak freeze is back', 'shield-check'), 2800);
   const nb = badgeCheck(true);
   const lvlUp = level() > before; const goalHit = S.week === S.goal;
   const names = who.map(firstName);
@@ -2429,19 +2451,66 @@ function flameSVG(px, lit = true) {
   return `<svg class="flame ${lit ? 'lit' : ''}" width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB13B"/><stop offset="1" stop-color="#E2391D"/></linearGradient></defs>
     <path d="${FLAME.outer}" fill="${lit ? `url(#${u})` : 'var(--lk-lo)'}"/>${lit ? `<path class="fmid" d="${FLAME.mid}" fill="#FFD449"/><path class="fcore" d="${FLAME.core}" fill="#FFF6D6"/>` : ''}</svg>`;
 }
-const bestStreak = () => { let best = 0, run = 0; S.streak.forEach((v) => { run = v ? run + 1 : 0; best = Math.max(best, run); }); return Math.max(best, S.bestStreak || 0); };
+/* Ice crystal for frozen weeks and freezes. */
+const snowSVG = (px) => `<svg class="snow" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2M4.2 10.3l3.5-.5-1.3-3.3M19.8 13.7l-3.5.5 1.3 3.3M4.2 13.7l3.5.5-1.3 3.3M19.8 10.3l-3.5-.5 1.3-3.3"/></svg>`;
+const MAX_FREEZES = 3, FREEZE_EVERY = 4;
+const bestStreak = () => { let best = 0, run = 0; S.streak.forEach((v) => { run = v === 1 ? run + 1 : v === 2 ? run : 0; best = Math.max(best, run); }); return Math.max(best, S.bestStreak || 0); };
+const curWeek = () => S.streak[S.streak.length - 1];
 function streakCardHTML() {
-  const n = streakWeeks(), left = Math.max(0, S.goal - S.week), last = S.streak.length - 1;
+  const n = streakWeeks(), left = Math.max(0, S.goal - S.week), last = S.streak.length - 1, cw = curWeek();
   const miles = [[3, 'hattrick'], [5, null], [8, 'iron'], [12, null]];
-  const next = miles.find(([w]) => w > n);
+  const next = miles.find(([w]) => w > n), toFreeze = FREEZE_EVERY - (n % FREEZE_EVERY);
+  const msg = cw === 1 ? '<b>Goal hit this week.</b> Your streak is safe.'
+    : cw === 2 ? `<b>This week is frozen.</b> Your streak is safe even if you can’t play. Hit your goal anyway and you get the freeze back.`
+    : `Play <b>${left} more game${left > 1 ? 's' : ''}</b> this week to keep your streak alive.${S.freezes ? ' If you can’t, a freeze saves it.' : ''}`;
   return `<div class="section streak-card">
     <div class="sc-top">${flameSVG(84, n > 0)}<div class="sc-num"><b class="num">${n}</b><span>week streak</span></div><div class="sc-best"><small>Best</small><b class="num">${bestStreak()}</b></div></div>
-    <div class="sc-msg">${left ? `Play <b>${left} more game${left > 1 ? 's' : ''}</b> this week to keep your streak alive.` : '<b>This week is done.</b> Your streak is safe.'}</div>
-    <div class="chain" aria-label="Weeks you hit your goal">${S.streak.map((v, i) => { const now = i === last; const pct = Math.min(1, S.week / S.goal);
-      return `<div class="link ${v ? 'hit' : 'miss'} ${now ? 'now' : ''}"><span class="node">${now && !v ? `<svg viewBox="0 0 36 36" class="ringp"><circle cx="18" cy="18" r="15" class="tr"/><circle cx="18" cy="18" r="15" class="vl" stroke-dasharray="${(94.2 * pct).toFixed(1)} 94.2"/></svg>` : ''}${v ? flameSVG(22) : now ? flameSVG(18, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
+    <div class="sc-msg">${msg}</div>
+    <div class="chain" aria-label="Your last ${S.streak.length} weeks">${S.streak.map((v, i) => { const now = i === last, pct = Math.min(1, S.week / S.goal), st = v === 1 ? 'hit' : v === 2 ? 'ice' : 'miss';
+      return `<div class="link ${st} ${now ? 'now' : ''}" title="${now ? 'This week' : `${last - i} weeks ago`}: ${{ hit: 'goal hit', ice: 'frozen', miss: now ? 'in progress' : 'missed' }[st]}"><span class="node">${now && v !== 1 ? `<svg viewBox="0 0 36 36" class="ringp"><circle cx="18" cy="18" r="15" class="tr"/><circle cx="18" cy="18" r="15" class="vl" stroke-dasharray="${(94.2 * pct).toFixed(1)} 94.2"/></svg>` : ''}${v === 1 ? flameSVG(22) : v === 2 ? snowSVG(18) : now ? flameSVG(18, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
     <div class="miles">${miles.map(([w, id]) => { const b = id && BADGES.find((x) => x.id === id), done = n >= w; return `<div class="mile ${done ? 'done' : ''}">${b ? badgeSVG(b, done, 34) : `<span class="xpmile">+${w * 20}</span>`}<small class="num">${w} wk</small></div>`; }).join('')}</div>
-    <div class="sc-foot"><span class="freeze">${ic('shield-check')}1 streak freeze</span><span>${next ? `Next: ${next[0]} weeks${next[1] ? ' · ' + BADGES.find((x) => x.id === next[1]).name : ` · +${next[0] * 20} XP`}` : 'Every milestone reached'}</span></div>
+    <div class="sc-foot"><button class="freeze" data-act="freezeSheet" aria-label="${S.freezes} streak freeze${S.freezes === 1 ? '' : 's'}. Manage">${snowSVG(15)}<span class="num">${S.freezes}</span> freeze${S.freezes === 1 ? '' : 's'}${cw === 2 ? ' · on' : ''}</button><span>${next ? `Next: ${next[0]} weeks${next[1] ? ' · ' + BADGES.find((x) => x.id === next[1]).name : ` · +${next[0] * 20} XP`}` : 'Every milestone reached'}</span></div>
+    ${S.freezes < MAX_FREEZES ? `<div class="sc-earn">${snowSVG(13)}Next freeze in ${toFreeze} week${toFreeze === 1 ? '' : 's'} of streak</div>` : ''}
   </div>`;
+}
+function freezeSheet() {
+  const cw = curWeek(), n = streakWeeks();
+  sheet(`${head('Streak freezes', 'Protect your streak when life gets in the way')}
+    <div class="frz-hero"><div class="frz-slots">${Array.from({ length: MAX_FREEZES }, (_, i) => `<span class="${i < S.freezes ? 'full' : ''}">${snowSVG(26)}</span>`).join('')}</div><b class="num">${S.freezes} of ${MAX_FREEZES}</b><span>freezes ready</span></div>
+    <div class="lrows">${rowHTML({ icon: 'shield-check', c: '#3B8BD4', title: 'Saves a week you can’t play', sub: 'Your streak carries on without adding a week' })}
+      ${rowHTML({ icon: 'timer', c: '#3B8BD4', title: 'Used for you if you forget', sub: 'If the week ends before you hit your goal, a freeze is used automatically' })}
+      ${rowHTML({ icon: 'flame', c: '#E2621D', title: `Earn one every ${FREEZE_EVERY} weeks in a row`, sub: `Hold up to ${MAX_FREEZES}. Hit your goal in a frozen week and you get it back.` })}</div>
+    ${cw === 1 ? '<div class="okbox">' + ic('circle-check') + '<div><b>You’ve hit this week’s goal</b><br>No freeze needed.</div></div>'
+      : cw === 2 ? `<button class="pill block soft" data-act="unfreeze">Cancel this week’s freeze</button>`
+      : `<button class="pill block" data-act="useFreeze" ${S.freezes ? '' : 'disabled'}>${snowSVG(18)}${S.freezes ? 'Freeze this week' : 'No freezes left'}</button>`}
+    <div class="demo-box"><div><b>Demo: end this week now</b><small>See what happens to a ${n}-week streak with ${S.week} of ${S.goal} games${cw === 2 ? ' and a freeze on' : ''}.</small></div><button class="pill sm soft" data-act="endWeek">End week</button></div>`);
+}
+/* What happens when a week closes: kept by the goal, saved by a freeze, or broken. */
+function endWeek() {
+  const before = streakWeeks(), last = S.streak.length - 1, cw = S.streak[last], played = S.week;
+  let result;
+  if (cw === 1) { result = 'kept'; S.xp += 30; }
+  else if (cw === 2) result = 'frozen';
+  else if (S.freezes > 0) { S.freezes--; S.streak[last] = 2; result = 'auto'; }
+  else { S.streak[last] = 0; result = 'broken'; }
+  const after = streakWeeks();
+  let earned = false;
+  if (result === 'kept' && after > 0 && after % FREEZE_EVERY === 0 && S.freezes < MAX_FREEZES) { S.freezes++; earned = true; }
+  S.bestStreak = Math.max(S.bestStreak || 0, bestStreak());
+  S.streak = S.streak.concat(0).slice(-8); S.week = 0; save();
+  const nb = badgeCheck(true);
+  const art = result === 'kept' ? flameSVG(110) : result === 'broken' ? flameSVG(110, false) : `<span class="frz-big">${snowSVG(64)}</span>`;
+  const title = { kept: `${after}-week streak!`, frozen: 'Streak frozen, not broken', auto: 'A freeze saved your streak', broken: 'Streak lost' }[result];
+  const body = { kept: `You hit your goal. +30 XP.${earned ? ' You also earned a streak freeze.' : ''}`, frozen: `Last week was protected by the freeze you set. You’re still on ${after} weeks.`,
+    auto: `You played ${played} of ${S.goal} games, so a freeze was used automatically. Still ${after} weeks. ${S.freezes} freeze${S.freezes === 1 ? '' : 's'} left.`,
+    broken: `You played ${played} of ${S.goal} games with no freeze left, so the ${before}-week streak ends. Start a new one this week.` }[result];
+  sheet(`<div class="xp-burst week-end ${result}">${art}<h2>${title}</h2><div class="muted">${body}</div></div>
+    ${earned ? `<div class="okbox frz-earned">${snowSVG(22)}<div><b>Streak freeze earned</b><br>You now have ${S.freezes} of ${MAX_FREEZES}.</div></div>` : ''}
+    ${unlockedRowHTML(nb)}
+    <div class="faint" style="font-size:13px;text-align:center">A new week has started: 0 of ${S.goal} games.</div>
+    <button class="pill block" data-act="close">${result === 'broken' ? 'Find a game' : 'Keep it going'}</button>`);
+  if (result === 'kept' && !REDUCED) confetti('#FFB13B');
+  if (tab === 'me') renderMe(); if (tab === 'play') renderPlay();
 }
 
 /* ── Badge grid and detail ── */
@@ -2472,6 +2541,10 @@ function badgeCheck(inline) {
 const unlockedRowHTML = (list) => (list.length ? `<div class="unlocked">${list.map((b) => `<button class="lrow" data-act="badgeId" data-id="${b.id}">${badgeSVG(b, true, 52)}<span class="ltext"><small class="eyebrow">Badge unlocked</small><b>${esc(b.name)}</b><small>${TIERS[b.tier].name} · +${TIERS[b.tier].xp} XP</small></span>${ic('chevron-right')}</button>`).join('')}</div>` : '');
 
 Object.assign(A, {
+  freezeSheet: () => freezeSheet(),
+  useFreeze: () => { if (!S.freezes || curWeek()) return; S.freezes--; S.streak[S.streak.length - 1] = 2; save(); buzz(15); freezeSheet(); renderMe(); toast('This week is frozen. Your streak is safe', 'shield-check'); },
+  unfreeze: () => { if (curWeek() !== 2) return; S.freezes = Math.min(MAX_FREEZES, S.freezes + 1); S.streak[S.streak.length - 1] = 0; save(); freezeSheet(); renderMe(); toast('Freeze cancelled and returned', 'rotate-ccw'); },
+  endWeek: () => endWeek(),
   badge: (el) => badgeSheet(BADGES[+el.dataset.i]),
   badgeId: (el) => badgeSheet(BADGES.find((b) => b.id === el.dataset.id), true),
   shareBadge: (el) => { const b = BADGES.find((x) => x.id === el.dataset.id); shareAny(`${b.name} badge`, `I just earned the ${TIERS[b.tier].name.toLowerCase()} ${b.name} badge on LetsPlay. ${b.how}. Come play:`, 'https://letsplay.app/b/' + b.id); },

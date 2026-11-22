@@ -62,19 +62,66 @@ function flameSVG(px, lit = true) {
   return `<svg class="flame ${lit ? 'lit' : ''}" width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB13B"/><stop offset="1" stop-color="#E2391D"/></linearGradient></defs>
     <path d="${FLAME.outer}" fill="${lit ? `url(#${u})` : 'var(--lk-lo)'}"/>${lit ? `<path class="fmid" d="${FLAME.mid}" fill="#FFD449"/><path class="fcore" d="${FLAME.core}" fill="#FFF6D6"/>` : ''}</svg>`;
 }
-const bestStreak = () => { let best = 0, run = 0; S.streak.forEach((v) => { run = v ? run + 1 : 0; best = Math.max(best, run); }); return Math.max(best, S.bestStreak || 0); };
+/* Ice crystal for frozen weeks and freezes. */
+const snowSVG = (px) => `<svg class="snow" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2M4.2 10.3l3.5-.5-1.3-3.3M19.8 13.7l-3.5.5 1.3 3.3M4.2 13.7l3.5.5-1.3 3.3M19.8 10.3l-3.5-.5 1.3-3.3"/></svg>`;
+const MAX_FREEZES = 3, FREEZE_EVERY = 4;
+const bestStreak = () => { let best = 0, run = 0; S.streak.forEach((v) => { run = v === 1 ? run + 1 : v === 2 ? run : 0; best = Math.max(best, run); }); return Math.max(best, S.bestStreak || 0); };
+const curWeek = () => S.streak[S.streak.length - 1];
 function streakCardHTML() {
-  const n = streakWeeks(), left = Math.max(0, S.goal - S.week), last = S.streak.length - 1;
+  const n = streakWeeks(), left = Math.max(0, S.goal - S.week), last = S.streak.length - 1, cw = curWeek();
   const miles = [[3, 'hattrick'], [5, null], [8, 'iron'], [12, null]];
-  const next = miles.find(([w]) => w > n);
+  const next = miles.find(([w]) => w > n), toFreeze = FREEZE_EVERY - (n % FREEZE_EVERY);
+  const msg = cw === 1 ? '<b>Goal hit this week.</b> Your streak is safe.'
+    : cw === 2 ? `<b>This week is frozen.</b> Your streak is safe even if you can’t play. Hit your goal anyway and you get the freeze back.`
+    : `Play <b>${left} more game${left > 1 ? 's' : ''}</b> this week to keep your streak alive.${S.freezes ? ' If you can’t, a freeze saves it.' : ''}`;
   return `<div class="section streak-card">
     <div class="sc-top">${flameSVG(84, n > 0)}<div class="sc-num"><b class="num">${n}</b><span>week streak</span></div><div class="sc-best"><small>Best</small><b class="num">${bestStreak()}</b></div></div>
-    <div class="sc-msg">${left ? `Play <b>${left} more game${left > 1 ? 's' : ''}</b> this week to keep your streak alive.` : '<b>This week is done.</b> Your streak is safe.'}</div>
-    <div class="chain" aria-label="Weeks you hit your goal">${S.streak.map((v, i) => { const now = i === last; const pct = Math.min(1, S.week / S.goal);
-      return `<div class="link ${v ? 'hit' : 'miss'} ${now ? 'now' : ''}"><span class="node">${now && !v ? `<svg viewBox="0 0 36 36" class="ringp"><circle cx="18" cy="18" r="15" class="tr"/><circle cx="18" cy="18" r="15" class="vl" stroke-dasharray="${(94.2 * pct).toFixed(1)} 94.2"/></svg>` : ''}${v ? flameSVG(22) : now ? flameSVG(18, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
+    <div class="sc-msg">${msg}</div>
+    <div class="chain" aria-label="Your last ${S.streak.length} weeks">${S.streak.map((v, i) => { const now = i === last, pct = Math.min(1, S.week / S.goal), st = v === 1 ? 'hit' : v === 2 ? 'ice' : 'miss';
+      return `<div class="link ${st} ${now ? 'now' : ''}" title="${now ? 'This week' : `${last - i} weeks ago`}: ${{ hit: 'goal hit', ice: 'frozen', miss: now ? 'in progress' : 'missed' }[st]}"><span class="node">${now && v !== 1 ? `<svg viewBox="0 0 36 36" class="ringp"><circle cx="18" cy="18" r="15" class="tr"/><circle cx="18" cy="18" r="15" class="vl" stroke-dasharray="${(94.2 * pct).toFixed(1)} 94.2"/></svg>` : ''}${v === 1 ? flameSVG(22) : v === 2 ? snowSVG(18) : now ? flameSVG(18, false) : '<i></i>'}</span><small>${now ? 'Now' : `${last - i}w`}</small></div>`; }).join('')}</div>
     <div class="miles">${miles.map(([w, id]) => { const b = id && BADGES.find((x) => x.id === id), done = n >= w; return `<div class="mile ${done ? 'done' : ''}">${b ? badgeSVG(b, done, 34) : `<span class="xpmile">+${w * 20}</span>`}<small class="num">${w} wk</small></div>`; }).join('')}</div>
-    <div class="sc-foot"><span class="freeze">${ic('shield-check')}1 streak freeze</span><span>${next ? `Next: ${next[0]} weeks${next[1] ? ' · ' + BADGES.find((x) => x.id === next[1]).name : ` · +${next[0] * 20} XP`}` : 'Every milestone reached'}</span></div>
+    <div class="sc-foot"><button class="freeze" data-act="freezeSheet" aria-label="${S.freezes} streak freeze${S.freezes === 1 ? '' : 's'}. Manage">${snowSVG(15)}<span class="num">${S.freezes}</span> freeze${S.freezes === 1 ? '' : 's'}${cw === 2 ? ' · on' : ''}</button><span>${next ? `Next: ${next[0]} weeks${next[1] ? ' · ' + BADGES.find((x) => x.id === next[1]).name : ` · +${next[0] * 20} XP`}` : 'Every milestone reached'}</span></div>
+    ${S.freezes < MAX_FREEZES ? `<div class="sc-earn">${snowSVG(13)}Next freeze in ${toFreeze} week${toFreeze === 1 ? '' : 's'} of streak</div>` : ''}
   </div>`;
+}
+function freezeSheet() {
+  const cw = curWeek(), n = streakWeeks();
+  sheet(`${head('Streak freezes', 'Protect your streak when life gets in the way')}
+    <div class="frz-hero"><div class="frz-slots">${Array.from({ length: MAX_FREEZES }, (_, i) => `<span class="${i < S.freezes ? 'full' : ''}">${snowSVG(26)}</span>`).join('')}</div><b class="num">${S.freezes} of ${MAX_FREEZES}</b><span>freezes ready</span></div>
+    <div class="lrows">${rowHTML({ icon: 'shield-check', c: '#3B8BD4', title: 'Saves a week you can’t play', sub: 'Your streak carries on without adding a week' })}
+      ${rowHTML({ icon: 'timer', c: '#3B8BD4', title: 'Used for you if you forget', sub: 'If the week ends before you hit your goal, a freeze is used automatically' })}
+      ${rowHTML({ icon: 'flame', c: '#E2621D', title: `Earn one every ${FREEZE_EVERY} weeks in a row`, sub: `Hold up to ${MAX_FREEZES}. Hit your goal in a frozen week and you get it back.` })}</div>
+    ${cw === 1 ? '<div class="okbox">' + ic('circle-check') + '<div><b>You’ve hit this week’s goal</b><br>No freeze needed.</div></div>'
+      : cw === 2 ? `<button class="pill block soft" data-act="unfreeze">Cancel this week’s freeze</button>`
+      : `<button class="pill block" data-act="useFreeze" ${S.freezes ? '' : 'disabled'}>${snowSVG(18)}${S.freezes ? 'Freeze this week' : 'No freezes left'}</button>`}
+    <div class="demo-box"><div><b>Demo: end this week now</b><small>See what happens to a ${n}-week streak with ${S.week} of ${S.goal} games${cw === 2 ? ' and a freeze on' : ''}.</small></div><button class="pill sm soft" data-act="endWeek">End week</button></div>`);
+}
+/* What happens when a week closes: kept by the goal, saved by a freeze, or broken. */
+function endWeek() {
+  const before = streakWeeks(), last = S.streak.length - 1, cw = S.streak[last], played = S.week;
+  let result;
+  if (cw === 1) { result = 'kept'; S.xp += 30; }
+  else if (cw === 2) result = 'frozen';
+  else if (S.freezes > 0) { S.freezes--; S.streak[last] = 2; result = 'auto'; }
+  else { S.streak[last] = 0; result = 'broken'; }
+  const after = streakWeeks();
+  let earned = false;
+  if (result === 'kept' && after > 0 && after % FREEZE_EVERY === 0 && S.freezes < MAX_FREEZES) { S.freezes++; earned = true; }
+  S.bestStreak = Math.max(S.bestStreak || 0, bestStreak());
+  S.streak = S.streak.concat(0).slice(-8); S.week = 0; save();
+  const nb = badgeCheck(true);
+  const art = result === 'kept' ? flameSVG(110) : result === 'broken' ? flameSVG(110, false) : `<span class="frz-big">${snowSVG(64)}</span>`;
+  const title = { kept: `${after}-week streak!`, frozen: 'Streak frozen, not broken', auto: 'A freeze saved your streak', broken: 'Streak lost' }[result];
+  const body = { kept: `You hit your goal. +30 XP.${earned ? ' You also earned a streak freeze.' : ''}`, frozen: `Last week was protected by the freeze you set. You’re still on ${after} weeks.`,
+    auto: `You played ${played} of ${S.goal} games, so a freeze was used automatically. Still ${after} weeks. ${S.freezes} freeze${S.freezes === 1 ? '' : 's'} left.`,
+    broken: `You played ${played} of ${S.goal} games with no freeze left, so the ${before}-week streak ends. Start a new one this week.` }[result];
+  sheet(`<div class="xp-burst week-end ${result}">${art}<h2>${title}</h2><div class="muted">${body}</div></div>
+    ${earned ? `<div class="okbox frz-earned">${snowSVG(22)}<div><b>Streak freeze earned</b><br>You now have ${S.freezes} of ${MAX_FREEZES}.</div></div>` : ''}
+    ${unlockedRowHTML(nb)}
+    <div class="faint" style="font-size:13px;text-align:center">A new week has started: 0 of ${S.goal} games.</div>
+    <button class="pill block" data-act="close">${result === 'broken' ? 'Find a game' : 'Keep it going'}</button>`);
+  if (result === 'kept' && !REDUCED) confetti('#FFB13B');
+  if (tab === 'me') renderMe(); if (tab === 'play') renderPlay();
 }
 
 /* ── Badge grid and detail ── */
@@ -105,6 +152,10 @@ function badgeCheck(inline) {
 const unlockedRowHTML = (list) => (list.length ? `<div class="unlocked">${list.map((b) => `<button class="lrow" data-act="badgeId" data-id="${b.id}">${badgeSVG(b, true, 52)}<span class="ltext"><small class="eyebrow">Badge unlocked</small><b>${esc(b.name)}</b><small>${TIERS[b.tier].name} · +${TIERS[b.tier].xp} XP</small></span>${ic('chevron-right')}</button>`).join('')}</div>` : '');
 
 Object.assign(A, {
+  freezeSheet: () => freezeSheet(),
+  useFreeze: () => { if (!S.freezes || curWeek()) return; S.freezes--; S.streak[S.streak.length - 1] = 2; save(); buzz(15); freezeSheet(); renderMe(); toast('This week is frozen. Your streak is safe', 'shield-check'); },
+  unfreeze: () => { if (curWeek() !== 2) return; S.freezes = Math.min(MAX_FREEZES, S.freezes + 1); S.streak[S.streak.length - 1] = 0; save(); freezeSheet(); renderMe(); toast('Freeze cancelled and returned', 'rotate-ccw'); },
+  endWeek: () => endWeek(),
   badge: (el) => badgeSheet(BADGES[+el.dataset.i]),
   badgeId: (el) => badgeSheet(BADGES.find((b) => b.id === el.dataset.id), true),
   shareBadge: (el) => { const b = BADGES.find((x) => x.id === el.dataset.id); shareAny(`${b.name} badge`, `I just earned the ${TIERS[b.tier].name.toLowerCase()} ${b.name} badge on LetsPlay. ${b.how}. Come play:`, 'https://letsplay.app/b/' + b.id); },

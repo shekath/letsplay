@@ -37,7 +37,7 @@ function buzz(ms = 12) { try { if (navigator.vibrate) navigator.vibrate(ms); } c
 const KEY = 'letsplay-d2-v2';
 const clone = (o) => JSON.parse(JSON.stringify(o));
 /* Sample week: your 5K run, plus Vihaan's futsal and Aanya's swim lesson on Saturday morning, which clash for drop-offs. */
-const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7', 'a13', 'a16'], taken: { a7: 1, a13: 1, a16: 1 }, bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0],
+const fresh = () => ({ theme: 'system', xp: 1180, goal: 3, week: 1, joined: ['a7', 'a13', 'a16'], taken: { a7: 1, a13: 1, a16: 1 }, bookings: { a7: ['f0'], a13: ['f2'], a16: ['f1'] }, seen: [], mood: 'all', streak: [1, 1, 0, 1, 1, 1, 1, 0], freezes: 1, bestStreak: 4,
   venue: 'v1', bookDay: 1, start: 18, dur: 2, players: 10,
   tier: 'lite', billing: 'monthly', renews: null, seats: 50, payApp: 'GPay',
   waitlist: [], turf: [], hosted: [], places: [], teams: clone(SAMPLE_TEAMS), tm: {}, fixtures: clone(SAMPLE_FIXTURES),
@@ -107,7 +107,9 @@ function goalRing() {
   return `<button class="goal-ring" data-act="tab" data-id="me" aria-label="Weekly goal: ${done} of ${S.goal} games"><svg viewBox="0 0 48 48"><circle class="track" cx="24" cy="24" r="${r}"/><circle class="val" cx="24" cy="24" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - done / S.goal)}"/></svg><b class="num">${done}/${S.goal}</b></button>`;
 }
 /* Weeks in a row with the goal hit. The current week only counts once it is hit, so it never breaks the streak early. */
-function streakWeeks() { let i = S.streak.length - 1, n = 0; if (!S.streak[i]) i--; for (; i >= 0 && S.streak[i]; i--) n++; return n; }
+/* S.streak holds one value per week: 1 goal hit, 2 protected by a streak freeze, 0 missed.
+   A frozen week keeps the streak alive but doesn't add to it. */
+function streakWeeks() { let i = S.streak.length - 1, n = 0; if (!S.streak[i]) i--; for (; i >= 0 && S.streak[i]; i--) n += S.streak[i] === 1 ? 1 : 0; return n; }
 function renderPlay() {
   const el = $('#scr-play');
   if (!$('#map')) {
@@ -207,7 +209,11 @@ function bindMapDrag() {
 const joinSheet = (id) => regStart(id);
 function celebrateJoin(id, who) {
   const a = actById(id); const before = level();
-  S.week += 1; S.xp += 50; if (S.week >= S.goal) S.streak[S.streak.length - 1] = 1; save();
+  S.week += 1; S.xp += 50;
+  let refund = false;   /* hitting the goal in a week you froze gives the freeze back */
+  if (S.week >= S.goal) { if (S.streak[S.streak.length - 1] === 2) { S.freezes = Math.min(3, S.freezes + 1); refund = true; } S.streak[S.streak.length - 1] = 1; }
+  save();
+  if (refund) setTimeout(() => toast('Goal hit, so your streak freeze is back', 'shield-check'), 2800);
   const nb = badgeCheck(true);
   const lvlUp = level() > before; const goalHit = S.week === S.goal;
   const names = who.map(firstName);

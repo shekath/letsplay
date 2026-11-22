@@ -348,8 +348,24 @@ button.gi-act:active { transform: scale(.92); }
 .xpmile { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 800 10.5px var(--f-display); color: #FFC24B; border: 2px dashed rgba(255,194,75,.5); }
 .mile.done .xpmile { background: #FFC24B; color: #2A1409; border-style: solid; }
 .sc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); }
-.freeze { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; background: rgba(120,190,255,.16); color: #B8DCFF; }
-.freeze .ic { width: 15px; height: 15px; }
+.freeze { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 12px; border-radius: 999px; background: rgba(120,190,255,.16); color: #B8DCFF; font-weight: 800; font-size: 13px; }
+.freeze:active { transform: scale(.96); }
+.sc-earn { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,.72); }
+.sc-earn .snow { color: #B8DCFF; }
+/* Frozen weeks: ice instead of fire */
+.link.ice .node { background: #173049; box-shadow: 0 0 0 2px #5AA9F0 inset; color: #CFE8FF; }
+.frz-hero { display: grid; justify-items: center; gap: 4px; padding: 18px; border-radius: var(--r-lg); background: #10243A; color: #fff; text-align: center; }
+.frz-hero > b { font: 800 26px var(--f-display); font-style: italic; }
+.frz-hero > span { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.8); }
+.frz-slots { display: flex; gap: 10px; margin-bottom: 6px; }
+.frz-slots span { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; border: 2px dashed rgba(184,220,255,.35); color: rgba(184,220,255,.35); }
+.frz-slots span.full { border: 0; background: linear-gradient(160deg, #6EC1FF, #2C7BD0); color: #fff; box-shadow: 0 6px 16px rgba(44,123,208,.45), inset 0 1px 0 rgba(255,255,255,.5); }
+.frz-big { width: 110px; height: 110px; border-radius: 34px; display: grid; place-items: center; background: linear-gradient(160deg, #6EC1FF, #2C7BD0); color: #fff; box-shadow: 0 10px 26px rgba(44,123,208,.45); animation: pop .5s cubic-bezier(.3, 1.6, .5, 1); }
+.week-end .flame { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1); }
+.week-end.broken .flame { opacity: .8; }
+.frz-earned .snow { color: #2C7BD0; flex: none; }
+.demo-box { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; border: 1px dashed var(--line); }
+.demo-box small { display: block; font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
 
 /* ── Badges: medal art on a 3-column shelf ── */
 .bgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
