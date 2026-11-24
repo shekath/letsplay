@@ -37,6 +37,14 @@ A second, engagement-first direction, branded **Splayer**, at `http://localhost:
 
 Tabs: **Play · Games · Team** (Company on Corporate) **· Shop · Me**.
 
+**Play (Design C):** the default view is a clean feed.
+- **Top bar:** location (live dot), Map and the bell.
+- **Story rings** of games starting soon. **Host** comes first; a game already on gets a red ring and LIVE tag; seen stories turn grey.
+- **Sport chips** with a coloured icon, plus Filters.
+- **One lime streak card** (games left this week, with a ring) that opens Me.
+- **Picked for you** cards: photo with sport and an IN 45 MIN / LIVE badge, one line of time · distance · price, a dot meter of spots filled, and Join (the best match gets the lime button). See all expands the list.
+- **Map** opens the map full screen: a back button, location and filters at the top, sport chips, pins, one selected game card with Join, and a List button back. Picking a spot (add a place, host a game) always opens in map view.
+
 - **Play:** a list of games in a bottom sheet over the live map (drag or tap to expand). Each game is a clean row: the game name, then day and time in bold with the distance after a map-pin icon (wrapping under the time on very narrow phones, never under the join button), then price, spots left and venue. Tap a game to move the map to its pin and open details; tap a pin to highlight its card; tap + to join. Full games offer the waitlist. **Filters** (day, time, distance, fee, ability, age, setting, step-free access), the notification bell, zoom and locate controls, and a map pin button to add places or host games (Pro).
 - **Joining:** step-by-step registration (who’s playing with family members and age checks, saved details and emergency contacts, consent with guardian consent for under-18s, UPI payment with a failed-payment demo), then XP and a short celebration.
 - **Starting soon:** story rings for games today and tomorrow; a full-screen viewer that advances every 5 seconds (hold to pause, tap the sides to move; manual when reduced motion is on).

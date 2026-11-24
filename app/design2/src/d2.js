@@ -116,14 +116,18 @@ function renderPlay() {
     el.innerHTML = `<div class="map" id="map" aria-label="Map of games near you"><div class="map-layer" id="mapLayer">${mapSVG()}<div id="pins"></div></div>
         <div class="mapctl" id="mapctl"><div class="zoomgrp"><button id="zoomIn" data-act="zoomIn" aria-label="Zoom in">${ic('plus')}</button><button id="zoomOut" data-act="zoomOut" aria-label="Zoom out">${ic('minus')}</button></div><button data-act="locate" aria-label="Centre on my location">${ic('locate-fixed')}</button><button class="addmap" data-act="addToMap" aria-label="Add a place or host a game">${ic('map-pin-plus')}</button></div></div>
       <div class="play-top top-safe" id="playTop"></div>
-      <div class="lsheet" id="lsheet"><div class="lgrab" id="lgrab" aria-hidden="true"></div><div class="lhead" id="lhead"></div><div class="llist" id="llist"></div></div>`;
+      <div class="lsheet" id="lsheet"><div class="lgrab" id="lgrab" aria-hidden="true"></div><div class="lhead" id="lhead"></div><div class="llist" id="llist"></div></div>
+      <div class="mcard" id="mapCard" hidden></div>
+      <button class="listfab" id="listFab" data-act="playView" data-id="feed">${ic('list')}List</button>
+      <div class="feed top-safe" id="feed" aria-label="Games near you"></div>`;
     bindMapDrag(); bindSheet();
   }
+  el.classList.toggle('mapview', playView === 'map');
   const moods = [['all', 'Anything', null]].concat(customIds().filter((k) => allActs().some((a) => a.sport === k && a.d >= 0)).concat(['cricket', 'football', 'badminton', 'kabaddi', 'basketball', 'tennis', 'volleyball', 'running', 'yoga']).map((k) => [k, sp(k).name, sp(k)]));
   const nf = advCount();
-  $('#playTop').innerHTML = `<div class="hello"><h1><small>${locChipHTML() || `Good to see you, ${esc(firstName('f0'))}`} · <button class="tierword t-${S.tier}" data-act="plans">${PLANS[S.tier].name}</button></small>What do you feel like playing${S.auth ? ', ' + esc(firstName('f0')) : ''}?</h1>${bellHTML()}${goalRing()}</div>
-    <div class="stories" aria-label="Starting soon">${soon().map((a, i) => `<button class="story ${S.seen.includes(a.id) ? 'seen' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${when(a)}"><span class="ring"><img src="${imgOf(a)}" alt=""></span><span class="t">${a.d === 0 ? tf.format(dateAt(a.d, a.t)) : 'Tmrw'}</span></button>`).join('')}</div>
-    <div class="chips"><button class="chip neutral" data-act="advOpen" aria-pressed="${nf > 0}" aria-label="Filters${nf ? ', ' + nf + ' on' : ''}">${ic('sliders-horizontal')}Filters${nf ? ` <b class="num">${nf}</b>` : ''}</button>${moods.map(([k, n, s]) => `<button class="chip ${s ? '' : 'neutral'}" style="${s ? '--c:' + s.c : ''}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? ic(s.icon) : ic('layers')}${n}</button>`).join('')}</div>`;
+  const chipRow = (cls) => `<div class="fd-chips ${cls}" role="group" aria-label="Sport">${moods.map(([k, n, s]) => `<button class="fd-chip${s ? '' : ' all'}" style="--c:${s ? s.c : 'var(--ink)'}" data-act="mood" data-id="${k}" aria-pressed="${S.mood === k}">${s ? `<span>${ic(s.icon)}</span>` : ''}${k === 'all' ? 'For you' : n}</button>`).join('')}</div>`;
+  const filterBtn = `<button class="fd-round" data-act="advOpen" aria-pressed="${nf > 0}" aria-label="Filters${nf ? ', ' + nf + ' on' : ''}">${ic('sliders-horizontal')}${nf ? `<i class="tcount num">${nf}</i>` : ''}</button>`;
+  $('#playTop').innerHTML = playView === 'map' ? `<div class="mv-top"><button class="fd-round" data-act="playView" data-id="feed" aria-label="Back to the list">${ic('arrow-left')}</button>${locBtnHTML('mv-loc')}${filterBtn}</div>${chipRow('mv')}` : '';
   const list = games();
   if (!list.find((a) => a.id === focused)) focused = list[0] ? list[0].id : null;
   $('#pins').innerHTML = `<div class="me" style="left:${ME.x}px;top:${ME.y}px"></div>`
@@ -131,8 +135,61 @@ function renderPlay() {
     + allActs().filter((a) => a.d >= 0).map((a) => `<button class="pin ${list.includes(a) ? '' : 'gone'} ${S.joined.includes(a.id) ? 'joined' : ''}" id="pin-${a.id}" data-act="pin" data-id="${a.id}" style="--c:${sp(a.sport).c};left:${a.x}px;top:${a.y}px" aria-label="${esc(a.title)}, ${when(a)}"><span>${ic(sp(a.sport).icon)}</span></button>`).join('');
   $('#lhead').innerHTML = `<div><h2>${list.length} game${list.length === 1 ? '' : 's'} near you</h2><div class="faint" style="font-size:13px;font-weight:600">Tap a game to see it on the map</div></div><button class="pill sm soft" data-act="sheetToggle" aria-label="Expand or collapse the list">${ic('layers')}${sheetIdx ? 'Map' : 'List'}</button>`;
   $('#llist').innerHTML = list.length ? `<div class="grows">${list.map(itemHTML).join('')}</div>` : `<div class="card" style="padding:22px;text-align:center;display:grid;gap:10px"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() + ' ' : '')}games match</b><div class="muted">${nf ? 'Try fewer filters' : 'Try another sport'}, or book a court and start your own.</div><div style="display:flex;gap:8px;justify-content:center">${nf ? '<button class="pill sm" data-act="advReset">Clear filters</button>' : ''}<button class="pill sm soft" data-act="openBook">Book a court</button></div></div>`;
+  if (playView === 'map') renderMapCard(); else renderFeed(list, chipRow, filterBtn, nf);
   focusMap(true, list.find((a) => a.id === focused) || null);
 }
+
+/* ═════ PLAY, Design C: stories, sport chips, a streak nudge and "Picked for you" cards. The map opens on demand. ═════ */
+let playView = 'feed', feedAll = false;
+const locBtnHTML = (cls = '') => `<button class="fd-loc ${cls}" data-act="locEdit" aria-label="Location: ${S.location ? esc(S.location.label) : 'not set'}. Change">${ic('map-pin')}<span>${S.location ? esc(S.location.label.split(',')[0]) : 'Set your location'}</span>${S.location && S.location.live ? '<i class="live" aria-hidden="true"></i>' : ''}${ic('chevron-down')}</button>`;
+const minsTo = (a) => Math.round((dateAt(a.d, a.t) - Date.now()) / 60000);
+const isLive = (a) => { const m = minsTo(a); return a.d === 0 && m <= 0 && -m < a.mins; };
+function storyHTML(a, i) {
+  const live = isLive(a), seen = S.seen.includes(a.id);
+  return `<button class="fd-st${seen && !live ? ' seen' : ''}${live ? ' live' : ''}" style="--c:${sp(a.sport).c}" data-act="story" data-i="${i}" aria-label="${esc(a.title)}, ${live ? 'on now' : when(a)}">
+    <span class="ring"><img src="${imgOf(a)}" alt=""></span>${live ? '<i>LIVE</i>' : ''}<b>${live ? 'Now' : a.d === 0 ? tf.format(dateAt(a.d, a.t)).replace(/\s?[ap]m$/i, '') : 'Tmrw'}</b></button>`;
+}
+function streakCardMini() {
+  const done = Math.min(S.week, S.goal), need = S.goal - done, wk = streakWeeks(), r = 15, c = 2 * Math.PI * r;
+  const title = need > 0 ? `${need} more game${need > 1 ? 's' : ''} ${wk ? `${need > 1 ? 'keep' : 'keeps'} your ${wk}-week streak` : `${need > 1 ? 'start' : 'starts'} your streak`}` : `Goal hit. ${wk + 1}-week streak!`;
+  return `<button class="fd-streak" data-act="tab" data-id="me" aria-label="${title}. Weekly goal ${done} of ${S.goal}. Open Me">
+    <span class="fl">${ic('flame')}</span><span class="tx"><b>${title}</b><small>${need > 0 ? 'Your week ends on Sunday' : 'See your badges on Me'}</small></span>
+    <span class="rg"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="${r}" class="t"/><circle cx="18" cy="18" r="${r}" class="v" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - done / S.goal)}"/></svg><b class="num">${done}/${S.goal}</b></span></button>`;
+}
+function feedCard(a, best) {
+  const s = sp(a.sport), joined = S.joined.includes(a.id), left = spotsLeft(a), total = a.total || a.spots || 1, m = minsTo(a), live = isLive(a);
+  const badge = live ? 'LIVE' : a.d === 0 && m > 0 && m <= 90 ? `IN ${m} MIN` : '';
+  const N = 8, filled = Math.round(Math.min(1, (total - left) / total) * N);
+  const day = a.d === 0 ? '' : (a.d === 1 ? 'Tmrw' : dayLabel(a.d)) + ' · ';
+  return `<article class="fd-card" style="--c:${s.c}">
+    <button class="fd-main" data-act="focus" data-id="${a.id}" aria-label="${esc(a.title)}, ${live ? 'on now' : when(a)}. See details">
+      <span class="th"><img src="${imgOf(a)}" alt="" loading="lazy">${badge ? `<u>${badge}</u>` : ''}<span>${esc(s.name)}</span></span>
+      <span class="cx"><b>${esc(a.title)}</b><small>${day}${tf.format(dateAt(a.d, a.t))} · ${fmtKm(km(a.x, a.y))} · ${money(a.price)}</small>
+        <span class="cm"><span class="sp" aria-hidden="true">${Array.from({ length: N }, (_, k) => `<i class="${k < filled ? 'f' : ''}"></i>`).join('')}</span><span>${left ? `${left} spot${left > 1 ? 's' : ''} left` : 'Full'}</span></span></span>
+    </button>
+    ${joined ? `<span class="fd-join in" role="img" aria-label="You're in">${ic('check')}In</span>`
+      : left === 0 ? `<button class="fd-join full" data-act="join" data-id="${a.id}" aria-label="${esc(a.title)} is full. Join the waitlist">${S.waitlist.includes(a.id) ? 'Waitlisted' : 'Waitlist'}</button>`
+      : `<button class="fd-join${best ? ' best' : ''}" data-act="join" data-id="${a.id}" aria-label="Join ${esc(a.title)}">Join</button>`}
+  </article>`;
+}
+function renderFeed(list, chipRow, filterBtn, nf) {
+  const f = $('#feed'); if (!f) return; const y = f.scrollTop;
+  const shown = feedAll ? list : list.slice(0, 4), bestId = (list.find((a) => !S.joined.includes(a.id) && spotsLeft(a)) || {}).id;
+  f.innerHTML = `<div class="fd-top">${locBtnHTML()}<div class="fd-tr"><button class="fd-round" data-act="playView" data-id="map" aria-label="Show games on the map">${ic('map')}</button>${bellHTML()}</div></div>
+    <div class="fd-stories" aria-label="Starting soon"><button class="fd-st host" data-act="addToMap" aria-label="Host a game or add a place"><span class="ring">${ic('plus')}</span><b>Host</b></button>${soon().map(storyHTML).join('')}</div>
+    <div class="fd-chiprow">${chipRow('')}${filterBtn}</div>
+    ${streakCardMini()}
+    <div class="fd-sec"><h2>${S.mood === 'all' ? 'Picked for you' : esc(sp(S.mood).name) + ' near you'}</h2>${list.length > 4 ? `<button data-act="feedAll">${feedAll ? 'Show less' : `See all ${list.length}`}</button>` : ''}</div>
+    <div class="fd-cards">${shown.length ? shown.map((a) => feedCard(a, a.id === bestId)).join('')
+      : `<div class="fd-empty"><b>No ${esc(sp(S.mood) ? sp(S.mood).name.toLowerCase() + ' ' : '')}games match</b><span>${nf ? 'Try fewer filters' : 'Try another sport'}, or book a court and start your own.</span><div>${nf ? '<button class="pill sm" data-act="advReset">Clear filters</button>' : ''}<button class="pill sm soft" data-act="openBook">Book a court</button></div></div>`}</div>`;
+  f.scrollTop = y;
+}
+function renderMapCard() {
+  const c = $('#mapCard'); if (!c) return; const a = actById(focused);
+  c.hidden = !a; c.innerHTML = a ? feedCard(a, !S.joined.includes(a.id)) : '';
+}
+function setPlayView(v) { if (playView === v) return; playView = v; renderPlay(); if (v === 'map') requestAnimationFrame(() => focusMap(false)); }
+
 /* One row per game: name, then day · time and a distance chip, then price, spots and venue.
    The venue goes last so a long name is what gets cut, never the price or spots. */
 function itemHTML(a) {
@@ -161,7 +218,7 @@ function bindSheet() {
 }
 function focusGame(id, scroll) {
   focused = id; $$('.gitem.on').forEach((e) => e.classList.remove('on')); const it = $('#item-' + id); if (it) { it.classList.add('on'); if (scroll) { const l = $('#llist'); l.scrollTo({ top: it.offsetTop - l.offsetTop - 8, behavior: REDUCED ? 'auto' : 'smooth' }); } }
-  focusMap(true, actById(id)); buzz(6);
+  focusMap(true, actById(id)); if (playView === 'map') renderMapCard(); buzz(6);
 }
 let mapPos = { x: 0, y: 0 };
 let mz = MAP_S;                       /* current zoom */
@@ -177,7 +234,11 @@ function zoomAt(f, cx, cy, anim) {
   const n = Math.max(Z_MIN, Math.min(Z_MAX, mz * f)); if (n === mz) return; const r = n / mz;
   const x = cx - (cx - mapPos.x) * r, y = cy - (cy - mapPos.y) * r; mz = n; setMap(x, y, anim);
 }
-function mapCentre() { const m = $('#map'), topH = ($('#playTop') || {}).offsetHeight || 200, sheetTop = m.clientHeight - (($('#lsheet') || {}).offsetHeight || 0); return [m.clientWidth / 2, topH + Math.max(40, (sheetTop - topH) / 2)]; }
+function mapCentre() {
+  const m = $('#map'), topH = ($('#playTop') || {}).offsetHeight || 0, card = $('#mapCard');
+  const bottom = playView === 'map' ? (card && !card.hidden && card.offsetHeight ? card.offsetTop : m.clientHeight - 110) : m.clientHeight - (($('#lsheet') || {}).offsetHeight || 0);
+  return [m.clientWidth / 2, topH + Math.max(40, (bottom - topH) / 2)];
+}
 function focusMap(anim, a) {
   const m = $('#map'); if (!m) return; const target = a === undefined ? actById(focused) : a; const p = target || ME;
   const [cx, cy] = mapCentre();
@@ -329,6 +390,8 @@ const A = {
   close: () => closeSheet(),
   theme: (el) => { S.theme = el.dataset.id; save(); applyTheme(); if (tab === 'me') renderMe(); },
   mood: (el) => { S.mood = el.dataset.id; save(); renderPlay(); },
+  playView: (el) => setPlayView(el.dataset.id),
+  feedAll: () => { feedAll = !feedAll; renderPlay(); },
   /* Tap a card: the map moves to its pin and the details open. Tap a pin: its card is highlighted in the list. */
   focus: (el) => { focusGame(el.dataset.id, false); openDetail(el.dataset.id); },
   pin: (el) => { if (sheetIdx) setSheet(0); focusGame(el.dataset.id, true); },

@@ -16,6 +16,7 @@ const placeById = (id) => COMMUNITY_SPOTS.concat(S.places).find((p) => p.id === 
 let PICK = null;
 function startPick(purpose, at) {
   PICK = { purpose }; closeSheet(); if (tab !== 'play') go('play');
+  if (playView !== 'map') { playView = 'map'; renderPlay(); }
   $('#scr-play').classList.add('picking');
   if (at && at.x) { const [cx, cy] = mapCentre(); setMap(cx - at.x * mz, cy - at.y * mz, false); }
   const m = $('#map'); const o = document.createElement('div'); o.id = 'pickUI'; o.className = 'pick-ui';
