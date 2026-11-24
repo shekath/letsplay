@@ -1,12 +1,10 @@
 # Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 
+# Manual only. The demo is published by pages.yml, which builds the apps first and serves
+# Splayer at the site root. This workflow uploads the raw repository (no index.html at the
+# root), so running it on every push raced pages.yml and left the site showing a 404.
 on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["claude/affectionate-mendel-wtp8rn"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
